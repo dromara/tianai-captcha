@@ -1,4 +1,4 @@
-package cloud.tianai.captcha.tianaicaptcha.template.slider;
+package cloud.tianai.captcha.template.slider;
 
 import lombok.SneakyThrows;
 
@@ -8,7 +8,6 @@ import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
 import java.awt.image.PixelGrabber;
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.util.List;
