@@ -182,7 +182,8 @@ public class SliderCaptchaTemplate {
      * @return true 成功 false 失败
      */
     public boolean percentageContrast(Float newPercentage, Float oriPercentage) {
-        if (newPercentage == null || Float.isNaN(newPercentage) || oriPercentage == null || Float.isNaN(oriPercentage)) {
+        if (newPercentage == null || Float.isNaN(newPercentage) || Float.isInfinite(newPercentage)
+                || oriPercentage == null || Float.isNaN(oriPercentage) || Float.isInfinite(oriPercentage)) {
             return false;
         }
         BigDecimal num = BigDecimal.valueOf(0.02d);
@@ -197,6 +198,7 @@ public class SliderCaptchaTemplate {
         }
         return false;
     }
+
 
     private String transformBase64(BufferedImage bufferedImage, String formatName) {
         byte[] data = null;
