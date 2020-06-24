@@ -183,7 +183,7 @@ public class SliderCaptchaTemplate {
      */
     public boolean percentageContrast(Float newPercentage, Float oriPercentage) {
         boolean falg = false;
-        BigDecimal num = BigDecimal.valueOf(0.05d).setScale(2, BigDecimal.ROUND_HALF_UP);
+        BigDecimal num = BigDecimal.valueOf(0.02d).setScale(2, BigDecimal.ROUND_HALF_UP);
         BigDecimal newPercentageBig = new BigDecimal(newPercentage).setScale(2, BigDecimal.ROUND_HALF_UP);
         BigDecimal oriPercentageBig = new BigDecimal(oriPercentage).setScale(2, BigDecimal.ROUND_HALF_UP);
         //最小百分比
