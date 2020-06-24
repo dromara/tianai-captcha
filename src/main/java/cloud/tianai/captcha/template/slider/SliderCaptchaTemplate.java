@@ -182,8 +182,10 @@ public class SliderCaptchaTemplate {
      * @return true 成功 false 失败
      */
     public boolean percentageContrast(Float newPercentage, Float oriPercentage) {
-        boolean falg = false;
-        BigDecimal num = BigDecimal.valueOf(0.02d).setScale(2, BigDecimal.ROUND_HALF_UP);
+        if (newPercentage == null || Float.isNaN(newPercentage) || oriPercentage == null || Float.isNaN(oriPercentage)) {
+            return false;
+        }
+        BigDecimal num = BigDecimal.valueOf(0.02d);
         BigDecimal newPercentageBig = new BigDecimal(newPercentage).setScale(2, BigDecimal.ROUND_HALF_UP);
         BigDecimal oriPercentageBig = new BigDecimal(oriPercentage).setScale(2, BigDecimal.ROUND_HALF_UP);
         //最小百分比
@@ -191,11 +193,10 @@ public class SliderCaptchaTemplate {
         //最大百分比
         BigDecimal maxOriPercentage = oriPercentageBig.add(num).setScale(2, BigDecimal.ROUND_HALF_UP);
         if (newPercentageBig.compareTo(minOriPercentage) > 0 && maxOriPercentage.compareTo(newPercentageBig) > 0) {
-            falg = true;
+            return true;
         }
-        return falg;
+        return false;
     }
-
 
     private String transformBase64(BufferedImage bufferedImage, String formatName) {
         byte[] data = null;
