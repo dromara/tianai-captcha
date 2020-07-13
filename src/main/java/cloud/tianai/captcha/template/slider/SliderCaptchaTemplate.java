@@ -6,7 +6,9 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
 import java.math.BigDecimal;
 import java.net.URL;
@@ -149,7 +151,8 @@ public class SliderCaptchaTemplate {
         Map<String, URL> templateImages = getRandomTemplateImages();
 
         BufferedImage cutBackground = warpFile2BufferedImage(resourceImage);
-        BufferedImage targetBackground = warpFile2BufferedImage(resourceImage);
+        // 拷贝一份图片
+        BufferedImage targetBackground = deepCopyBufferedImage(cutBackground);
 
         BufferedImage fixedTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, FIXED_IMAGE_NAME));
         BufferedImage activeTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, ACTIVE_IMAGE_NAME));
@@ -246,6 +249,19 @@ public class SliderCaptchaTemplate {
         graphics2.drawImage(origin, -x, -y, lw, lh, null);
         graphics2.dispose();
         return image;
+    }
+
+
+    /**
+     * 深度拷贝图片
+     * @param bi 原图片
+     * @return BufferedImage
+     */
+    public static BufferedImage deepCopyBufferedImage(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(bi.getRaster().createCompatibleWritableRaster());
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
     }
 
     /**
