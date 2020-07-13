@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -160,9 +161,8 @@ public class SliderCaptchaTemplate {
         BufferedImage cutTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, CUT_IMAGE_NAME));
 
         // 获取随机的 x 和 y 轴
-        Random random = new Random();
-        int randomX = random.nextInt(targetBackground.getWidth() - fixedTemplate.getWidth() * 2) + fixedTemplate.getWidth();
-        int randomY = random.nextInt(targetBackground.getHeight() - fixedTemplate.getHeight());
+        int randomX = ThreadLocalRandom.current().nextInt(targetBackground.getWidth() - fixedTemplate.getWidth() * 2) + fixedTemplate.getWidth();
+        int randomY =ThreadLocalRandom.current().nextInt(targetBackground.getHeight() - fixedTemplate.getHeight());
 
         coverImage(targetBackground, fixedTemplate, randomX, randomY);
         BufferedImage cutImage = cutImage(cutBackground, cutTemplate, randomX, randomY);
@@ -371,7 +371,7 @@ public class SliderCaptchaTemplate {
         if (templateImageFiles.size() == 1) {
             return templateImageFiles.get(0);
         }
-        int templateNo = new Random().nextInt(templateImageFiles.size());
+        int templateNo = ThreadLocalRandom.current().nextInt(templateImageFiles.size());
         return templateImageFiles.get(templateNo);
     }
 
@@ -384,7 +384,7 @@ public class SliderCaptchaTemplate {
     }
 
     private  URL getRandomResourceImage() {
-        int targetNo = new Random().nextInt(resourceImageFiles.size());
+        int targetNo = ThreadLocalRandom.current().nextInt(resourceImageFiles.size());
         return resourceImageFiles.get(targetNo);
     }
 
