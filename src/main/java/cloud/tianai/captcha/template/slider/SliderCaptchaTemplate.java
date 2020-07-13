@@ -158,14 +158,14 @@ public class SliderCaptchaTemplate {
         BufferedImage fixedTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, FIXED_IMAGE_NAME));
         BufferedImage activeTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, ACTIVE_IMAGE_NAME));
         BufferedImage matrixTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, MATRIX_IMAGE_NAME));
-        BufferedImage cutTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, CUT_IMAGE_NAME));
+//        BufferedImage cutTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, CUT_IMAGE_NAME));
 
         // 获取随机的 x 和 y 轴
         int randomX = ThreadLocalRandom.current().nextInt(targetBackground.getWidth() - fixedTemplate.getWidth() * 2) + fixedTemplate.getWidth();
         int randomY =ThreadLocalRandom.current().nextInt(targetBackground.getHeight() - fixedTemplate.getHeight());
 
         coverImage(targetBackground, fixedTemplate, randomX, randomY);
-        BufferedImage cutImage = cutImage(cutBackground, cutTemplate, randomX, randomY);
+        BufferedImage cutImage = cutImage(cutBackground, fixedTemplate, randomX, randomY);
         coverImage(cutImage, activeTemplate, 0, 0);
         coverImage(matrixTemplate, cutImage, 0, randomY);
         // 计算滑块百分比
