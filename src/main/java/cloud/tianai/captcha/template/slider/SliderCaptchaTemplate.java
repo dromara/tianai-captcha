@@ -189,17 +189,11 @@ public class SliderCaptchaTemplate {
                 || oriPercentage == null || Float.isNaN(oriPercentage) || Float.isInfinite(oriPercentage)) {
             return false;
         }
-        BigDecimal num = BigDecimal.valueOf(0.02d);
-        BigDecimal newPercentageBig = new BigDecimal(newPercentage).setScale(2, BigDecimal.ROUND_HALF_UP);
-        BigDecimal oriPercentageBig = new BigDecimal(oriPercentage).setScale(2, BigDecimal.ROUND_HALF_UP);
-        //最小百分比
-        BigDecimal minOriPercentage = oriPercentageBig.subtract(num).setScale(2, BigDecimal.ROUND_HALF_UP);
-        //最大百分比
-        BigDecimal maxOriPercentage = oriPercentageBig.add(num).setScale(2, BigDecimal.ROUND_HALF_UP);
-        if (newPercentageBig.compareTo(minOriPercentage) > 0 && maxOriPercentage.compareTo(newPercentageBig) > 0) {
-            return true;
-        }
-        return false;
+        // 容错值
+        float tolerant = 0.02f;
+        float maxTolerant = oriPercentage + tolerant;
+        float minTolerant = oriPercentage - tolerant;
+        return newPercentage >= minTolerant && newPercentage <= maxTolerant;
     }
 
 
