@@ -3,8 +3,22 @@
 ![](image/1.png)
 ![](image/2.png)
 
+
 - 该滑块验证码实现了 普通图片和 **webp**图片两种格式
+
 - java获取滑块验证码例子
+
+
+```xml
+    <!-- maven 导入 -->
+    <dependency>
+        <groupId>cloud.tianai.captcha</groupId>
+        <artifactId>tianai-captcha</artifactId>
+        <version>1.0.alpha</version>
+    </dependency>
+```
+
+
 ```java
 public static void main(String[] args) {
     SliderCaptchaTemplate sliderCaptchaTemplate = new SliderCaptchaTemplate();
