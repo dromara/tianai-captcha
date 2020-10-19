@@ -34,13 +34,28 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
         queue = new LinkedList<>();
         // 初始化一个队列扫描
         scheduledExecutor.scheduleAtFixedRate(() -> {
-            while (pos.get() < this.size) {
-                int count = pos.incrementAndGet();
-                if (count > size) {
-                    return;
+            try {
+                while (pos.get() < this.size) {
+                    if (pos.get() >= size) {
+                        return;
+                    }
+                    SliderCaptchaInfo slideImageInfo = target.getSlideImageInfo();
+                    if (slideImageInfo != null) {
+                        queue.add(slideImageInfo);
+                        // 添加记录
+                        pos.incrementAndGet();
+                    }else {
+                        // 休眠500毫秒
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(500);
+                        } catch (InterruptedException ignored) {
+                        }
+                    }
+
                 }
-                SliderCaptchaInfo slideImageInfo = target.getSlideImageInfo();
-                queue.add(slideImageInfo);
+            } catch (Exception e) {
+                // cache所有
+                log.error("缓存队列扫描时出错， ex", e);
             }
         }, 0, 100, TimeUnit.MILLISECONDS);
     }

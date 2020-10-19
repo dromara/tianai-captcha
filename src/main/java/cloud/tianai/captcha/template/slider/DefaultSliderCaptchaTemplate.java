@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.template.slider;
 
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -21,6 +22,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @Date 2020/5/29 8:06
  * @Description 滑块验证码模板
  */
+@Slf4j
 public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
     /**
@@ -186,6 +188,11 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
     @SneakyThrows
     public SliderCaptchaInfo getSlideImageInfo(String targetFormatName, String matrixFormatName) {
+        if (resourceImageFiles.isEmpty() ||  templateImageFiles.isEmpty()) {
+            log.warn("滑块验证码生成失败， 资源或模板为空，不能进行生成, 资源文件列表长度: {}, 模板文件列表长度: {}",
+                    resourceImageFiles.size(), templateImageFiles.size());
+            return null;
+        }
         URL resourceImage = getRandomResourceImage();
         Map<String, URL> templateImages = getRandomTemplateImages();
 
