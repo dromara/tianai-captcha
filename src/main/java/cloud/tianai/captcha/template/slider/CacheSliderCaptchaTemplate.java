@@ -28,6 +28,13 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
     public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, int size) {
         this.target = target;
+        this.size = size;
+    }
+
+    /**
+     * 记的初始化调度器
+     */
+    public void initSchedule() {
         init(size);
     }
 
