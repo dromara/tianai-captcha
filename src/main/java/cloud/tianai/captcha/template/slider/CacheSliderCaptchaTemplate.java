@@ -1,6 +1,5 @@
 package cloud.tianai.captcha.template.slider;
 
-import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -13,10 +12,14 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * @Author: 天爱有情
+ * @date 2020/10/20 9:23
+ * @Description 滑块验证码缓冲器
+ */
 @Slf4j
 public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
-    public static final int RETRY = 10;
     private final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slider-captcha-queue"));
     private ConcurrentLinkedQueue<SliderCaptchaInfo> queue;
     private AtomicInteger pos = new AtomicInteger(0);
@@ -65,15 +68,11 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     @SneakyThrows
     @Override
     public SliderCaptchaInfo getSlideImageInfo() {
-        SliderCaptchaInfo poll;
-        int retryIdx = 0;
-        while ((poll = queue.poll()) == null) {
-            retryIdx++;
-            if (retryIdx > RETRY) {
-                throw new SliderCaptchaException("获取滑块验证码限流");
-            }
-            // 休眠50毫秒
-            TimeUnit.MILLISECONDS.sleep(50);
+        SliderCaptchaInfo poll = queue.poll();
+        if (poll == null) {
+            log.warn("滑块验证码缓存不足");
+            // 如果池内没数据， 则直接生成
+            return target.getSlideImageInfo();
         }
         // 减1
         pos.decrementAndGet();
@@ -81,19 +80,19 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     }
 
 
-    public static void main(String[] args) throws InterruptedException {
-        SliderCaptchaTemplate captchaTemplate = new DefaultSliderCaptchaTemplate("jpeg", "png", true);
-
-        captchaTemplate = new CacheSliderCaptchaTemplate(captchaTemplate, 20);
-        TimeUnit.SECONDS.sleep(5);
-        for (int i = 0; i < 100; i++) {
-            long start = System.currentTimeMillis();
-            SliderCaptchaInfo info = captchaTemplate.getSlideImageInfo();
-            long end = System.currentTimeMillis();
-            System.out.println("耗时:" + (end - start));
-            TimeUnit.MILLISECONDS.sleep(10);
-        }
-    }
+//    public static void main(String[] args) throws InterruptedException {
+//        SliderCaptchaTemplate captchaTemplate = new DefaultSliderCaptchaTemplate("jpeg", "png", true);
+//
+//        captchaTemplate = new CacheSliderCaptchaTemplate(captchaTemplate, 20);
+//        TimeUnit.SECONDS.sleep(5);
+//        for (int i = 0; i < 100; i++) {
+//            long start = System.currentTimeMillis();
+//            SliderCaptchaInfo info = captchaTemplate.getSlideImageInfo();
+//            long end = System.currentTimeMillis();
+//            System.out.println("耗时:" + (end - start));
+//            TimeUnit.MILLISECONDS.sleep(10);
+//        }
+//    }
 
     @Override
     public void addResource(URL url) {
