@@ -70,6 +70,7 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
                 log.error("缓存队列扫描时出错， ex", e);
             }
         }, 0, 100, TimeUnit.MILLISECONDS);
+        log.info("缓存滑块验证码调度器初始化完成: size:{}", size);
     }
 
     @SneakyThrows
