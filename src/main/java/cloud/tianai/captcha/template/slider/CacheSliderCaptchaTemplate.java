@@ -1,13 +1,13 @@
 package cloud.tianai.captcha.template.slider;
 
+import cloud.tianai.captcha.template.slider.exception.SliderCaptchaException;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -16,12 +16,12 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
+    public static final int RETRY = 10;
     private final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slider-captcha-queue"));
-    private Queue<SliderCaptchaInfo> queue;
+    private ConcurrentLinkedQueue<SliderCaptchaInfo> queue;
     private AtomicInteger pos = new AtomicInteger(0);
     private SliderCaptchaTemplate target;
     private int size;
-
 
     public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, int size) {
         this.target = target;
@@ -31,7 +31,7 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     private void init(int z) {
         this.size = z;
         this.pos = new AtomicInteger(0);
-        queue = new LinkedList<>();
+        queue = new ConcurrentLinkedQueue<>();
         // 初始化一个队列扫描
         scheduledExecutor.scheduleAtFixedRate(() -> {
             try {
@@ -41,10 +41,12 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
                     }
                     SliderCaptchaInfo slideImageInfo = target.getSlideImageInfo();
                     if (slideImageInfo != null) {
-                        queue.add(slideImageInfo);
-                        // 添加记录
-                        pos.incrementAndGet();
-                    }else {
+                        boolean addStatus = queue.offer(slideImageInfo);
+                        if (addStatus) {
+                            // 添加记录
+                            pos.incrementAndGet();
+                        }
+                    } else {
                         // 休眠500毫秒
                         try {
                             TimeUnit.MILLISECONDS.sleep(500);
@@ -63,24 +65,24 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     @SneakyThrows
     @Override
     public SliderCaptchaInfo getSlideImageInfo() {
-        while (true) {
-            int i = pos.get();
-            if (i > 0) {
-                if (pos.compareAndSet(i, i - 1)) {
-                    SliderCaptchaInfo poll = queue.poll();
-                    if (poll != null) {
-                        return poll;
-                    }
-                }
+        SliderCaptchaInfo poll;
+        int retryIdx = 0;
+        while ((poll = queue.poll()) == null) {
+            retryIdx++;
+            if (retryIdx > RETRY) {
+                throw new SliderCaptchaException("获取滑块验证码限流");
             }
-            // 休眠100毫秒
-            TimeUnit.MILLISECONDS.sleep(100);
+            // 休眠50毫秒
+            TimeUnit.MILLISECONDS.sleep(50);
         }
+        // 减1
+        pos.decrementAndGet();
+        return poll;
     }
 
 
     public static void main(String[] args) throws InterruptedException {
-        SliderCaptchaTemplate captchaTemplate = new DefaultSliderCaptchaTemplate("webp", "webp", true);
+        SliderCaptchaTemplate captchaTemplate = new DefaultSliderCaptchaTemplate("jpeg", "png", true);
 
         captchaTemplate = new CacheSliderCaptchaTemplate(captchaTemplate, 20);
         TimeUnit.SECONDS.sleep(5);

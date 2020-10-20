@@ -14,7 +14,7 @@
     <dependency>
         <groupId>cloud.tianai.captcha</groupId>
         <artifactId>tianai-captcha</artifactId>
-        <version>1.0.alpha</version>
+        <version>1.0</version>
     </dependency>
 ```
 
