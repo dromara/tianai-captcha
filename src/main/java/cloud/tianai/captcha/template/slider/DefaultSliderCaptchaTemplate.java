@@ -188,7 +188,7 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
     @SneakyThrows
     public SliderCaptchaInfo getSlideImageInfo(String targetFormatName, String matrixFormatName) {
-        if (resourceImageFiles.isEmpty() ||  templateImageFiles.isEmpty()) {
+        if (resourceImageFiles.isEmpty() || templateImageFiles.isEmpty()) {
             log.warn("滑块验证码生成失败， 资源或模板为空，不能进行生成, 资源文件列表长度: {}, 模板文件列表长度: {}",
                     resourceImageFiles.size(), templateImageFiles.size());
             return null;
@@ -425,6 +425,9 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
     }
 
     private URL getRandomResourceImage() {
+        if (resourceImageFiles.size() == 1) {
+            return resourceImageFiles.get(0);
+        }
         int targetNo = ThreadLocalRandom.current().nextInt(resourceImageFiles.size());
         return resourceImageFiles.get(targetNo);
     }
