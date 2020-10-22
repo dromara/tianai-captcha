@@ -87,21 +87,6 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
         return poll;
     }
 
-
-//    public static void main(String[] args) throws InterruptedException {
-//        SliderCaptchaTemplate captchaTemplate = new DefaultSliderCaptchaTemplate("jpeg", "png", true);
-//
-//        captchaTemplate = new CacheSliderCaptchaTemplate(captchaTemplate, 20);
-//        TimeUnit.SECONDS.sleep(5);
-//        for (int i = 0; i < 100; i++) {
-//            long start = System.currentTimeMillis();
-//            SliderCaptchaInfo info = captchaTemplate.getSlideImageInfo();
-//            long end = System.currentTimeMillis();
-//            System.out.println("耗时:" + (end - start));
-//            TimeUnit.MILLISECONDS.sleep(10);
-//        }
-//    }
-
     @Override
     public void addResource(URL url) {
         target.addResource(url);
@@ -128,12 +113,48 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     }
 
     @Override
+    public List<URL> listResources() {
+        return target.listResources();
+    }
+
+    @Override
+    public void clearResources() {
+        target.clearResources();
+    }
+
+    @Override
     public void deleteTemplate(Map<String, URL> template) {
         target.deleteTemplate(template);
+    }
+
+    @Override
+    public List<Map<String, URL>> listTemplates() {
+        return target.listTemplates();
+    }
+
+    @Override
+    public void clearTemplates() {
+        target.clearTemplates();
     }
 
     @Override
     public boolean percentageContrast(Float newPercentage, Float oriPercentage) {
         return target.percentageContrast(newPercentage, oriPercentage);
     }
+
+
+//    public static void main(String[] args) throws InterruptedException {
+//        SliderCaptchaTemplate captchaTemplate = new DefaultSliderCaptchaTemplate("jpeg", "png", true);
+//
+//        captchaTemplate = new CacheSliderCaptchaTemplate(captchaTemplate, 20);
+//        TimeUnit.SECONDS.sleep(5);
+//        for (int i = 0; i < 100; i++) {
+//            long start = System.currentTimeMillis();
+//            SliderCaptchaInfo info = captchaTemplate.getSlideImageInfo();
+//            long end = System.currentTimeMillis();
+//            System.out.println("耗时:" + (end - start));
+//            TimeUnit.MILLISECONDS.sleep(10);
+//        }
+//    }
+
 }

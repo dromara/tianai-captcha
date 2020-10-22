@@ -130,8 +130,28 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
     }
 
     @Override
+    public List<URL> listResources() {
+        return Collections.unmodifiableList(resourceImageFiles);
+    }
+
+    @Override
+    public void clearResources() {
+        resourceImageFiles.clear();
+    }
+
+    @Override
     public void deleteTemplate(Map<String, URL> template) {
         templateImageFiles.remove(template);
+    }
+
+    @Override
+    public List<Map<String, URL>> listTemplates() {
+        return Collections.unmodifiableList(templateImageFiles);
+    }
+
+    @Override
+    public void clearTemplates() {
+        templateImageFiles.clear();
     }
 
     @Override

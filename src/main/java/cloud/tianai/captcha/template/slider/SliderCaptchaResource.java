@@ -18,25 +18,11 @@ public interface SliderCaptchaResource {
     void addResource(URL url);
 
     /**
-     * 添加模板
-     *
-     * @param template template
-     */
-    void addTemplate(Map<String, URL> template);
-
-    /**
      * 设置资源
      *
      * @param resources resources
      */
     void setResource(List<URL> resources);
-
-    /**
-     * 设置模板
-     *
-     * @param imageTemplates imageTemplates
-     */
-    void setTemplates(List<Map<String, URL>> imageTemplates);
 
     /**
      * 删除资源
@@ -46,9 +32,48 @@ public interface SliderCaptchaResource {
     void deleteResource(URL resource);
 
     /**
+     * 读取所有资源
+     *
+     * @return List<URL>
+     */
+    List<URL> listResources();
+
+    /**
+     * 清除所有资源
+     */
+    void clearResources();
+
+    /**
+     * 添加模板
+     *
+     * @param template template
+     */
+    void addTemplate(Map<String, URL> template);
+
+
+    /**
+     * 设置模板
+     *
+     * @param imageTemplates imageTemplates
+     */
+    void setTemplates(List<Map<String, URL>> imageTemplates);
+
+    /**
      * 删除模板
      *
      * @param template template
      */
     void deleteTemplate(Map<String, URL> template);
+
+    /**
+     * 查询所有模板
+     *
+     * @return List<Map < String, URL>>
+     */
+    List<Map<String, URL>> listTemplates();
+
+    /**
+     * 清除所有模板
+     */
+    void clearTemplates();
 }
