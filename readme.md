@@ -14,7 +14,7 @@
     <dependency>
         <groupId>cloud.tianai.captcha</groupId>
         <artifactId>tianai-captcha</artifactId>
-        <version>1.0</version>
+        <version>1.1</version>
     </dependency>
 ```
 
@@ -35,15 +35,6 @@ public static void main(String[] args) {
 - 添加自定义背景图片例子
 ```java
 addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/2.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/3.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/4.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/5.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/6.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/7.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/8.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/9.jpg")));
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/10.jpg")));
 ```
 - 添加自定义模板(滑块的颜色和形状)
 ```java
