@@ -15,7 +15,6 @@ import java.net.URL;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @Author: 天爱有情
@@ -35,7 +34,6 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
     public static final String DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH = "META-INF/cut-image/template";
 
     public static final String ACTIVE_IMAGE_NAME = "active.png";
-    public static final String CUT_IMAGE_NAME = "cut.png";
     public static final String FIXED_IMAGE_NAME = "fixed.png";
     public static final String MATRIX_IMAGE_NAME = "matrix.png";
 
@@ -54,20 +52,10 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
     public void initDefaultResource() {
         // 添加一些系统的资源文件
         addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/2.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/3.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/4.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/5.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/6.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/7.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/8.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/9.jpg")));
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/10.jpg")));
 
         // 添加一些系统的 模板文件
         Map<String, URL> template1 = new HashMap<>(4);
         template1.put(ACTIVE_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
-        template1.put(CUT_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/cut.png")));
         template1.put(FIXED_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
         template1.put(MATRIX_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/matrix.png")));
         addTemplate(template1);
@@ -75,24 +63,11 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
         Map<String, URL> template2 = new HashMap<>(4);
         template2.put(ACTIVE_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/active.png")));
-        template2.put(CUT_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/cut.png")));
         template2.put(FIXED_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/fixed.png")));
         template2.put(MATRIX_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/matrix.png")));
         addTemplate(template2);
 
-        Map<String, URL> template3 = new HashMap<>(4);
-        template3.put(ACTIVE_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/active.png")));
-        template3.put(CUT_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/cut.png")));
-        template3.put(FIXED_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/fixed.png")));
-        template3.put(MATRIX_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/matrix.png")));
-        addTemplate(template3);
     }
-
-
-    private final AtomicBoolean loadResources = new AtomicBoolean(false);
-
-    private String sliderImageResourcePath = DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
-    private String sliderImageTemplatePath = DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH;
 
     public DefaultSliderCaptchaTemplate(boolean initDefaultResource) {
         // 加载系统资源文件
@@ -111,15 +86,11 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
     public DefaultSliderCaptchaTemplate(String targetFormatName,
                                         String matrixFormatName,
-                                        String sliderImageResourcePath,
-                                        String sliderImageTemplatePath,
                                         List<URL> r,
                                         List<Map<String, URL>> t,
                                         boolean initDefaultResource) {
         this.targetFormatName = targetFormatName;
         this.matrixFormatName = matrixFormatName;
-        this.sliderImageResourcePath = sliderImageResourcePath;
-        this.sliderImageTemplatePath = sliderImageTemplatePath;
         resourceImageFiles = r;
         templateImageFiles = t;
         if (initDefaultResource) {
@@ -362,14 +333,6 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
                     if (temp == 0) {
                         temp = j;
                     }
-                    if (j == width) {
-                        if (temp == 0) {
-                            rec.add(new Area(new Rectangle(j, i, 1, 1)));
-                        } else {
-                            rec.add(new Area(new Rectangle(temp, i, j - temp, 1)));
-                            temp = 0;
-                        }
-                    }
                 } else {
                     if (temp != 0) {
                         rec.add(new Area(new Rectangle(temp, i, j - temp, 1)));
@@ -403,7 +366,7 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
     private URL getTemplateFile(Map<String, URL> templateImages, String imageName) {
         URL url = templateImages.get(imageName);
         if (url == null) {
-            throw new IllegalArgumentException("查找模板异常， 该模板下未找到 ");
+            throw new IllegalArgumentException("查找模板异常， 该模板下未找到 ".concat(imageName));
         }
         return url;
     }
