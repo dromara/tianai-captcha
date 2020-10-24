@@ -45,3 +45,4 @@ template1.put(FIXED_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAG
 template1.put(MATRIX_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/matrix.png")));
 addTemplate(template1);
 ```
+- qq群: 1021884609
