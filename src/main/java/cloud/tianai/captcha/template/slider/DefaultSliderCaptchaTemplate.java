@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.template.slider;
 
+import cloud.tianai.captcha.template.slider.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -11,9 +12,12 @@ import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.List;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -33,132 +37,38 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
      */
     public static final String DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH = "META-INF/cut-image/template";
 
-    public static final String ACTIVE_IMAGE_NAME = "active.png";
-    public static final String FIXED_IMAGE_NAME = "fixed.png";
-    public static final String MATRIX_IMAGE_NAME = "matrix.png";
 
-    /**
-     * resource图片.
-     */
-    private List<URL> resourceImageFiles = new ArrayList<>(20);
-    /**
-     * 模板图片.
-     */
-    private List<Map<String, URL>> templateImageFiles = new ArrayList<>(2);
+    private final SliderCaptchaResourceManager sliderCaptchaResourceManager;
 
-    protected String targetFormatName = "jpeg";
-    protected String matrixFormatName = "png";
 
     public void initDefaultResource() {
+        ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();
         // 添加一些系统的资源文件
-        addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
+        resourceStore.addResource(new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
 
         // 添加一些系统的 模板文件
-        Map<String, URL> template1 = new HashMap<>(4);
-        template1.put(ACTIVE_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
-        template1.put(FIXED_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
-        template1.put(MATRIX_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/matrix.png")));
-        addTemplate(template1);
+        Map<String, Resource> template1 = new HashMap<>(4);
+        template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
+        template1.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
+        template1.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/matrix.png")));
+        resourceStore.addTemplate(template1);
 
 
-        Map<String, URL> template2 = new HashMap<>(4);
-        template2.put(ACTIVE_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/active.png")));
-        template2.put(FIXED_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/fixed.png")));
-        template2.put(MATRIX_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/matrix.png")));
-        addTemplate(template2);
+        Map<String, Resource> template2 = new HashMap<>(4);
+        template2.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/active.png")));
+        template2.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/fixed.png")));
+        template2.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/matrix.png")));
+        resourceStore.addTemplate(template2);
 
     }
 
-    public DefaultSliderCaptchaTemplate(boolean initDefaultResource) {
-        // 加载系统资源文件
+    public DefaultSliderCaptchaTemplate(SliderCaptchaResourceManager sliderCaptchaResourceManager, boolean initDefaultResource) {
+        this.sliderCaptchaResourceManager = sliderCaptchaResourceManager;
         if (initDefaultResource) {
             initDefaultResource();
         }
     }
 
-    public DefaultSliderCaptchaTemplate(String targetFormatName, String matrixFormatName, boolean initDefaultResource) {
-        this.targetFormatName = targetFormatName;
-        this.matrixFormatName = matrixFormatName;
-        if (initDefaultResource) {
-            initDefaultResource();
-        }
-    }
-
-    public DefaultSliderCaptchaTemplate(String targetFormatName,
-                                        String matrixFormatName,
-                                        List<URL> r,
-                                        List<Map<String, URL>> t,
-                                        boolean initDefaultResource) {
-        this.targetFormatName = targetFormatName;
-        this.matrixFormatName = matrixFormatName;
-        resourceImageFiles = r;
-        templateImageFiles = t;
-        if (initDefaultResource) {
-            initDefaultResource();
-        }
-    }
-
-
-    public DefaultSliderCaptchaTemplate(List<URL> r, List<Map<String, URL>> t, boolean initDefaultResource) {
-        resourceImageFiles = r;
-        templateImageFiles = t;
-        if (initDefaultResource) {
-            initDefaultResource();
-        }
-    }
-
-
-    @Override
-    public void addResource(URL url) {
-        resourceImageFiles.remove(url);
-        resourceImageFiles.add(url);
-    }
-
-    @Override
-    public void setResource(List<URL> resources) {
-        resourceImageFiles = resources;
-    }
-
-    @Override
-    public void setTemplates(List<Map<String, URL>> imageTemplates) {
-        templateImageFiles = imageTemplates;
-    }
-
-    @Override
-    public void deleteResource(URL resource) {
-        resourceImageFiles.remove(resource);
-    }
-
-    @Override
-    public List<URL> listResources() {
-        return Collections.unmodifiableList(resourceImageFiles);
-    }
-
-    @Override
-    public void clearResources() {
-        resourceImageFiles.clear();
-    }
-
-    @Override
-    public void deleteTemplate(Map<String, URL> template) {
-        templateImageFiles.remove(template);
-    }
-
-    @Override
-    public List<Map<String, URL>> listTemplates() {
-        return Collections.unmodifiableList(templateImageFiles);
-    }
-
-    @Override
-    public void clearTemplates() {
-        templateImageFiles.clear();
-    }
-
-    @Override
-    public void addTemplate(Map<String, URL> template) {
-        templateImageFiles.remove(template);
-        templateImageFiles.add(template);
-    }
 
     private static ClassLoader getClassLoader() {
         ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
@@ -173,27 +83,26 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
     @Override
     public SliderCaptchaInfo getSlideImageInfo() {
-        return getSlideImageInfo(this.targetFormatName, this.matrixFormatName);
+        return getSlideImageInfo("jpeg", "png");
     }
 
 
     @SneakyThrows
+    @Override
     public SliderCaptchaInfo getSlideImageInfo(String targetFormatName, String matrixFormatName) {
-        if (resourceImageFiles.isEmpty() || templateImageFiles.isEmpty()) {
-            log.warn("滑块验证码生成失败， 资源或模板为空，不能进行生成, 资源文件列表长度: {}, 模板文件列表长度: {}",
-                    resourceImageFiles.size(), templateImageFiles.size());
-            return null;
-        }
-        URL resourceImage = getRandomResourceImage();
-        Map<String, URL> templateImages = getRandomTemplateImages();
 
-        BufferedImage cutBackground = warpFile2BufferedImage(resourceImage);
+
+        Map<String, Resource> templateImages = sliderCaptchaResourceManager.randomGetTemplate();
+        Resource resourceImage = sliderCaptchaResourceManager.randomGetResource();
+
+
+        BufferedImage cutBackground = warpFile2BufferedImage(sliderCaptchaResourceManager.getResourceInputStream(resourceImage));
         // 拷贝一份图片
         BufferedImage targetBackground = deepCopyBufferedImage(cutBackground);
 
-        BufferedImage fixedTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, FIXED_IMAGE_NAME));
-        BufferedImage activeTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, ACTIVE_IMAGE_NAME));
-        BufferedImage matrixTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, MATRIX_IMAGE_NAME));
+        BufferedImage fixedTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME));
+        BufferedImage activeTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME));
+        BufferedImage matrixTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME));
 //        BufferedImage cutTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, CUT_IMAGE_NAME));
 
         // 获取随机的 x 和 y 轴
@@ -231,6 +140,11 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
         float maxTolerant = oriPercentage + tolerant;
         float minTolerant = oriPercentage - tolerant;
         return newPercentage >= minTolerant && newPercentage <= maxTolerant;
+    }
+
+    @Override
+    public SliderCaptchaResourceManager getSlideImageResourceManager() {
+        return sliderCaptchaResourceManager;
     }
 
 
@@ -383,21 +297,14 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
         g2d.dispose();
     }
 
-    private URL getTemplateFile(Map<String, URL> templateImages, String imageName) {
-        URL url = templateImages.get(imageName);
-        if (url == null) {
+    private InputStream getTemplateFile(Map<String, Resource> templateImages, String imageName) {
+        Resource resource = templateImages.get(imageName);
+        if (resource == null) {
             throw new IllegalArgumentException("查找模板异常， 该模板下未找到 ".concat(imageName));
         }
-        return url;
+        return sliderCaptchaResourceManager.getResourceInputStream(resource);
     }
 
-    private Map<String, URL> getRandomTemplateImages() {
-        if (templateImageFiles.size() == 1) {
-            return templateImageFiles.get(0);
-        }
-        int templateNo = ThreadLocalRandom.current().nextInt(templateImageFiles.size());
-        return templateImageFiles.get(templateNo);
-    }
 
     @SneakyThrows
     private static BufferedImage warpFile2BufferedImage(URL resourceImage) {
@@ -407,23 +314,27 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
         return ImageIO.read(resourceImage);
     }
 
-    private URL getRandomResourceImage() {
-        if (resourceImageFiles.size() == 1) {
-            return resourceImageFiles.get(0);
+    @SneakyThrows
+    private static BufferedImage warpFile2BufferedImage(InputStream resource) {
+        if (resource == null) {
+            throw new IllegalArgumentException("包装文件到 BufferedImage 失败， file不能为空");
         }
-        int targetNo = ThreadLocalRandom.current().nextInt(resourceImageFiles.size());
-        return resourceImageFiles.get(targetNo);
+        return ImageIO.read(resource);
     }
 
-//    public static void main(String[] args) throws InterruptedException {
-//        DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate();
-//        // 生成滑块图片
-//        SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo();
-//        // 获取背景图片的base64
-//        String backgroundImage = slideImageInfo.getBackgroundImage();
-//        // 获取滑块图片
-//        slideImageInfo.getSliderImage();
-//        // 获取滑块被背景图片的百分比， (校验图片使用)
-//        Float xPercent = slideImageInfo.getXPercent();
-//    }
+
+    public static void main(String[] args) throws InterruptedException {
+        SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
+        DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
+        // 生成滑块图片
+        SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo();
+        // 获取背景图片的base64
+        String backgroundImage = slideImageInfo.getBackgroundImage();
+        // 获取滑块图片
+        slideImageInfo.getSliderImage();
+        // 获取滑块被背景图片的百分比， (校验图片使用)
+        Float xPercent = slideImageInfo.getXPercent();
+
+        System.out.println(slideImageInfo);
+    }
 }

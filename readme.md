@@ -9,19 +9,21 @@
 - java获取滑块验证码例子
 
 
+##  快速上手
+1. 导入xml
 ```xml
     <!-- maven 导入 -->
     <dependency>
         <groupId>cloud.tianai.captcha</groupId>
         <artifactId>tianai-captcha</artifactId>
-        <version>1.1</version>
+        <version>1.2</version>
     </dependency>
 ```
-
-
+2. 使用 `SliderCaptchaTemplate`获取滑块验证码
 ```java
-public static void main(String[] args) {
-    SliderCaptchaTemplate sliderCaptchaTemplate = new SliderCaptchaTemplate();
+public static void main(String[] args) throws InterruptedException {
+    SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
+    DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
     // 生成滑块图片
     SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo();
     // 获取背景图片的base64
@@ -30,18 +32,66 @@ public static void main(String[] args) {
     slideImageInfo.getSliderImage();
     // 获取滑块被背景图片的百分比， (校验图片使用)
     Float xPercent = slideImageInfo.getXPercent();
+
+    System.out.println(slideImageInfo);
 }
 ```
-- 添加自定义背景图片例子
+# 常用接口
+- 添加自定义图片资源
 ```java
-addResource(getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
+  ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();=
+  // 添加classpath目录下的 aa.jpg 图片      
+  resourceStore.addResource(new Resource(ClassPathResourceProvider.NAME, "/aa.jpg"));
+  // 添加远程url图片资源
+  resourceStore.addResource(new Resource(URLResourceProvider.NAME, "http://www.xx.com/aa.jpg"));
+  // 内置了通过url 和 classpath读取图片资源，如果想扩展可实现 ResourceProvider 接口，进行自定义扩展
 ```
-- 添加自定义模板(滑块的颜色和形状)
+- 添加自定义模板资源
 ```java
-Map<String, URL> template1 = new HashMap<>(4);
-template1.put(ACTIVE_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
-template1.put(CUT_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/cut.png")));
-template1.put(FIXED_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
-template1.put(MATRIX_IMAGE_NAME, getClassLoader().getResource(DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/matrix.png")));
-addTemplate(template1);
+  ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();=
+  Map<String, Resource> template1 = new HashMap<>(4);
+  template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME,"/active.png"));
+  template1.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/fixed.png"));
+  template1.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/matrix.png"));
+  resourceStore.addTemplate(template1);
+
+  // 模板与三张图片组成 滑块、凹槽、背景图 
+  // 同样默认支持 classpath 和 url 两种获取图片资源， 如果想扩展可实现 ResourceProvider 接口，进行自定义扩展
+```
+- 清除内置的图片资源和模板资源
+ ```java
+    //为方便快速上手 系统本身自带了一张图片和两套滑块模板，如果不想用系统自带的可以不让它加载系统自带的
+    // 第二个构造参数设置为false时将不加载默认的图片和模板
+    SliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, false);
+```
+- 扩展，对`DefaultSliderCaptchaTemplate`增加了缓存模块
+```java
+public static void main(String[] args) throws InterruptedException {
+    // 使用 CacheSliderCaptchaTemplate 对滑块验证码进行缓存，使其提前生成滑块图片
+    // 参数一: 真正实现 滑块的 SliderCaptchaTemplate
+    // 参数二: 默认提前缓存多少个
+    // 参数三: 出错后 等待xx时间再进行生成
+    // 参数四: 检查时间间隔    
+    SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
+    DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new CacheSliderCaptchaTemplate(new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, true), 10, 1000, 100);
+    // 生成滑块图片
+    SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo();
+    // 获取背景图片的base64
+    String backgroundImage = slideImageInfo.getBackgroundImage();
+    // 获取滑块图片
+    slideImageInfo.getSliderImage();
+    // 获取滑块被背景图片的百分比， (校验图片使用)
+    Float xPercent = slideImageInfo.getXPercent();
+
+    System.out.println(slideImageInfo);
+}
+```
+- 自定义 `ResourceProvider` 实现自定义文件读取策略， 比如 oss之类的
+
+```java
+  // 实现了 ResourceProvider 后
+  SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
+  DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
+  // 注册
+  sliderCaptchaResourceManager.registerResourceProvider(new CustomResourceProvider());
 ```

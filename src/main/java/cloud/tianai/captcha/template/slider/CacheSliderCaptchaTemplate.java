@@ -3,9 +3,6 @@ package cloud.tianai.captcha.template.slider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.net.URL;
-import java.util.List;
-import java.util.Map;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -25,10 +22,21 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     private AtomicInteger pos = new AtomicInteger(0);
     private SliderCaptchaTemplate target;
     private int size;
+    /** 等待时间，一般报错或者拉取为空时会休眠一段时间再试. */
+    private int waitTime = 1000;
+    /** 调度器检查缓存的间隔时间. */
+    private int period = 100;
 
     public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, int size) {
         this.target = target;
         this.size = size;
+    }
+
+    public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, int size, int waitTime, int period) {
+        this.target = target;
+        this.size = size;
+        this.waitTime = waitTime;
+        this.period = period;
     }
 
     /**
@@ -57,20 +65,24 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
                             pos.incrementAndGet();
                         }
                     } else {
-                        // 休眠500毫秒
-                        try {
-                            TimeUnit.MILLISECONDS.sleep(500);
-                        } catch (InterruptedException ignored) {
-                        }
+                        sleep();
                     }
-
                 }
             } catch (Exception e) {
                 // cache所有
                 log.error("缓存队列扫描时出错， ex", e);
+                // 休眠
+                sleep();
             }
-        }, 0, 100, TimeUnit.MILLISECONDS);
+        }, 0, period, TimeUnit.MILLISECONDS);
         log.info("缓存滑块验证码调度器初始化完成: size:{}", size);
+    }
+
+    private void sleep() {
+        try {
+            TimeUnit.MILLISECONDS.sleep(waitTime);
+        } catch (InterruptedException ignored) {
+        }
     }
 
     @SneakyThrows
@@ -88,58 +100,19 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     }
 
     @Override
-    public void addResource(URL url) {
-        target.addResource(url);
+    public SliderCaptchaInfo getSlideImageInfo(String targetFormatName, String matrixFormatName) {
+        return target.getSlideImageInfo(targetFormatName, matrixFormatName);
     }
 
-    @Override
-    public void addTemplate(Map<String, URL> template) {
-        target.addTemplate(template);
-    }
-
-    @Override
-    public void setResource(List<URL> resources) {
-        target.setResource(resources);
-    }
-
-    @Override
-    public void setTemplates(List<Map<String, URL>> imageTemplates) {
-        target.setTemplates(imageTemplates);
-    }
-
-    @Override
-    public void deleteResource(URL resource) {
-        target.deleteResource(resource);
-    }
-
-    @Override
-    public List<URL> listResources() {
-        return target.listResources();
-    }
-
-    @Override
-    public void clearResources() {
-        target.clearResources();
-    }
-
-    @Override
-    public void deleteTemplate(Map<String, URL> template) {
-        target.deleteTemplate(template);
-    }
-
-    @Override
-    public List<Map<String, URL>> listTemplates() {
-        return target.listTemplates();
-    }
-
-    @Override
-    public void clearTemplates() {
-        target.clearTemplates();
-    }
 
     @Override
     public boolean percentageContrast(Float newPercentage, Float oriPercentage) {
         return target.percentageContrast(newPercentage, oriPercentage);
+    }
+
+    @Override
+    public SliderCaptchaResourceManager getSlideImageResourceManager() {
+        return target.getSlideImageResourceManager();
     }
 
 
