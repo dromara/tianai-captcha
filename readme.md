@@ -95,3 +95,4 @@ public static void main(String[] args) throws InterruptedException {
   // 注册
   sliderCaptchaResourceManager.registerResourceProvider(new CustomResourceProvider());
 ```
+- qq群: 1021884609
