@@ -12,12 +12,10 @@ import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
 import java.awt.image.WritableRaster;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
@@ -93,33 +91,59 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
 
         Map<String, Resource> templateImages = sliderCaptchaResourceManager.randomGetTemplate();
-        Resource resourceImage = sliderCaptchaResourceManager.randomGetResource();
+        if (templateImages == null || templateImages.isEmpty()) {
+            return null;
+        }
+        Collection<InputStream> inputStreams = new LinkedList<>();
+        try {
+            Resource resourceImage = sliderCaptchaResourceManager.randomGetResource();
+
+            InputStream resourceInputStream = sliderCaptchaResourceManager.getResourceInputStream(resourceImage);
+            inputStreams.add(resourceInputStream);
+            BufferedImage cutBackground = warpFile2BufferedImage(resourceInputStream);
+            // 拷贝一份图片
+            BufferedImage targetBackground = deepCopyBufferedImage(cutBackground);
+
+            InputStream fixedTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME);
+            inputStreams.add(fixedTemplateInput);
+            BufferedImage fixedTemplate = warpFile2BufferedImage(fixedTemplateInput);
+
+            InputStream activeTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME);
+            inputStreams.add(activeTemplateInput);
+            BufferedImage activeTemplate = warpFile2BufferedImage(activeTemplateInput);
 
 
-        BufferedImage cutBackground = warpFile2BufferedImage(sliderCaptchaResourceManager.getResourceInputStream(resourceImage));
-        // 拷贝一份图片
-        BufferedImage targetBackground = deepCopyBufferedImage(cutBackground);
+            InputStream matrixTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME);
+            inputStreams.add(matrixTemplateInput);
+            BufferedImage matrixTemplate = warpFile2BufferedImage(matrixTemplateInput);
 
-        BufferedImage fixedTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME));
-        BufferedImage activeTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME));
-        BufferedImage matrixTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME));
 //        BufferedImage cutTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, CUT_IMAGE_NAME));
 
-        // 获取随机的 x 和 y 轴
-        int randomX = ThreadLocalRandom.current().nextInt(targetBackground.getWidth() - fixedTemplate.getWidth() * 2) + fixedTemplate.getWidth();
-        int randomY = ThreadLocalRandom.current().nextInt(targetBackground.getHeight() - fixedTemplate.getHeight());
+            // 获取随机的 x 和 y 轴
+            int randomX = ThreadLocalRandom.current().nextInt(targetBackground.getWidth() - fixedTemplate.getWidth() * 2) + fixedTemplate.getWidth();
+            int randomY = ThreadLocalRandom.current().nextInt(targetBackground.getHeight() - fixedTemplate.getHeight());
 
-        coverImage(targetBackground, fixedTemplate, randomX, randomY);
-        BufferedImage cutImage = cutImage(cutBackground, fixedTemplate, randomX, randomY);
-        coverImage(cutImage, activeTemplate, 0, 0);
-        coverImage(matrixTemplate, cutImage, 0, randomY);
-        // 计算滑块百分比
-        Float xPercent = (float) randomX / targetBackground.getWidth();
+            coverImage(targetBackground, fixedTemplate, randomX, randomY);
+            BufferedImage cutImage = cutImage(cutBackground, fixedTemplate, randomX, randomY);
+            coverImage(cutImage, activeTemplate, 0, 0);
+            coverImage(matrixTemplate, cutImage, 0, randomY);
+            // 计算滑块百分比
+            Float xPercent = (float) randomX / targetBackground.getWidth();
 
-        String backGroundImageBase64 = transformBase64(targetBackground, targetFormatName);
-        String sliderImageBase64 = transformBase64(matrixTemplate, matrixFormatName);
+            String backGroundImageBase64 = transformBase64(targetBackground, targetFormatName);
+            String sliderImageBase64 = transformBase64(matrixTemplate, matrixFormatName);
 
-        return SliderCaptchaInfo.of(randomX, xPercent, randomY, backGroundImageBase64, sliderImageBase64);
+            return SliderCaptchaInfo.of(randomX, xPercent, randomY, backGroundImageBase64, sliderImageBase64);
+        } finally {
+            // 使用完后关闭流
+            for (InputStream inputStream : inputStreams) {
+                try {
+                    inputStream.close();
+                } catch (IOException e) {
+                    // ignore
+                }
+            }
+        }
     }
 
     /**
