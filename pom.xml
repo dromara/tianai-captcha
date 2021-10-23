@@ -16,6 +16,17 @@
         <skipTests>true</skipTests>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+        <skip.nexus>false</skip.nexus>
+        <deplay.id>ossrh</deplay.id>
+        <deplay.repository>https://oss.sonatype.org/service/local/staging/deploy/maven2/</deplay.repository>
+        <deplay.snapshotRepository>https://oss.sonatype.org/content/repositories/snapshots/</deplay.snapshotRepository>
+
+        <!-- 私服 -->
+<!--        <skip.nexus>true</skip.nexus>-->
+<!--        <deplay.id>smart</deplay.id>-->
+<!--        <deplay.repository>http://192.168.3.10:6061/repository/smart_hosted/</deplay.repository>-->
+<!--        <deplay.snapshotRepository>http://192.168.3.10:6061/repository/smart_hosted/</deplay.snapshotRepository>-->
     </properties>
 
     <licenses>
@@ -38,17 +49,16 @@
     </scm>
     <distributionManagement>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+            <id>${deplay.id}</id>
+            <url>${deplay.snapshotRepository}</url>
         </snapshotRepository>
         <repository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+            <id>${deplay.id}</id>
+            <url>${deplay.repository}</url>
         </repository>
     </distributionManagement>
 
     <dependencies>
-
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -80,8 +90,9 @@
                 <version>1.6.7</version>
                 <extensions>true</extensions>
                 <configuration>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <skipNexusStagingDeployMojo>${skip.nexus}</skipNexusStagingDeployMojo>
+                    <serverId>smart</serverId>
+                    <nexusUrl>http://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
