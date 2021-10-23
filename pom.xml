@@ -91,7 +91,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <skipNexusStagingDeployMojo>${skip.nexus}</skipNexusStagingDeployMojo>
-                    <serverId>smart</serverId>
+                    <serverId>ossrh</serverId>
                     <nexusUrl>http://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
