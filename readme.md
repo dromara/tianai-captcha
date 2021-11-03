@@ -10,6 +10,7 @@
 
 
 ##  快速上手
+- 如果是SpringBoot开发者可直接使用SpringBoot快速启动器[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter)
 1. 导入xml
 ```xml
     <!-- maven 导入 -->
