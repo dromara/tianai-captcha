@@ -12,7 +12,7 @@ import java.net.URL;
  * @date 2021/8/7 16:05
  * @Description url
  */
-public class URLResourceProvider implements AbstractResourceProvider {
+public class URLResourceProvider extends AbstractResourceProvider {
 
     public static final String NAME = "URL";
 
