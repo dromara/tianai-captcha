@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.template.slider.provider;
 
 import cloud.tianai.captcha.template.slider.Resource;
-import cloud.tianai.captcha.template.slider.ResourceProvider;
 
 import java.io.InputStream;
 
@@ -10,12 +9,12 @@ import java.io.InputStream;
  * @date 2021/8/7 16:07
  * @Description classPath
  */
-public class ClassPathResourceProvider implements ResourceProvider {
+public class ClassPathResourceProvider extends AbstractResourceProvider {
 
     public static final String NAME = "classpath";
 
     @Override
-    public InputStream getResourceInputStream(Resource data) {
+    public InputStream doGetResourceInputStream(Resource data) {
         return getClassLoader().getResourceAsStream(data.getData());
     }
 

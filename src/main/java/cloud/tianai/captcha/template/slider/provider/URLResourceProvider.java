@@ -12,13 +12,13 @@ import java.net.URL;
  * @date 2021/8/7 16:05
  * @Description url
  */
-public class URLResourceProvider implements ResourceProvider {
+public class URLResourceProvider implements AbstractResourceProvider {
 
     public static final String NAME = "URL";
 
     @SneakyThrows
     @Override
-    public InputStream getResourceInputStream(Resource data) {
+    public InputStream doGetResourceInputStream(Resource data) {
         URL url = new URL(data.getData());
         return url.openStream();
     }

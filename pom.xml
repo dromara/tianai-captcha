@@ -104,7 +104,7 @@
                     <execution>
                         <id>attach-sources</id>
                         <goals>
-                            <goal>jar-no-fork</goal>
+                            <goal>jar-no-fork</goal>6
                         </goals>
                     </execution>
                 </executions>

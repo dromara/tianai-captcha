@@ -70,7 +70,12 @@ public class DefaultSliderCaptchaResourceManager implements SliderCaptchaResourc
     public InputStream getResourceInputStream(Resource resource) {
         for (ResourceProvider resourceProvider : resourceProviderList) {
             if (resourceProvider.supported(resource.getType())) {
-                return resourceProvider.getResourceInputStream(resource);
+                InputStream resourceInputStream = resourceProvider.getResourceInputStream(resource);
+                if (resourceInputStream == null) {
+                    throw new IllegalArgumentException("滑块验证码 ResourceProvider 读到的图片资源为空,providerName=["
+                            + resourceProvider.getName() + "], resource=[" + resource + "]");
+                }
+                return resourceInputStream;
             }
         }
         throw new IllegalStateException("没有找到Resource [" + resource.getType() + "]对应的资源提供者");
