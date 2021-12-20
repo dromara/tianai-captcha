@@ -2,7 +2,8 @@
 ## 不说废话，直接上成品
 ![](image/1.png)
 ![](image/2.png)
-
+![](image/3.png)
+## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 
 - 该滑块验证码实现了 普通图片和 **webp**图片两种格式
 
