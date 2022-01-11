@@ -18,7 +18,7 @@
     <dependency>
         <groupId>cloud.tianai.captcha</groupId>
         <artifactId>tianai-captcha</artifactId>
-        <version>1.2.2</version>
+        <version>1.2.3</version>
     </dependency>
 ```
 2. 使用 `SliderCaptchaTemplate`获取滑块验证码

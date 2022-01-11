@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
 
     <name>tianai-captcha</name>
     <description>滑块验证码</description>
@@ -92,7 +92,7 @@
                 <configuration>
                     <skipNexusStagingDeployMojo>${skip.nexus}</skipNexusStagingDeployMojo>
                     <serverId>ossrh</serverId>
-                    <nexusUrl>http://oss.sonatype.org/</nexusUrl>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
                     <autoReleaseAfterClose>true</autoReleaseAfterClose>
                 </configuration>
             </plugin>
