@@ -1,5 +1,5 @@
 # 这是一个滑块验证码的实现
-## 在线体验[点击前往](http://101.42.239.82:8080/)
+## [在线体验](http://101.42.239.82:8080/)
 ## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 ## 不说废话，直接上成品
 ![](image/1.png)
