@@ -100,22 +100,22 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
             InputStream resourceInputStream = sliderCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
-            BufferedImage cutBackground = warpFile2BufferedImage(resourceInputStream);
+            BufferedImage cutBackground = wrapFile2BufferedImage(resourceInputStream);
             // 拷贝一份图片
             BufferedImage targetBackground = deepCopyBufferedImage(cutBackground);
 
             InputStream fixedTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME);
             inputStreams.add(fixedTemplateInput);
-            BufferedImage fixedTemplate = warpFile2BufferedImage(fixedTemplateInput);
+            BufferedImage fixedTemplate = wrapFile2BufferedImage(fixedTemplateInput);
 
             InputStream activeTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME);
             inputStreams.add(activeTemplateInput);
-            BufferedImage activeTemplate = warpFile2BufferedImage(activeTemplateInput);
+            BufferedImage activeTemplate = wrapFile2BufferedImage(activeTemplateInput);
 
 
             InputStream matrixTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME);
             inputStreams.add(matrixTemplateInput);
-            BufferedImage matrixTemplate = warpFile2BufferedImage(matrixTemplateInput);
+            BufferedImage matrixTemplate = wrapFile2BufferedImage(matrixTemplateInput);
 
 //        BufferedImage cutTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, CUT_IMAGE_NAME));
 
@@ -331,7 +331,7 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
 
     @SneakyThrows
-    private static BufferedImage warpFile2BufferedImage(URL resourceImage) {
+    private static BufferedImage wrapFile2BufferedImage(URL resourceImage) {
         if (resourceImage == null) {
             throw new IllegalArgumentException("包装文件到 BufferedImage 失败， file不能为空");
         }
@@ -339,7 +339,7 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
     }
 
     @SneakyThrows
-    private static BufferedImage warpFile2BufferedImage(InputStream resource) {
+    private static BufferedImage wrapFile2BufferedImage(InputStream resource) {
         if (resource == null) {
             throw new IllegalArgumentException("包装文件到 BufferedImage 失败， file不能为空");
         }
