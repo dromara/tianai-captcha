@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class GenerateParam {
     /** 背景格式化名称.*/
-    private String backgroundFormatName;
+    private String backgroundFormatName = "jpeg";
     /** 滑块格式化名称.*/
-    private String sliderFormatName;
+    private String sliderFormatName = "png";
     /** 是否混淆.*/
-    private Boolean obfuscate;
+    private Boolean obfuscate = false;
 }
