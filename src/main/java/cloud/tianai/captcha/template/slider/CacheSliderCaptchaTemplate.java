@@ -104,6 +104,10 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
         return target.getSlideImageInfo(targetFormatName, matrixFormatName);
     }
 
+    @Override
+    public SliderCaptchaInfo getSlideImageInfo(GenerateParam param) {
+        return target.getSlideImageInfo(param);
+    }
 
     @Override
     public boolean percentageContrast(Float newPercentage, Float oriPercentage) {

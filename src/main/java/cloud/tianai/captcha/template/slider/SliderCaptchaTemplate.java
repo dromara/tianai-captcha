@@ -25,6 +25,14 @@ public interface SliderCaptchaTemplate {
     SliderCaptchaInfo getSlideImageInfo(String targetFormatName, String matrixFormatName);
 
     /**
+     * 获取滑块验证码
+     *
+     * @param param 生成参数
+     * @return SliderCaptchaInfo
+     */
+    SliderCaptchaInfo getSlideImageInfo(GenerateParam param);
+
+    /**
      * 百分比对比
      *
      * @param newPercentage 用户百分比

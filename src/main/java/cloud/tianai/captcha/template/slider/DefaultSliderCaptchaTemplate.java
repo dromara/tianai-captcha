@@ -87,8 +87,21 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
     @SneakyThrows
     @Override
-    public SliderCaptchaInfo getSlideImageInfo(String targetFormatName, String matrixFormatName) {
+    public SliderCaptchaInfo getSlideImageInfo(String backgroundFormatName, String sliderFormatName) {
+        return getSlideImageInfo(GenerateParam.builder()
+                .backgroundFormatName(backgroundFormatName)
+                .sliderFormatName(sliderFormatName)
+                .obfuscate(true)
+                .build());
+    }
 
+    @SneakyThrows
+    @Override
+    public SliderCaptchaInfo getSlideImageInfo(GenerateParam param) {
+
+        String backgroundFormatName = param.getBackgroundFormatName();
+        String sliderFormatName = param.getSliderFormatName();
+        Boolean obfuscate = param.getObfuscate();
 
         Map<String, Resource> templateImages = sliderCaptchaResourceManager.randomGetTemplate();
         if (templateImages == null || templateImages.isEmpty()) {
@@ -97,7 +110,6 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {
             Resource resourceImage = sliderCaptchaResourceManager.randomGetResource();
-
             InputStream resourceInputStream = sliderCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage cutBackground = wrapFile2BufferedImage(resourceInputStream);
@@ -124,14 +136,19 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
             int randomY = ThreadLocalRandom.current().nextInt(targetBackground.getHeight() - fixedTemplate.getHeight());
 
             coverImage(targetBackground, fixedTemplate, randomX, randomY);
+            if (obfuscate) {
+                // 加入混淆滑块
+                int obfuscateX = randomObfuscateX(randomX, fixedTemplate.getWidth(), targetBackground.getWidth());
+                coverImage(targetBackground, fixedTemplate, obfuscateX, randomY);
+            }
             BufferedImage cutImage = cutImage(cutBackground, fixedTemplate, randomX, randomY);
             coverImage(cutImage, activeTemplate, 0, 0);
             coverImage(matrixTemplate, cutImage, 0, randomY);
             // 计算滑块百分比
             Float xPercent = (float) randomX / targetBackground.getWidth();
 
-            String backGroundImageBase64 = transformBase64(targetBackground, targetFormatName);
-            String sliderImageBase64 = transformBase64(matrixTemplate, matrixFormatName);
+            String backGroundImageBase64 = transformBase64(targetBackground, backgroundFormatName);
+            String sliderImageBase64 = transformBase64(matrixTemplate, sliderFormatName);
 
             return SliderCaptchaInfo.of(randomX, xPercent, randomY, backGroundImageBase64, sliderImageBase64);
         } finally {
@@ -144,6 +161,15 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
                 }
             }
         }
+    }
+
+    private int randomObfuscateX(int sliderX, int slWidth, int bgWidth) {
+        if (bgWidth / 2 > (sliderX + (slWidth / 2))) {
+            // 右边混淆
+            return ThreadLocalRandom.current().nextInt( sliderX + slWidth, bgWidth - slWidth);
+        }
+        // 左边混淆
+        return ThreadLocalRandom.current().nextInt(slWidth, sliderX - slWidth);
     }
 
     /**
@@ -172,15 +198,11 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
     }
 
 
-    private String transformBase64(BufferedImage bufferedImage, String formatName) {
-        byte[] data = null;
-        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
-            ImageIO.write(bufferedImage, formatName, byteArrayOutputStream);
-            //转换成字节码
-            data = byteArrayOutputStream.toByteArray();
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
+    private String transformBase64(BufferedImage bufferedImage, String formatName) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, formatName, byteArrayOutputStream);
+        //转换成字节码
+        byte[] data = byteArrayOutputStream.toByteArray();
         String base64 = Base64.getEncoder().encodeToString(data);
         return "data:image/" + formatName + ";base64,".concat(base64);
     }
@@ -358,7 +380,7 @@ public class DefaultSliderCaptchaTemplate implements SliderCaptchaTemplate {
         slideImageInfo.getSliderImage();
         // 获取滑块被背景图片的百分比， (校验图片使用)
         Float xPercent = slideImageInfo.getXPercent();
-
+        System.out.println(backgroundImage);
         System.out.println(slideImageInfo);
     }
 }
