@@ -4,7 +4,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha</artifactId>
-    <version>1.2.5</version>
+    <version>1.2.4</version>
 
     <name>tianai-captcha</name>
     <description>滑块验证码</description>
