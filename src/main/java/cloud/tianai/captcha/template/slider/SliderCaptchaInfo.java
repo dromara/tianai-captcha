@@ -32,8 +32,23 @@ public class SliderCaptchaInfo {
      * 移动图
      */
     private String sliderImage;
+    /**
+     * 扩展字段
+     */
+    public Object expand;
+    public SliderCaptchaInfo(Integer x, Float xPercent, Integer y, String backgroundImage, String sliderImage) {
+        this.x = x;
+        this.xPercent = xPercent;
+        this.y = y;
+        this.backgroundImage = backgroundImage;
+        this.sliderImage = sliderImage;
+    }
 
     public static SliderCaptchaInfo of(Integer x, Float xPercent, Integer y, String backgroundImage, String sliderImage) {
         return new SliderCaptchaInfo(x, xPercent, y, backgroundImage, sliderImage);
+    }
+
+    public static SliderCaptchaInfo of(OriginalSliderData originalSliderData, String backgroundImage, String sliderImage) {
+        return new SliderCaptchaInfo(originalSliderData.getX(), originalSliderData.getXPercent(), originalSliderData.getY(), backgroundImage, sliderImage);
     }
 }
