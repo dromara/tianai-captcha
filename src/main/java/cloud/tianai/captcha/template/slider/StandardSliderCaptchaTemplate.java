@@ -6,13 +6,12 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cloud.tianai.captcha.template.slider.CaptchaImageUtils.*;
@@ -39,7 +38,6 @@ public class StandardSliderCaptchaTemplate implements SliderCaptchaTemplate {
     public static float DEFAULT_TOLERANT = 0.02f;
 
     protected final SliderCaptchaResourceManager sliderCaptchaResourceManager;
-    protected final CaptchaImageConverter captchaImageConverter;
 
     @Getter
     @Setter
@@ -55,10 +53,8 @@ public class StandardSliderCaptchaTemplate implements SliderCaptchaTemplate {
     public String defaultSliderImageType = DEFAULT_SLIDER_IMAGE_TYPE;
 
     public StandardSliderCaptchaTemplate(SliderCaptchaResourceManager sliderCaptchaResourceManager,
-                                         CaptchaImageConverter captchaImageConverter,
                                          boolean initDefaultResource) {
         this.sliderCaptchaResourceManager = sliderCaptchaResourceManager;
-        this.captchaImageConverter = captchaImageConverter;
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -124,9 +120,7 @@ public class StandardSliderCaptchaTemplate implements SliderCaptchaTemplate {
             BufferedImage cutImage = cutImage(cutBackground, fixedTemplate, randomX, randomY);
             overlayImage(cutImage, activeTemplate, 0, 0);
             overlayImage(matrixTemplate, cutImage, 0, randomY);
-            // 计算滑块百分比
-            float xPercent = (float) randomX / targetBackground.getWidth();
-            return captchaImageConverter.convert(OriginalSliderData.of(randomX, randomY, xPercent, targetBackground, matrixTemplate, param));
+            return wrapSliderCaptchaInfo(randomX, randomY, targetBackground, matrixTemplate, param);
         } finally {
             // 使用完后关闭流
             for (InputStream inputStream : inputStreams) {
@@ -137,6 +131,49 @@ public class StandardSliderCaptchaTemplate implements SliderCaptchaTemplate {
                 }
             }
         }
+    }
+
+    /**
+     * 包装成 SliderCaptchaInfo
+     *
+     * @param randomX         随机生成的 x轴
+     * @param randomY         随机生成的 y轴
+     * @param backgroundImage 背景图片
+     * @param sliderImage     滑块图片
+     * @param param           接口传入参数
+     * @return SliderCaptchaInfo
+     */
+    @SneakyThrows
+    public SliderCaptchaInfo wrapSliderCaptchaInfo(int randomX,
+                                                   int randomY,
+                                                   BufferedImage backgroundImage,
+                                                   BufferedImage sliderImage,
+                                                   GenerateParam param) {
+        String backgroundFormatName = param.getBackgroundFormatName();
+        String sliderFormatName = param.getSliderFormatName();
+        // 计算滑块百分比
+        float xPercent = (float) randomX / backgroundImage.getWidth();
+        String backGroundImageBase64 = transform(backgroundImage, backgroundFormatName);
+        String sliderImageBase64 = transform(sliderImage, sliderFormatName);
+        return SliderCaptchaInfo.of(randomX, xPercent, randomY,
+                backGroundImageBase64,
+                sliderImageBase64);
+    }
+
+    /**
+     * 将图片转换成字符串格式
+     * @param bufferedImage 图片
+     * @param formatType 格式化类型
+     * @return String
+     * @throws IOException
+     */
+    public String transform(BufferedImage bufferedImage, String formatType) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, formatType, byteArrayOutputStream);
+        //转换成字节码
+        byte[] data = byteArrayOutputStream.toByteArray();
+        String base64 = Base64.getEncoder().encodeToString(data);
+        return "data:image/" + formatType + ";base64,".concat(base64);
     }
 
     /**
