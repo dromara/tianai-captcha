@@ -52,7 +52,7 @@ public class BasicCaptchaTrackValidator extends SimpleSliderCaptchaValidator {
         }
         // 检测3
         SliderCaptchaTrack.Track firstTrack = trackList.get(0);
-        if (firstTrack.getX() > 1 || firstTrack.getX() < -2 || firstTrack.getY() > 1 || firstTrack.getY() < -2) {
+        if (firstTrack.getX() > 10 || firstTrack.getX() < -10 || firstTrack.getY() > 10 || firstTrack.getY() < -10) {
             return false;
         }
         int check4 = 0;
