@@ -35,7 +35,7 @@ public class BasicCaptchaTrackValidator extends SimpleSliderCaptchaValidator {
         List<SliderCaptchaTrack.Track> trackList = sliderCaptchaTrack.getTrackList();
         // 这里只进行基本检测, 用一些简单算法进行校验，如有需要可扩展
         // 检测1: 滑动时间如果小于300毫秒 返回false
-        // 检测2: 轨迹数据要是少于背景宽度的五分之一，或者大于背景宽度的五分之一 返回false
+        // 检测2: 轨迹数据要是少于背10，或者大于背景宽度的五倍 返回false
         // 检测3: x轴和y轴应该是从0开始的，要是一开始x轴和y轴乱跑，返回false
         // 检测4: 如果y轴是相同的，必然是机器操作，直接返回false
         // 检测5： x轴或者y轴直接的区间跳跃过大的话返回 false
@@ -47,7 +47,7 @@ public class BasicCaptchaTrackValidator extends SimpleSliderCaptchaValidator {
             return false;
         }
         // 检测2
-        if (trackList.size() < bgImageWidth / 5 || trackList.size() > bgImageWidth * 5) {
+        if (trackList.size() < 10 || trackList.size() > bgImageWidth * 5) {
             return false;
         }
         // 检测3
@@ -71,11 +71,11 @@ public class BasicCaptchaTrackValidator extends SimpleSliderCaptchaValidator {
             }
             // check5
             SliderCaptchaTrack.Track preTrack = trackList.get(i - 1);
-            if ((track.getX() - preTrack.getX()) > 5 || (track.getY() - preTrack.getY()) > 5) {
+            if ((track.getX() - preTrack.getX()) > 50 || (track.getY() - preTrack.getY()) > 50) {
                 return false;
             }
         }
-        if (check4 > trackList.size() * 0.7 || check7 > 200) {
+        if (check4 == trackList.size() || check7 > 200) {
             return false;
         }
 
