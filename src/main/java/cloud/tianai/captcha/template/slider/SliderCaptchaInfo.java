@@ -17,10 +17,6 @@ public class SliderCaptchaInfo {
      */
     private Integer x;
     /**
-     * x轴百分比
-     */
-    private Float xPercent;
-    /**
      * y轴
      */
     private Integer y;
@@ -32,21 +28,39 @@ public class SliderCaptchaInfo {
      * 移动图
      */
     private String sliderImage;
+    /** 背景图片宽度. */
+    private Integer bgImageWidth;
+    /** 背景图片高度. */
+    private Integer bgImageHeight;
+    /** 滑块图片宽度. */
+    private Integer sliderImageWidth;
+    /** 滑块图片高度. */
+    private Integer sliderImageHeight;
     /**
      * 扩展字段
      */
     public Object expand;
 
-    public SliderCaptchaInfo(Integer x, Float xPercent, Integer y, String backgroundImage, String sliderImage) {
+    public SliderCaptchaInfo(Integer x, Integer y, String backgroundImage, String sliderImage, Integer bgImageWidth, Integer bgImageHeight, Integer sliderImageWidth, Integer sliderImageHeight) {
         this.x = x;
-        this.xPercent = xPercent;
         this.y = y;
         this.backgroundImage = backgroundImage;
         this.sliderImage = sliderImage;
+        this.bgImageWidth = bgImageWidth;
+        this.bgImageHeight = bgImageHeight;
+        this.sliderImageWidth = sliderImageWidth;
+        this.sliderImageHeight = sliderImageHeight;
     }
 
-    public static SliderCaptchaInfo of(Integer x, Float xPercent, Integer y, String backgroundImage, String sliderImage) {
-        return new SliderCaptchaInfo(x, xPercent, y, backgroundImage, sliderImage);
+    public static SliderCaptchaInfo of(Integer x,
+                                       Integer y,
+                                       String backgroundImage,
+                                       String sliderImage,
+                                       Integer bgImageWidth,
+                                       Integer bgImageHeight,
+                                       Integer sliderImageWidth,
+                                       Integer sliderImageHeight) {
+        return new SliderCaptchaInfo(x, y, backgroundImage, sliderImage, bgImageWidth, bgImageHeight, sliderImageWidth, sliderImageHeight);
     }
 
 }

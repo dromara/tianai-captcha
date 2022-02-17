@@ -151,19 +151,21 @@ public class StandardSliderCaptchaTemplate implements SliderCaptchaTemplate {
                                                    GenerateParam param) {
         String backgroundFormatName = param.getBackgroundFormatName();
         String sliderFormatName = param.getSliderFormatName();
-        // 计算滑块百分比
-        float xPercent = (float) randomX / backgroundImage.getWidth();
         String backGroundImageBase64 = transform(backgroundImage, backgroundFormatName);
         String sliderImageBase64 = transform(sliderImage, sliderFormatName);
-        return SliderCaptchaInfo.of(randomX, xPercent, randomY,
+        return SliderCaptchaInfo.of(randomX, randomY,
                 backGroundImageBase64,
-                sliderImageBase64);
+                sliderImageBase64,
+                backgroundImage.getWidth(), backgroundImage.getHeight(),
+                sliderImage.getWidth(), sliderImage.getHeight()
+        );
     }
 
     /**
      * 将图片转换成字符串格式
+     *
      * @param bufferedImage 图片
-     * @param formatType 格式化类型
+     * @param formatType    格式化类型
      * @return String
      * @throws IOException
      */
