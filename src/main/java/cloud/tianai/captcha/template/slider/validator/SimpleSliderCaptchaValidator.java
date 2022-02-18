@@ -5,7 +5,11 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
-
+/**
+ * @Author: 天爱有情
+ * @date 2022/2/17 11:01
+ * @Description 基本的滑块验证校验 ， 值进行基本校验， 目前只校验用户是否滑动到缺口处，不校验行为轨迹
+ */
 public class SimpleSliderCaptchaValidator implements SliderCaptchaValidator {
 
     public static float DEFAULT_TOLERANT = 0.02f;

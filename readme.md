@@ -5,6 +5,9 @@
 ![](image/1.png)
 ![](image/2.png)
 ![](image/3.png)
+![](image/4.png)
+![](image/5.png)
+![](image/6.png)
 
 - 该滑块验证码实现了 普通图片和 **webp**图片两种格式
 - java获取滑块验证码例子
