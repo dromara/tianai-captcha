@@ -108,7 +108,7 @@ public class StandardSliderCaptchaTemplate implements SliderCaptchaTemplate {
 //        BufferedImage cutTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, CUT_IMAGE_NAME));
 
             // 获取随机的 x 和 y 轴
-            int randomX = ThreadLocalRandom.current().nextInt(targetBackground.getWidth() - fixedTemplate.getWidth() * 2) + fixedTemplate.getWidth();
+            int randomX = ThreadLocalRandom.current().nextInt(fixedTemplate.getWidth() + 5, targetBackground.getWidth() - fixedTemplate.getWidth() - 10);
             int randomY = ThreadLocalRandom.current().nextInt(targetBackground.getHeight() - fixedTemplate.getHeight());
 
             overlayImage(targetBackground, fixedTemplate, randomX, randomY);
