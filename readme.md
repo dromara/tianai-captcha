@@ -21,30 +21,51 @@
     <dependency>
         <groupId>cloud.tianai.captcha</groupId>
         <artifactId>tianai-captcha</artifactId>
-        <version>1.2.3</version>
+        <version>1.3.0</version>
     </dependency>
 ```
 2. 使用 `SliderCaptchaTemplate`获取滑块验证码
 ```java
 public static void main(String[] args) throws InterruptedException {
     SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-    DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
+    StandardSliderCaptchaTemplate sliderCaptchaTemplate = new StandardSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
     // 生成滑块图片
     SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo();
     // 获取背景图片的base64
     String backgroundImage = slideImageInfo.getBackgroundImage();
     // 获取滑块图片
     slideImageInfo.getSliderImage();
-    // 获取滑块被背景图片的百分比， (校验图片使用)
-    Float xPercent = slideImageInfo.getXPercent();
-
+    
     System.out.println(slideImageInfo);
+    
+    // 计算滑块到凹槽的百分比，用户存到缓存中供校验使用
+    SliderCaptchaValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
+    // 滑块的百分比
+    float percentage = sliderCaptchaValidator.calcPercentage(slideImageInfo.getX(), SliderCaptchaInfo.getBgImageWidth());
+    
+    // 校验
+    
+    // 用户传来的百分比和滑块的百分比校验是否正确，如果正确的话说明移动到了指定凹槽
+    boolean check =sliderCaptchaValidator.checkPercentage(0.2f, percentage);
+    // 用户传来的行为轨迹和滑动百分比进行校验，(有了滑动行为轨迹校验，是对 checkPercentage(..)方法的增强,建议使用这个方法进行校验 )
+    check = sliderCaptchaValidator.valid(sliderCaptchaTrack, percentage);
+    
 }
 ```
 # 常用接口
-- 添加自定义图片资源
+- 自定义 `SliderCaptchaValidator` 校验器
 ```java
-  ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();=
+// 该接口负责对用户滑动验证码后传回的数据进行校验，比如滑块是否滑到指定位置，滑块行为轨迹是否正常等等
+// 该接口的默认实现有 
+// SimpleSliderCaptchaValidator 校验用户是否滑到了指定缺口处
+// BasicCaptchaTrackValidator 是对 SimpleSliderCaptchaValidator增强
+// BasicCaptchaTrackValidator是对SimpleSliderCaptchaValidator的增强 对滑动轨迹进行了简单的验证
+// 友情提示 因为BasicCaptchaTrackValidator 里面校验滑动轨迹的算法已经开源，有强制要求的建议重写该接口的方法，避免被破解
+```
+- 添加自定义图片资源
+    - 自定义图片资源大小为 590*360 格式为jpg
+```java
+  ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();
   // 添加classpath目录下的 aa.jpg 图片      
   resourceStore.addResource(new Resource(ClassPathResourceProvider.NAME, "/aa.jpg"));
   // 添加远程url图片资源
@@ -52,6 +73,11 @@ public static void main(String[] args) throws InterruptedException {
   // 内置了通过url 和 classpath读取图片资源，如果想扩展可实现 ResourceProvider 接口，进行自定义扩展
 ```
 - 添加自定义模板资源
+  - 系统内置了2套模板，可以到QQ群:1021884609 文件中获取更多模板或者自己制作模板
+  - 模板图片格式
+    - 滑块大小为 110*110 格式为png
+    - 凹槽大小为 110*110 格式为png
+    - 模板大小为 110*360 格式为png，该图为固定格式，是一张纯透明图片
 ```java
   ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();=
   Map<String, Resource> template1 = new HashMap<>(4);
@@ -69,7 +95,7 @@ public static void main(String[] args) throws InterruptedException {
     // 第二个构造参数设置为false时将不加载默认的图片和模板
     SliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, false);
 ```
-- 扩展，对`DefaultSliderCaptchaTemplate`增加了缓存模块
+- 扩展，对`StandardSliderCaptchaTemplate`增加了缓存模块
 ```java
 public static void main(String[] args) throws InterruptedException {
     // 使用 CacheSliderCaptchaTemplate 对滑块验证码进行缓存，使其提前生成滑块图片
@@ -78,15 +104,13 @@ public static void main(String[] args) throws InterruptedException {
     // 参数三: 出错后 等待xx时间再进行生成
     // 参数四: 检查时间间隔    
     SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-    DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new CacheSliderCaptchaTemplate(new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, true), 10, 1000, 100);
+    DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new CacheSliderCaptchaTemplate(new StandardSliderCaptchaTemplate(sliderCaptchaResourceManager, true), 10, 1000, 100);
     // 生成滑块图片
     SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo();
     // 获取背景图片的base64
     String backgroundImage = slideImageInfo.getBackgroundImage();
     // 获取滑块图片
     slideImageInfo.getSliderImage();
-    // 获取滑块被背景图片的百分比， (校验图片使用)
-    Float xPercent = slideImageInfo.getXPercent();
 
     System.out.println(slideImageInfo);
 }
@@ -96,8 +120,8 @@ public static void main(String[] args) throws InterruptedException {
 ```java
   // 实现了 ResourceProvider 后
   SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-  DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
+  StandardSliderCaptchaTemplate sliderCaptchaTemplate = new StandardSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
   // 注册
   sliderCaptchaResourceManager.registerResourceProvider(new CustomResourceProvider());
 ```
-- qq群: 1021884609
+# qq群: 1021884609

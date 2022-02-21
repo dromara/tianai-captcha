@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.template.slider;
 
 import cloud.tianai.captcha.template.slider.provider.ClassPathResourceProvider;
+import cloud.tianai.captcha.template.slider.provider.FileResourceProvider;
 import cloud.tianai.captcha.template.slider.provider.URLResourceProvider;
 
 import java.io.InputStream;
@@ -38,6 +39,7 @@ public class DefaultSliderCaptchaResourceManager implements SliderCaptchaResourc
         // 注入一些默认的提供者
         registerResourceProvider(new URLResourceProvider());
         registerResourceProvider(new ClassPathResourceProvider());
+        registerResourceProvider(new FileResourceProvider());
     }
 
     @Override
