@@ -1,4 +1,4 @@
-package cloud.tianai.captcha.template.slider;
+package cloud.tianai.captcha.template.slider.util;
 
 import lombok.SneakyThrows;
 
@@ -25,6 +25,8 @@ public class CaptchaImageUtils {
         if (resourceImage == null) {
             throw new IllegalArgumentException("包装文件到 BufferedImage 失败， file不能为空");
         }
+        // 关闭磁盘缓存
+        ImageIO.setUseCache(false);
         return ImageIO.read(resourceImage);
     }
 
@@ -33,6 +35,8 @@ public class CaptchaImageUtils {
         if (resource == null) {
             throw new IllegalArgumentException("包装文件到 BufferedImage 失败， file不能为空");
         }
+        // 关闭磁盘缓存
+        ImageIO.setUseCache(false);
         return ImageIO.read(resource);
     }
 

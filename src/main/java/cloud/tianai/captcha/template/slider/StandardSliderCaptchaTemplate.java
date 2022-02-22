@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cloud.tianai.captcha.template.slider.CaptchaImageUtils.*;
+import static cloud.tianai.captcha.template.slider.util.CaptchaImageUtils.*;
 
 /**
  * @Author: 天爱有情
