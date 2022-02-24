@@ -1,5 +1,7 @@
 package cloud.tianai.captcha.template.slider;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -17,16 +19,20 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
 
-    private final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slider-captcha-queue"));
-    private ConcurrentLinkedQueue<SliderCaptchaInfo> queue;
-    private AtomicInteger pos = new AtomicInteger(0);
-    private SliderCaptchaTemplate target;
-    private int size;
+    protected final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slider-captcha-queue"));
+    protected ConcurrentLinkedQueue<SliderCaptchaInfo> queue;
+    protected AtomicInteger pos = new AtomicInteger(0);
+    protected SliderCaptchaTemplate target;
+    protected int size;
     /** 等待时间，一般报错或者拉取为空时会休眠一段时间再试. */
-    private int waitTime = 1000;
+    protected int waitTime = 1000;
     /** 调度器检查缓存的间隔时间. */
-    private int period = 100;
-    private GenerateParam generateParam;
+    protected int period = 100;
+    protected GenerateParam generateParam;
+
+    @Getter
+    @Setter
+    protected boolean requiredGetCaptcha = true;
 
     public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, GenerateParam generateParam, int size) {
         this.target = target;
@@ -91,11 +97,16 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     @SneakyThrows
     @Override
     public SliderCaptchaInfo getSlideImageInfo() {
+        return getSlideImageInfo(this.requiredGetCaptcha);
+    }
+
+    @SneakyThrows
+    public SliderCaptchaInfo getSlideImageInfo(boolean requiredGetCaptcha) {
         SliderCaptchaInfo poll = queue.poll();
-        if (poll == null) {
+        if (poll == null && requiredGetCaptcha) {
             log.warn("滑块验证码缓存不足, genParam:{}", generateParam);
             // 如果池内没数据， 则直接生成
-            return target.getSlideImageInfo();
+            return target.getSlideImageInfo(generateParam);
         }
         // 减1
         pos.decrementAndGet();
