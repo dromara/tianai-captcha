@@ -1,15 +1,21 @@
 package cloud.tianai.captcha.template.slider.validator;
 
+import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
 import cloud.tianai.captcha.template.slider.util.CollectionUtils;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 /**
  * @Author: 天爱有情
  * @date 2022/2/17 11:01
  * @Description 基本的滑块验证校验 ， 值进行基本校验， 目前只校验用户是否滑动到缺口处，不校验行为轨迹
  */
+@Slf4j
 public class SimpleSliderCaptchaValidator implements SliderCaptchaValidator {
 
     public static float DEFAULT_TOLERANT = 0.02f;
@@ -48,7 +54,19 @@ public class SimpleSliderCaptchaValidator implements SliderCaptchaValidator {
     }
 
     @Override
-    public boolean valid(SliderCaptchaTrack sliderCaptchaTrack, Float oriPercentage) {
+    public Map<String, Object> generateSliderCaptchaValidData(SliderCaptchaInfo sliderCaptchaInfo) {
+        Map<String, Object> map = new HashMap<>(8);
+        addPercentage(sliderCaptchaInfo, map);
+        return map;
+    }
+
+    @Override
+    public boolean valid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData) {
+        Float oriPercentage = getPercentage(sliderCaptchaTrack, sliderCaptchaValidData);
+        if (oriPercentage == null) {
+            // 没读取到百分比
+            return false;
+        }
         Integer bgImageWidth = sliderCaptchaTrack.getBgImageWidth();
         if (bgImageWidth == null || bgImageWidth < 1) {
             // 没有背景图片宽度
@@ -65,5 +83,29 @@ public class SimpleSliderCaptchaValidator implements SliderCaptchaValidator {
         float calcPercentage = calcPercentage(lastTrack.getX(), bgImageWidth);
         // 校验百分比
         return checkPercentage(calcPercentage, oriPercentage);
+    }
+
+    protected Float getPercentage(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData) {
+        Object percentage = sliderCaptchaValidData.get("percentage");
+        if (percentage != null) {
+            if (percentage instanceof Number) {
+                return ((Number) percentage).floatValue();
+            }
+            try {
+                if (percentage instanceof String) {
+                    return Float.parseFloat((String) percentage);
+                }
+            } catch (NumberFormatException e) {
+                log.error("从 sliderCaptchaValidData 读取到的 percentage无法转换成float类型, [{}]", percentage);
+                throw e;
+            }
+        }
+        log.warn("无法从 sliderCaptchaValidData 获取到 percentage");
+        return null;
+    }
+
+    protected void addPercentage(SliderCaptchaInfo sliderCaptchaInfo, Map<String, Object> sliderCaptchaValidData) {
+        float percentage = calcPercentage(sliderCaptchaInfo.getX(), sliderCaptchaInfo.getBgImageWidth());
+        sliderCaptchaValidData.put("percentage", percentage);
     }
 }

@@ -4,6 +4,7 @@ import cloud.tianai.captcha.template.slider.util.CollectionUtils;
 import cloud.tianai.captcha.template.slider.util.ObjectUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Author: 天爱有情
@@ -20,11 +21,11 @@ public class BasicCaptchaTrackValidator extends SimpleSliderCaptchaValidator {
     }
 
     @Override
-    public boolean valid(SliderCaptchaTrack sliderCaptchaTrack, Float oriPercentage) {
+    public boolean valid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData) {
         // 校验参数
         checkParam(sliderCaptchaTrack);
         // 基础校验
-        boolean superValid = super.valid(sliderCaptchaTrack, oriPercentage);
+        boolean superValid = super.valid(sliderCaptchaTrack, sliderCaptchaValidData);
         if (!superValid) {
             return false;
         }

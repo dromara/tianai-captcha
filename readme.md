@@ -1,4 +1,4 @@
-# 这是一个滑块验证码的实现
+ 这是一个滑块验证码的实现
 ## [在线体验](https://www.tianai.cloud)
 ## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 ## 不说废话，直接上成品
@@ -21,7 +21,7 @@
     <dependency>
         <groupId>cloud.tianai.captcha</groupId>
         <artifactId>tianai-captcha</artifactId>
-        <version>1.2.5</version>
+        <version>1.2.6</version>
     </dependency>
 ```
 2. 使用 `SliderCaptchaTemplate`获取滑块验证码

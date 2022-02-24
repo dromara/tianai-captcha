@@ -26,14 +26,17 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     private int waitTime = 1000;
     /** 调度器检查缓存的间隔时间. */
     private int period = 100;
+    private GenerateParam generateParam;
 
-    public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, int size) {
+    public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, GenerateParam generateParam, int size) {
         this.target = target;
+        this.generateParam = generateParam;
         this.size = size;
     }
 
-    public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, int size, int waitTime, int period) {
+    public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, GenerateParam generateParam, int size, int waitTime, int period) {
         this.target = target;
+        this.generateParam = generateParam;
         this.size = size;
         this.waitTime = waitTime;
         this.period = period;
@@ -57,7 +60,7 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
                     if (pos.get() >= size) {
                         return;
                     }
-                    SliderCaptchaInfo slideImageInfo = target.getSlideImageInfo();
+                    SliderCaptchaInfo slideImageInfo = target.getSlideImageInfo(generateParam);
                     if (slideImageInfo != null) {
                         boolean addStatus = queue.offer(slideImageInfo);
                         if (addStatus) {
@@ -75,7 +78,7 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
                 sleep();
             }
         }, 0, period, TimeUnit.MILLISECONDS);
-        log.info("缓存滑块验证码调度器初始化完成: size:{}", size);
+        log.info("缓存滑块验证码调度器初始化完成: size:{}, genParam:{}", size, generateParam);
     }
 
     private void sleep() {
@@ -90,7 +93,7 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     public SliderCaptchaInfo getSlideImageInfo() {
         SliderCaptchaInfo poll = queue.poll();
         if (poll == null) {
-            log.warn("滑块验证码缓存不足");
+            log.warn("滑块验证码缓存不足, genParam:{}", generateParam);
             // 如果池内没数据， 则直接生成
             return target.getSlideImageInfo();
         }
