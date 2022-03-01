@@ -42,8 +42,6 @@ public static void main(String[] args) throws InterruptedException {
     SliderCaptchaValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
     // 这个map数据应该存到缓存中，校验的时候需要用到该数据
     Map<String, Object> map = sliderCaptchaValidator.generateSliderCaptchaValidData(slideImageInfo);
-    map.put("percentage", percentage);
-    // map中可添加自定义数据用于自定义逻辑校验
 }
 ```
 ### 3. 使用`SliderCaptchaValidator`校验
