@@ -38,7 +38,7 @@ public static void main(String[] args) throws InterruptedException {
     System.out.println(slideImageInfo);
     
     // 负责计算一些数据存到缓存中，用于校验使用
-    // SliderCaptchaValidator负责校验用户滑动滑块是否正确和生成滑块到凹槽的百分比值
+    // SliderCaptchaValidator负责校验用户滑动滑块是否正确和生成滑块的一些校验数据; 比如滑块到凹槽的百分比值
     SliderCaptchaValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
     // 这个map数据应该存到缓存中，校验的时候需要用到该数据
     Map<String, Object> map = sliderCaptchaValidator.generateSliderCaptchaValidData(slideImageInfo);
