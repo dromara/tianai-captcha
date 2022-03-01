@@ -40,10 +40,8 @@ public static void main(String[] args) throws InterruptedException {
     // 负责计算一些数据存到缓存中，用于校验使用
     // SliderCaptchaValidator负责校验用户滑动滑块是否正确和生成滑块到凹槽的百分比值
     SliderCaptchaValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
-    // 计算滑块到凹槽的百分比，用户存到缓存中供校验使用
-    float percentage = sliderCaptchaValidator.calcPercentage(slideImageInfo.getX(), SliderCaptchaInfo.getBgImageWidth());
-	// 这个map数据应该存到缓存中，校验的时候需要用到该数据
-    Map<String, Object> map = new HashMap<>(4);
+    // 这个map数据应该存到缓存中，校验的时候需要用到该数据
+    Map<String, Object> map = sliderCaptchaValidator.generateSliderCaptchaValidData(slideImageInfo);
     map.put("percentage", percentage);
     // map中可添加自定义数据用于自定义逻辑校验
 }
