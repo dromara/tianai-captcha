@@ -4,6 +4,7 @@ import cloud.tianai.captcha.template.slider.util.CollectionUtils;
 import cloud.tianai.captcha.template.slider.util.ObjectUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 import java.util.List;
@@ -32,6 +33,8 @@ public class SliderCaptchaTrack {
     private List<Track> trackList;
 
     @Data
+    //#I4WQ4F
+    @NoArgsConstructor
     @AllArgsConstructor
     public static class Track {
         private Integer x;
