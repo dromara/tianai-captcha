@@ -1,11 +1,13 @@
-package cloud.tianai.captcha.template.slider;
+package cloud.tianai.captcha.template.slider.generator;
+
+import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 
 /**
  * @Author: 天爱有情
  * @date 2020/10/19 18:37
  * @Description 滑块验证码模板
  */
-public interface SliderCaptchaTemplate {
+public interface SliderCaptchaGenerator {
 
     /**
      * 获取滑块验证码

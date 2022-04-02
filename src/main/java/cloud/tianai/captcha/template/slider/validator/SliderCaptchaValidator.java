@@ -1,6 +1,6 @@
 package cloud.tianai.captcha.template.slider.validator;
 
-import cloud.tianai.captcha.template.slider.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaInfo;
 
 import java.util.Map;
 

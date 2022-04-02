@@ -1,7 +1,7 @@
-package cloud.tianai.captcha.template.slider.provider;
+package cloud.tianai.captcha.template.slider.resource.provider;
 
-import cloud.tianai.captcha.template.slider.Resource;
-import cloud.tianai.captcha.template.slider.ResourceProvider;
+import cloud.tianai.captcha.template.slider.resource.ResourceProvider;
+import cloud.tianai.captcha.template.slider.resource.Resource;
 
 import java.io.InputStream;
 
@@ -10,7 +10,7 @@ import java.io.InputStream;
  * @date 2021/12/16 16:52
  * @Description 抽象的ResourceProvider
  */
-public abstract class AbstractResourceProvider implements ResourceProvider{
+public abstract class AbstractResourceProvider implements ResourceProvider {
     @Override
     public InputStream getResourceInputStream(Resource data) {
         InputStream resourceInputStream = doGetResourceInputStream(data);

@@ -1,4 +1,4 @@
-package cloud.tianai.captcha.template.slider;
+package cloud.tianai.captcha.template.slider.resource;
 
 import java.io.InputStream;
 import java.util.List;

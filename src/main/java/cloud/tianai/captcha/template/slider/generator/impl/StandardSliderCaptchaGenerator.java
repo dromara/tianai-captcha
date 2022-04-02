@@ -1,6 +1,13 @@
-package cloud.tianai.captcha.template.slider;
+package cloud.tianai.captcha.template.slider.generator.impl;
 
-import cloud.tianai.captcha.template.slider.provider.ClassPathResourceProvider;
+import cloud.tianai.captcha.template.slider.generator.GenerateParam;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaConstant;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.resource.provider.ClassPathResourceProvider;
+import cloud.tianai.captcha.template.slider.resource.Resource;
+import cloud.tianai.captcha.template.slider.resource.ResourceStore;
+import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -22,7 +29,7 @@ import static cloud.tianai.captcha.template.slider.util.CaptchaImageUtils.*;
  * @Description 滑块验证码模板
  */
 @Slf4j
-public class StandardSliderCaptchaTemplate implements SliderCaptchaTemplate {
+public class StandardSliderCaptchaGenerator implements SliderCaptchaGenerator {
 
     /**
      * 默认的resource资源文件路径.
@@ -52,8 +59,8 @@ public class StandardSliderCaptchaTemplate implements SliderCaptchaTemplate {
     /** 默认滑块图片类型. */
     public String defaultSliderImageType = DEFAULT_SLIDER_IMAGE_TYPE;
 
-    public StandardSliderCaptchaTemplate(SliderCaptchaResourceManager sliderCaptchaResourceManager,
-                                         boolean initDefaultResource) {
+    public StandardSliderCaptchaGenerator(SliderCaptchaResourceManager sliderCaptchaResourceManager,
+                                          boolean initDefaultResource) {
         this.sliderCaptchaResourceManager = sliderCaptchaResourceManager;
         if (initDefaultResource) {
             initDefaultResource();

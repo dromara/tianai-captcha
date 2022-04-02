@@ -1,5 +1,10 @@
-package cloud.tianai.captcha.template.slider;
+package cloud.tianai.captcha.template.slider.generator.impl;
 
+import cloud.tianai.captcha.template.slider.generator.GenerateParam;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.util.NamedThreadFactory;
+import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
@@ -17,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Description 滑块验证码缓冲器
  */
 @Slf4j
-public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
+public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
 
     protected final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slider-captcha-queue"));
     protected ConcurrentLinkedQueue<SliderCaptchaInfo> queue;
     protected AtomicInteger pos = new AtomicInteger(0);
-    protected SliderCaptchaTemplate target;
+    protected SliderCaptchaGenerator target;
     protected int size;
     /** 等待时间，一般报错或者拉取为空时会休眠一段时间再试. */
     protected int waitTime = 1000;
@@ -34,13 +39,13 @@ public class CacheSliderCaptchaTemplate implements SliderCaptchaTemplate {
     @Setter
     protected boolean requiredGetCaptcha = true;
 
-    public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, GenerateParam generateParam, int size) {
+    public CacheSliderCaptchaGenerator(SliderCaptchaGenerator target, GenerateParam generateParam, int size) {
         this.target = target;
         this.generateParam = generateParam;
         this.size = size;
     }
 
-    public CacheSliderCaptchaTemplate(SliderCaptchaTemplate target, GenerateParam generateParam, int size, int waitTime, int period) {
+    public CacheSliderCaptchaGenerator(SliderCaptchaGenerator target, GenerateParam generateParam, int size, int waitTime, int period) {
         this.target = target;
         this.generateParam = generateParam;
         this.size = size;

@@ -1,11 +1,10 @@
-package cloud.tianai.captcha.template.slider.provider;
+package cloud.tianai.captcha.template.slider.resource.provider;
 
-import cloud.tianai.captcha.template.slider.Resource;
+import cloud.tianai.captcha.template.slider.resource.Resource;
 import lombok.SneakyThrows;
 
 import java.io.FileInputStream;
 import java.io.InputStream;
-import java.net.URL;
 
 /**
  * @Author: 天爱有情
