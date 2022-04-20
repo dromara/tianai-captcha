@@ -1,4 +1,4 @@
-package cloud.tianai.captcha.template.slider.exception;
+package cloud.tianai.captcha.template.slider.common.exception;
 
 public class SliderCaptchaException extends RuntimeException{
     public SliderCaptchaException() {

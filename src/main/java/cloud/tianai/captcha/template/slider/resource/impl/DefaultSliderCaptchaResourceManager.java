@@ -1,8 +1,12 @@
-package cloud.tianai.captcha.template.slider.resource;
+package cloud.tianai.captcha.template.slider.resource.impl;
 
-import cloud.tianai.captcha.template.slider.resource.provider.ClassPathResourceProvider;
-import cloud.tianai.captcha.template.slider.resource.provider.FileResourceProvider;
-import cloud.tianai.captcha.template.slider.resource.provider.URLResourceProvider;
+import cloud.tianai.captcha.template.slider.resource.ResourceProvider;
+import cloud.tianai.captcha.template.slider.resource.ResourceStore;
+import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.template.slider.resource.impl.provider.ClassPathResourceProvider;
+import cloud.tianai.captcha.template.slider.resource.impl.provider.FileResourceProvider;
+import cloud.tianai.captcha.template.slider.resource.impl.provider.URLResourceProvider;
 
 import java.io.InputStream;
 import java.util.ArrayList;

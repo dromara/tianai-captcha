@@ -24,7 +24,7 @@
     <dependency>
         <groupId>cloud.tianai.captcha</groupId>
         <artifactId>tianai-captcha</artifactId>
-        <version>1.2.7</version>
+        <version>1.3.1</version>
     </dependency>
 ```
 ### 2. 使用 `SliderCaptchaTemplate`获取滑块验证码
@@ -65,9 +65,9 @@ check =sliderCaptchaValidator.checkPercentage(0.2f, percentage);
 
 ```java
 SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-StandardSliderCaptchaTemplate sliderCaptchaTemplate = new StandardSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
+StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true);
 // 生成滑块图片
-SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo(GenerateParam.builder()
+SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateSlideImageInfo(GenerateParam.builder()
                                         .sliderFormatName("jpeg")
                                         .backgroundFormatName("png")
                                         // 是否添加混淆滑块
@@ -79,9 +79,9 @@ SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo(Gener
 
 ```java
 SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-StandardSliderCaptchaTemplate sliderCaptchaTemplate = new StandardSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
+StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true);
 // 生成滑块图片
-SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo(GenerateParam.builder()
+SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateSlideImageInfo(GenerateParam.builder()
                                         .sliderFormatName("webp")
                                         .backgroundFormatName("webp")
                                         // 是否添加混淆滑块
@@ -124,7 +124,7 @@ SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo(Gener
  ```java
     //为方便快速上手 系统本身自带了一张图片和两套滑块模板，如果不想用系统自带的可以不让它加载系统自带的
     // 第二个构造参数设置为false时将不加载默认的图片和模板
-    SliderCaptchaTemplate sliderCaptchaTemplate = new DefaultSliderCaptchaTemplate(sliderCaptchaResourceManager, false);
+    SliderCaptchaGenerator sliderCaptchaTemplate = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, false);
  ```
 
 ### 自定义 `SliderCaptchaValidator` 校验器
@@ -143,7 +143,7 @@ SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo(Gener
 ```java
   // 实现了 ResourceProvider 后
   SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-  StandardSliderCaptchaTemplate sliderCaptchaTemplate = new StandardSliderCaptchaTemplate(sliderCaptchaResourceManager, true);
+  StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true);
   // 注册
   sliderCaptchaResourceManager.registerResourceProvider(new CustomResourceProvider());
 ```
@@ -157,9 +157,9 @@ public static void main(String[] args) throws InterruptedException {
     // 参数三: 出错后 等待xx时间再进行生成
     // 参数四: 检查时间间隔    
     SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-    DefaultSliderCaptchaTemplate sliderCaptchaTemplate = new CacheSliderCaptchaTemplate(new StandardSliderCaptchaTemplate(sliderCaptchaResourceManager, true), 10, 1000, 100);
+    SliderCaptchaGenerator sliderCaptchaGenerator = new CacheSliderCaptchaGenerator(new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true), 10, 1000, 100);
     // 生成滑块图片
-    SliderCaptchaInfo slideImageInfo = sliderCaptchaTemplate.getSlideImageInfo();
+    SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateSlideImageInfo();
     // 获取背景图片的base64
     String backgroundImage = slideImageInfo.getBackgroundImage();
     // 获取滑块图片

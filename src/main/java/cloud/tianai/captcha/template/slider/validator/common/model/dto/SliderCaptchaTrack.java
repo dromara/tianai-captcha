@@ -1,7 +1,5 @@
-package cloud.tianai.captcha.template.slider.validator;
+package cloud.tianai.captcha.template.slider.validator.common.model.dto;
 
-import cloud.tianai.captcha.template.slider.util.CollectionUtils;
-import cloud.tianai.captcha.template.slider.util.ObjectUtils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

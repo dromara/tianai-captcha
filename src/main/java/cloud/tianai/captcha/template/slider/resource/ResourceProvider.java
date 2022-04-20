@@ -1,5 +1,7 @@
 package cloud.tianai.captcha.template.slider.resource;
 
+import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
+
 import java.io.InputStream;
 
 /**

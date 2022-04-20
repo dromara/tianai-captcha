@@ -1,4 +1,4 @@
-package cloud.tianai.captcha.template.slider.generator;
+package cloud.tianai.captcha.template.slider.generator.common.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

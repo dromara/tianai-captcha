@@ -1,4 +1,4 @@
-package cloud.tianai.captcha.template.slider.generator;
+package cloud.tianai.captcha.template.slider.generator.common.constant;
 
 /**
  * @Author: 天爱有情

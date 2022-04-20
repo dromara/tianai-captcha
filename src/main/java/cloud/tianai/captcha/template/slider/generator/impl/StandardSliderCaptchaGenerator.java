@@ -1,11 +1,11 @@
 package cloud.tianai.captcha.template.slider.generator.impl;
 
-import cloud.tianai.captcha.template.slider.generator.GenerateParam;
-import cloud.tianai.captcha.template.slider.generator.SliderCaptchaConstant;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
+import cloud.tianai.captcha.template.slider.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.SliderCaptchaInfo;
-import cloud.tianai.captcha.template.slider.resource.provider.ClassPathResourceProvider;
-import cloud.tianai.captcha.template.slider.resource.Resource;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.resource.impl.provider.ClassPathResourceProvider;
+import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.template.slider.resource.ResourceStore;
 import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import lombok.Getter;
@@ -21,7 +21,7 @@ import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cloud.tianai.captcha.template.slider.util.CaptchaImageUtils.*;
+import static cloud.tianai.captcha.template.slider.common.util.CaptchaImageUtils.*;
 
 /**
  * @Author: 天爱有情
@@ -68,14 +68,14 @@ public class StandardSliderCaptchaGenerator implements SliderCaptchaGenerator {
     }
 
     @Override
-    public SliderCaptchaInfo getSlideImageInfo() {
-        return getSlideImageInfo(defaultBgImageType, defaultSliderImageType);
+    public SliderCaptchaInfo generateSlideImageInfo() {
+        return generateSlideImageInfo(defaultBgImageType, defaultSliderImageType);
     }
 
     @SneakyThrows
     @Override
-    public SliderCaptchaInfo getSlideImageInfo(String backgroundFormatName, String sliderFormatName) {
-        return getSlideImageInfo(GenerateParam.builder()
+    public SliderCaptchaInfo generateSlideImageInfo(String backgroundFormatName, String sliderFormatName) {
+        return generateSlideImageInfo(GenerateParam.builder()
                 .backgroundFormatName(backgroundFormatName)
                 .sliderFormatName(sliderFormatName)
                 .obfuscate(false)
@@ -84,7 +84,7 @@ public class StandardSliderCaptchaGenerator implements SliderCaptchaGenerator {
 
     @SneakyThrows
     @Override
-    public SliderCaptchaInfo getSlideImageInfo(GenerateParam param) {
+    public SliderCaptchaInfo generateSlideImageInfo(GenerateParam param) {
         Boolean obfuscate = param.getObfuscate();
         Map<String, Resource> templateImages = sliderCaptchaResourceManager.randomGetTemplate();
         if (templateImages == null || templateImages.isEmpty()) {
@@ -174,7 +174,6 @@ public class StandardSliderCaptchaGenerator implements SliderCaptchaGenerator {
      * @param bufferedImage 图片
      * @param formatType    格式化类型
      * @return String
-     * @throws IOException
      */
     public String transform(BufferedImage bufferedImage, String formatType) throws IOException {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package cloud.tianai.captcha.template.slider.util;
+package cloud.tianai.captcha.template.slider.common.util;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;

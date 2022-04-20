@@ -1,4 +1,4 @@
-package cloud.tianai.captcha.template.slider.util;
+package cloud.tianai.captcha.template.slider.common.util;
 
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;

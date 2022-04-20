@@ -1,7 +1,8 @@
-package cloud.tianai.captcha.template.slider.validator;
+package cloud.tianai.captcha.template.slider.validator.impl;
 
-import cloud.tianai.captcha.template.slider.util.CollectionUtils;
-import cloud.tianai.captcha.template.slider.util.ObjectUtils;
+import cloud.tianai.captcha.template.slider.common.util.CollectionUtils;
+import cloud.tianai.captcha.template.slider.common.util.ObjectUtils;
+import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 
 import java.util.List;
 import java.util.Map;

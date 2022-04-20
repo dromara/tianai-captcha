@@ -1,9 +1,9 @@
 package cloud.tianai.captcha.template.slider.generator.impl;
 
-import cloud.tianai.captcha.template.slider.generator.GenerateParam;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.SliderCaptchaInfo;
-import cloud.tianai.captcha.template.slider.util.NamedThreadFactory;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.common.util.NamedThreadFactory;
 import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -71,7 +71,7 @@ public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
                     if (pos.get() >= size) {
                         return;
                     }
-                    SliderCaptchaInfo slideImageInfo = target.getSlideImageInfo(generateParam);
+                    SliderCaptchaInfo slideImageInfo = target.generateSlideImageInfo(generateParam);
                     if (slideImageInfo != null) {
                         boolean addStatus = queue.offer(slideImageInfo);
                         if (addStatus) {
@@ -101,17 +101,17 @@ public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
 
     @SneakyThrows
     @Override
-    public SliderCaptchaInfo getSlideImageInfo() {
-        return getSlideImageInfo(this.requiredGetCaptcha);
+    public SliderCaptchaInfo generateSlideImageInfo() {
+        return generateSlideImageInfo(this.requiredGetCaptcha);
     }
 
     @SneakyThrows
-    public SliderCaptchaInfo getSlideImageInfo(boolean requiredGetCaptcha) {
+    public SliderCaptchaInfo generateSlideImageInfo(boolean requiredGetCaptcha) {
         SliderCaptchaInfo poll = queue.poll();
         if (poll == null && requiredGetCaptcha) {
             log.warn("滑块验证码缓存不足, genParam:{}", generateParam);
             // 如果池内没数据， 则直接生成
-            return target.getSlideImageInfo(generateParam);
+            return target.generateSlideImageInfo(generateParam);
         }
         // 减1
         pos.decrementAndGet();
@@ -119,13 +119,13 @@ public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
     }
 
     @Override
-    public SliderCaptchaInfo getSlideImageInfo(String targetFormatName, String matrixFormatName) {
-        return target.getSlideImageInfo(targetFormatName, matrixFormatName);
+    public SliderCaptchaInfo generateSlideImageInfo(String targetFormatName, String matrixFormatName) {
+        return target.generateSlideImageInfo(targetFormatName, matrixFormatName);
     }
 
     @Override
-    public SliderCaptchaInfo getSlideImageInfo(GenerateParam param) {
-        return target.getSlideImageInfo(param);
+    public SliderCaptchaInfo generateSlideImageInfo(GenerateParam param) {
+        return target.generateSlideImageInfo(param);
     }
 
     @Override

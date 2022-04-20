@@ -1,4 +1,7 @@
-package cloud.tianai.captcha.template.slider.resource;
+package cloud.tianai.captcha.template.slider.resource.impl;
+
+import cloud.tianai.captcha.template.slider.resource.ResourceStore;
+import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
 
 import java.util.ArrayList;
 import java.util.Collections;
