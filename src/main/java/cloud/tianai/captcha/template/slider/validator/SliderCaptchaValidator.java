@@ -1,6 +1,6 @@
 package cloud.tianai.captcha.template.slider.validator;
 
-import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 
 import java.util.Map;
@@ -43,10 +43,10 @@ public interface SliderCaptchaValidator {
     /**
      * 用于生成验证码校验时需要的回传参数
      *
-     * @param sliderCaptchaInfo 生成的验证码数据
+     * @param imageCaptchaInfo 生成的验证码数据
      * @return Map<String, Object>
      */
-    Map<String, Object> generateSliderCaptchaValidData(SliderCaptchaInfo sliderCaptchaInfo);
+    Map<String, Object> generateSliderCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo);
 
     /**
      * 校验用户滑动滑块是否正确

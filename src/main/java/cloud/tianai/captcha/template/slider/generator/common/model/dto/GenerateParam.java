@@ -21,4 +21,6 @@ public class GenerateParam {
     private String sliderFormatName = "png";
     /** 是否混淆.*/
     private Boolean obfuscate = false;
+    /** 类型.*/
+    private String type;
 }

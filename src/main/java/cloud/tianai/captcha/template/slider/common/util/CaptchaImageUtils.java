@@ -176,4 +176,43 @@ public class CaptchaImageUtils {
     }
 
 
+//    /**
+//     * 旋转图片
+//     *
+//     * @param bufferedImage 图片
+//     * @param degree        旋转xx度
+//     */
+//    public static void rotateImage(BufferedImage bufferedImage, int degree) {
+//        // 创建Graphics2D对象，用在底图对象上绘图
+//        Graphics2D g2d = bufferedImage.createGraphics();
+//        // 绘制
+//        g2d.rotate(Math.toRadians(degree), bufferedImage.getWidth() / 2, bufferedImage.getHeight()/2);
+//        g2d.drawImage(bufferedImage, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
+//        // 释放图形上下文使用的系统资源
+//        g2d.dispose();
+//    }
+
+    public static BufferedImage rotateImage(final BufferedImage bufferedimage,
+                                            final double degree) {
+        // 得到图片宽度。
+        int w = bufferedimage.getWidth();
+        // 得到图片高度。
+        int h = bufferedimage.getHeight();
+        // 得到图片透明度。
+        int type = bufferedimage.getColorModel().getTransparency();
+        BufferedImage img;// 空的图片。
+        Graphics2D graphics2d;// 空的画笔。
+        (graphics2d = (img = new BufferedImage(w, h, type))
+                .createGraphics()).setRenderingHint(
+                RenderingHints.KEY_INTERPOLATION,
+                RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        // 旋转，degree是整型，度数，比如垂直90度。
+        graphics2d.rotate(Math.toRadians(degree), w / 2, h / 2);
+        // 从bufferedimagecopy图片至img，0,0是img的坐标。
+        graphics2d.drawImage(bufferedimage, 0, 0, null);
+        graphics2d.dispose();
+        // 返回复制好的图片，原图片依然没有变，没有旋转，下次还可以使用。
+        return img;
+    }
+
 }

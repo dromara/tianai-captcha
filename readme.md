@@ -34,6 +34,7 @@
 ### 2. 使用 `SliderCaptchaGenerator`生成器生成滑块验证码
 
 ```java
+import cloud.tianai.captcha.template.slider.generator.impl.StandardImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.impl.StandardSliderCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.impl.DefaultSliderCaptchaResourceManager;
@@ -41,9 +42,9 @@ import cloud.tianai.captcha.template.slider.resource.impl.DefaultSliderCaptchaRe
 public class Test {
     public static void main(String[] args) throws InterruptedException {
         SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-        StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true);
+        StandardImageCaptchaGenerator sliderCaptchaGenerator = new StandardImageCaptchaGenerator(sliderCaptchaResourceManager, true);
         // 生成滑块图片
-        SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateSlideImageInfo();
+        SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateCaptchaImage();
         System.out.println(slideImageInfo);
 
         // 负责计算一些数据存到缓存中，用于校验使用
@@ -58,11 +59,12 @@ public class Test {
 ### 3. 使用`SliderCaptchaValidator`校验器 验证
 
 ```java
+import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
 
 public class Test2 {
     public static void main(String[] args) {
-        SliderCaptchaGenerator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
+        ImageCaptchaGenerator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
 
         // 用户传来的行为轨迹和进行校验 
         // - sliderCaptchaTrack为前端传来的滑动轨迹数据

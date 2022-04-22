@@ -18,14 +18,14 @@ public interface SliderCaptchaResourceManager {
      *
      * @return Map<String, Resource>
      */
-    Map<String, Resource> randomGetTemplate();
+    Map<String, Resource> randomGetTemplate(String type);
 
     /**
      * 随机获取某个资源对象
      *
      * @return Resource
      */
-    Resource randomGetResource();
+    Resource randomGetResource(String type);
 
     /**
      * 获取真正的资源流通过资源对象

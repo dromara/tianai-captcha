@@ -1,7 +1,7 @@
 package cloud.tianai.captcha.template.slider.validator.impl;
 
-import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderCaptchaInfo;
 import cloud.tianai.captcha.template.slider.common.util.CollectionUtils;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import lombok.Getter;
@@ -56,9 +56,9 @@ public class SimpleSliderCaptchaValidator implements SliderCaptchaValidator {
     }
 
     @Override
-    public Map<String, Object> generateSliderCaptchaValidData(SliderCaptchaInfo sliderCaptchaInfo) {
+    public Map<String, Object> generateSliderCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo) {
         Map<String, Object> map = new HashMap<>(8);
-        addPercentage(sliderCaptchaInfo, map);
+        addPercentage(imageCaptchaInfo, map);
         return map;
     }
 
@@ -106,8 +106,8 @@ public class SimpleSliderCaptchaValidator implements SliderCaptchaValidator {
         return null;
     }
 
-    protected void addPercentage(SliderCaptchaInfo sliderCaptchaInfo, Map<String, Object> sliderCaptchaValidData) {
-        float percentage = calcPercentage(sliderCaptchaInfo.getX(), sliderCaptchaInfo.getBgImageWidth());
+    protected void addPercentage(ImageCaptchaInfo imageCaptchaInfo, Map<String, Object> sliderCaptchaValidData) {
+        float percentage = calcPercentage(imageCaptchaInfo.getRandomX(), imageCaptchaInfo.getBgImageWidth());
         sliderCaptchaValidData.put("percentage", percentage);
     }
 }

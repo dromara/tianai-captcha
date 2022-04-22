@@ -12,97 +12,97 @@ public interface ResourceStore {
      *
      * @param resource 资源
      */
-    void addResource(Resource resource);
+    void addResource(String type, Resource resource);
 
     /**
-     * 设置资源
+     * 清除某个类型下的所有资源
      *
-     * @param resources resources
+     * @param type type
      */
-    void setResource(List<Resource> resources);
-
-    /**
-     * 删除资源
-     *
-     * @param resource resource
-     */
-    boolean deleteResource(Resource resource);
+    void clearResources(String type);
 
     /**
      * 清除所有资源
      */
-    void clearResources();
-
-    /**
-     * 添加模板
-     *
-     * @param template template
-     */
-    void addTemplate(Map<String, Resource> template);
-
-
-    /**
-     * 设置模板
-     *
-     * @param templateResource templateResource
-     */
-    void setTemplates(List<Map<String, Resource>> templateResource);
-
-    /**
-     * 删除模板
-     *
-     * @param template template
-     */
-    void deleteTemplate(Map<String, Resource> template);
-
-    /**
-     * 清除所有模板
-     */
-    void clearTemplates();
-
+    void clearAllResources();
 
     /**
      * 获取所有资源对象
      *
      * @return List<Resource>
      */
-    List<Resource> listResources();
+    Map<String,List<Resource>> listAllResources();
 
     /**
-     * 获取所有模板
+     * 获取某个type下的所有资源对象
      *
-     * @return List<Map < String, Resource>>
+     * @param type type
+     * @return List<Resource>
      */
-    List<Map<String, Resource>> listTemplates();
+    List<Resource> listResourcesByType(String type);
+
+    /**
+     * 随机获取某个资源
+     *
+     * @param type type
+     * @return Resource
+     */
+    Resource randomGetResource(String type);
 
     /**
      * 获取资源总数
      *
      * @return int
      */
-    int getResourceCount();
+    int getAllResourceCount();
 
     /**
-     * 获取模板count
+     * 获取某个type下的资源总数
      *
+     * @param type type
      * @return int
      */
-    int getTemplateCount();
+    int getResourceCount(String type);
 
     /**
-     * 获取资源通过index
+     * 添加模板
      *
-     * @param index index
-     * @return Resource
+     * @param template template
      */
-    Resource getResourceByIndex(int index);
+    void addTemplate(String type, Map<String, Resource> template);
 
     /**
-     * 获取模板通过indx
+     * 清除所有模板
+     */
+    void clearAllTemplates();
+
+    /**
+     * 清除某个type下的所有模板
      *
-     * @param index index
+     * @param type type
+     */
+    void clearTemplates(String type);
+
+    /**
+     * 获取所有模板通过type
+     *
+     * @return List<Map < String, Resource>>
+     */
+    List<Map<String, Resource>> listTemplatesByType(String type);
+
+    /**
+     * 获取所有模板
+     *
+     * @return Map<String, List < Map < String, Resource>>>
+     */
+    Map<String, List<Map<String, Resource>>> listAllTemplates();
+
+    /**
+     * 随机获取某个模板通过type
+     *
+     * @param type type
      * @return Map<String, Resource>
      */
-    Map<String, Resource> getTemplateByIndex(int index);
+    Map<String, Resource> randomGetTemplateByType(String type);
 
 }

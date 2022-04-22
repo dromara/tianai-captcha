@@ -13,7 +13,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author: 天爱有情
@@ -47,29 +46,21 @@ public class DefaultSliderCaptchaResourceManager implements SliderCaptchaResourc
     }
 
     @Override
-    public Map<String, Resource> randomGetTemplate() {
-        int count = resourceStore.getTemplateCount();
-        if (count < 1) {
-            throw new IllegalStateException("随机获取模板错误，store中模板为空");
+    public Map<String, Resource> randomGetTemplate(String type) {
+        Map<String, Resource> resourceMap = resourceStore.randomGetTemplateByType(type);
+        if (resourceMap == null) {
+            throw new IllegalStateException("随机获取模板错误，store中模板为空, type:" + type);
         }
-        if (count == 1) {
-            return resourceStore.getTemplateByIndex(0);
-        }
-        int randomIndex = ThreadLocalRandom.current().nextInt(count);
-        return resourceStore.getTemplateByIndex(randomIndex);
+        return resourceMap;
     }
 
     @Override
-    public Resource randomGetResource() {
-        int count = resourceStore.getResourceCount();
-        if (count < 1) {
-            throw new IllegalStateException("随机获取资源错误，store中资源为空");
+    public Resource randomGetResource(String type) {
+        Resource resource = resourceStore.randomGetResource(type);
+        if (resource == null) {
+            throw new IllegalStateException("随机获取资源错误，store中资源为空, type:" + type);
         }
-        if (count == 1) {
-            return resourceStore.getResourceByIndex(0);
-        }
-        int randomIndex = ThreadLocalRandom.current().nextInt(count);
-        return resourceStore.getResourceByIndex(randomIndex);
+        return resource;
     }
 
     @Override

@@ -1,8 +1,8 @@
 package cloud.tianai.captcha.template.slider.generator.impl;
 
+import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
-import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderCaptchaInfo;
+import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.common.util.NamedThreadFactory;
 import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import lombok.Getter;
@@ -22,12 +22,12 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Description 滑块验证码缓冲器
  */
 @Slf4j
-public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
+public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
 
     protected final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slider-captcha-queue"));
-    protected ConcurrentLinkedQueue<SliderCaptchaInfo> queue;
+    protected ConcurrentLinkedQueue<ImageCaptchaInfo> queue;
     protected AtomicInteger pos = new AtomicInteger(0);
-    protected SliderCaptchaGenerator target;
+    protected ImageCaptchaGenerator target;
     protected int size;
     /** 等待时间，一般报错或者拉取为空时会休眠一段时间再试. */
     protected int waitTime = 1000;
@@ -39,13 +39,13 @@ public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
     @Setter
     protected boolean requiredGetCaptcha = true;
 
-    public CacheSliderCaptchaGenerator(SliderCaptchaGenerator target, GenerateParam generateParam, int size) {
+    public CacheImageCaptchaGenerator(ImageCaptchaGenerator target, GenerateParam generateParam, int size) {
         this.target = target;
         this.generateParam = generateParam;
         this.size = size;
     }
 
-    public CacheSliderCaptchaGenerator(SliderCaptchaGenerator target, GenerateParam generateParam, int size, int waitTime, int period) {
+    public CacheImageCaptchaGenerator(ImageCaptchaGenerator target, GenerateParam generateParam, int size, int waitTime, int period) {
         this.target = target;
         this.generateParam = generateParam;
         this.size = size;
@@ -71,7 +71,7 @@ public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
                     if (pos.get() >= size) {
                         return;
                     }
-                    SliderCaptchaInfo slideImageInfo = target.generateSlideImageInfo(generateParam);
+                    ImageCaptchaInfo slideImageInfo = target.generateCaptchaImage(generateParam);
                     if (slideImageInfo != null) {
                         boolean addStatus = queue.offer(slideImageInfo);
                         if (addStatus) {
@@ -101,17 +101,17 @@ public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
 
     @SneakyThrows
     @Override
-    public SliderCaptchaInfo generateSlideImageInfo() {
-        return generateSlideImageInfo(this.requiredGetCaptcha);
+    public ImageCaptchaInfo generateCaptchaImage(String type) {
+        return generateCaptchaImage(this.requiredGetCaptcha);
     }
 
     @SneakyThrows
-    public SliderCaptchaInfo generateSlideImageInfo(boolean requiredGetCaptcha) {
-        SliderCaptchaInfo poll = queue.poll();
+    public ImageCaptchaInfo generateCaptchaImage(boolean requiredGetCaptcha) {
+        ImageCaptchaInfo poll = queue.poll();
         if (poll == null && requiredGetCaptcha) {
             log.warn("滑块验证码缓存不足, genParam:{}", generateParam);
             // 如果池内没数据， 则直接生成
-            return target.generateSlideImageInfo(generateParam);
+            return target.generateCaptchaImage(generateParam);
         }
         // 减1
         pos.decrementAndGet();
@@ -119,18 +119,13 @@ public class CacheSliderCaptchaGenerator implements SliderCaptchaGenerator {
     }
 
     @Override
-    public SliderCaptchaInfo generateSlideImageInfo(String targetFormatName, String matrixFormatName) {
-        return target.generateSlideImageInfo(targetFormatName, matrixFormatName);
+    public ImageCaptchaInfo generateCaptchaImage(String type, String targetFormatName, String matrixFormatName) {
+        return target.generateCaptchaImage(type,targetFormatName, matrixFormatName);
     }
 
     @Override
-    public SliderCaptchaInfo generateSlideImageInfo(GenerateParam param) {
-        return target.generateSlideImageInfo(param);
-    }
-
-    @Override
-    public boolean percentageContrast(Float newPercentage, Float oriPercentage) {
-        return target.percentageContrast(newPercentage, oriPercentage);
+    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
+        return target.generateCaptchaImage(param);
     }
 
     @Override
