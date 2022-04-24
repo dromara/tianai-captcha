@@ -113,7 +113,7 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
             return target.generateCaptchaImage(generateParam);
         }
         // 减1
-        if (poll == null) {
+        if (poll != null) {
             AtomicInteger pos = posMap.get(generateParam);
             if (pos != null) {
                 pos.decrementAndGet();
