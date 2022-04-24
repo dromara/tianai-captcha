@@ -34,15 +34,15 @@
 ### 2. 使用 `SliderCaptchaGenerator`生成器生成滑块验证码
 
 ```java
-import cloud.tianai.captcha.template.slider.generator.impl.StandardImageCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.impl.StandardSliderImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.impl.StandardSliderCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.resource.impl.DefaultSliderCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
+import cloud.tianai.captcha.template.slider.resource.impl.DefaultImageCaptchaResourceManager;
 
 public class Test {
     public static void main(String[] args) throws InterruptedException {
-        SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-        StandardImageCaptchaGenerator sliderCaptchaGenerator = new StandardImageCaptchaGenerator(sliderCaptchaResourceManager, true);
+        ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
+        StandardSliderImageCaptchaGenerator sliderCaptchaGenerator = new StandardSliderImageCaptchaGenerator(imageCaptchaResourceManager, true);
         // 生成滑块图片
         SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateCaptchaImage();
         System.out.println(slideImageInfo);
@@ -101,9 +101,9 @@ public class Test2 {
 public class Test {
     public static void main(String[] args) {
         // 资源管理器
-        SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
+        SliderCaptchaResourceManager imageCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
         // 标准验证码生成器
-        StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true);
+        StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(imageCaptchaResourceManager, true);
         // 生成滑块图片
         SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateSlideImageInfo(GenerateParam.builder()
                 .sliderFormatName("jpeg")
@@ -121,9 +121,9 @@ public class Test {
 public class Test {
     public static void main(String[] args) {
         // 资源管理器
-        SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
+        SliderCaptchaResourceManager imageCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
         // 标准验证码生成器
-        StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true);
+        StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(imageCaptchaResourceManager, true);
         // 生成滑块图片
         SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateSlideImageInfo(GenerateParam.builder()
                 .sliderFormatName("webp")
@@ -143,7 +143,7 @@ public class Test {
  public class Test {
     public static void main(String[] args) {
         // 通过资源管理器或者资源存储器
-        ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();
+        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加classpath目录下的 aa.jpg 图片      
         resourceStore.addResource(new Resource(ClassPathResourceProvider.NAME, "/aa.jpg"));
         // 添加远程url图片资源
@@ -165,7 +165,7 @@ public class Test {
  public class Test {
     public static void main(String[] args) {
         // 通过资源管理器或者资源存储器
-        ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();
+        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加模板.模板图片由三张图片组成
         Map<String, Resource> template1 = new HashMap<>(4);
         template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/active.png"));
@@ -185,7 +185,7 @@ public class Test {
     public static void main(String[] args) {
         //为方便快速上手 系统本身自带了一张图片和两套滑块模板，如果不想用系统自带的可以不让它加载系统自带的
         // 第二个构造参数设置为false时将不加载默认的图片和模板
-        SliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, false);
+        SliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(imageCaptchaResourceManager, false);
     }
 }
  ```
@@ -207,10 +207,10 @@ public class Test {
  public class Test {
     public static void main(String[] args) {
         // 实现了 ResourceProvider 后
-        SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-        StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true);
+        SliderCaptchaResourceManager imageCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
+        StandardSliderCaptchaGenerator sliderCaptchaGenerator = new StandardSliderCaptchaGenerator(imageCaptchaResourceManager, true);
         // 注册
-        sliderCaptchaResourceManager.registerResourceProvider(new CustomResourceProvider());
+        imageCaptchaResourceManager.registerResourceProvider(new CustomResourceProvider());
     }
 }
 ```
@@ -227,8 +227,8 @@ public class Test {
         // 参数二: 默认提前缓存多少个
         // 参数三: 出错后 等待xx时间再进行生成
         // 参数四: 检查时间间隔    
-        SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
-        SliderCaptchaGenerator sliderCaptchaGenerator = new CacheSliderCaptchaGenerator(new StandardSliderCaptchaGenerator(sliderCaptchaResourceManager, true), 10, 1000, 100);
+        SliderCaptchaResourceManager imageCaptchaResourceManager = new DefaultSliderCaptchaResourceManager();
+        SliderCaptchaGenerator sliderCaptchaGenerator = new CacheSliderCaptchaGenerator(new StandardSliderCaptchaGenerator(imageCaptchaResourceManager, true), 10, 1000, 100);
         // 生成滑块图片
         SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateSlideImageInfo();
         // 获取背景图片的base64

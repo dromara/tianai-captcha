@@ -1,9 +1,7 @@
 package cloud.tianai.captcha.template.slider.generator.common.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
+import lombok.*;
 
 /**
  * @Author: 天爱有情
@@ -14,6 +12,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode
 public class GenerateParam {
     /** 背景格式化名称.*/
     private String backgroundFormatName = "jpeg";
@@ -22,5 +21,5 @@ public class GenerateParam {
     /** 是否混淆.*/
     private Boolean obfuscate = false;
     /** 类型.*/
-    private String type;
+    private String type = CaptchaTypeConstant.SLIDER;
 }

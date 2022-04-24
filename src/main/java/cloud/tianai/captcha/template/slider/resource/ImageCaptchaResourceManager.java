@@ -9,9 +9,9 @@ import java.util.Map;
 /**
  * @Author: 天爱有情
  * @date 2021/8/7 15:26
- * @Description 滑块验证码图片资源管理器
+ * @Description 验证码图片资源管理器
  */
-public interface SliderCaptchaResourceManager {
+public interface ImageCaptchaResourceManager {
 
     /**
      * 随机获取某个模板

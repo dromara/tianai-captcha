@@ -6,8 +6,8 @@ import cloud.tianai.captcha.template.slider.generator.common.constant.SliderCapt
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.SliderImageCaptchaInfo;
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.ResourceStore;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.template.slider.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
@@ -30,7 +30,7 @@ import static cloud.tianai.captcha.template.slider.common.util.CaptchaImageUtils
  * @Description 滑块验证码模板
  */
 @Slf4j
-public class StandardImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
+public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
     /**
      * 默认的resource资源文件路径.
@@ -41,12 +41,12 @@ public class StandardImageCaptchaGenerator extends AbstractImageCaptchaGenerator
      */
     public static final String DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH = "META-INF/cut-image/template";
 
-    protected final SliderCaptchaResourceManager sliderCaptchaResourceManager;
+    protected final ImageCaptchaResourceManager imageCaptchaResourceManager;
 
 
-    public StandardImageCaptchaGenerator(SliderCaptchaResourceManager sliderCaptchaResourceManager,
-                                         boolean initDefaultResource) {
-        this.sliderCaptchaResourceManager = sliderCaptchaResourceManager;
+    public StandardSliderImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager,
+                                               boolean initDefaultResource) {
+        this.imageCaptchaResourceManager = imageCaptchaResourceManager;
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -56,14 +56,14 @@ public class StandardImageCaptchaGenerator extends AbstractImageCaptchaGenerator
     @Override
     public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
         Boolean obfuscate = param.getObfuscate();
-        Map<String, Resource> templateImages = sliderCaptchaResourceManager.randomGetTemplate(param.getType());
+        Map<String, Resource> templateImages = imageCaptchaResourceManager.randomGetTemplate(param.getType());
         if (templateImages == null || templateImages.isEmpty()) {
             return null;
         }
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {
-            Resource resourceImage = sliderCaptchaResourceManager.randomGetResource(param.getType());
-            InputStream resourceInputStream = sliderCaptchaResourceManager.getResourceInputStream(resourceImage);
+            Resource resourceImage = imageCaptchaResourceManager.randomGetResource(param.getType());
+            InputStream resourceInputStream = imageCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage cutBackground = wrapFile2BufferedImage(resourceInputStream);
             // 拷贝一份图片
@@ -139,8 +139,8 @@ public class StandardImageCaptchaGenerator extends AbstractImageCaptchaGenerator
     }
 
     @Override
-    public SliderCaptchaResourceManager getSlideImageResourceManager() {
-        return sliderCaptchaResourceManager;
+    public ImageCaptchaResourceManager getImageResourceManager() {
+        return imageCaptchaResourceManager;
     }
 
     protected int randomObfuscateX(int sliderX, int slWidth, int bgWidth) {
@@ -156,7 +156,7 @@ public class StandardImageCaptchaGenerator extends AbstractImageCaptchaGenerator
      * 初始化默认资源
      */
     public void initDefaultResource() {
-        ResourceStore resourceStore = sliderCaptchaResourceManager.getResourceStore();
+        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加一些系统的资源文件
         resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
 

@@ -215,4 +215,14 @@ public class CaptchaImageUtils {
         return img;
     }
 
+    public static void centerOverlayAndRotateImage(BufferedImage baseBufferedImage, BufferedImage coverBufferedImage,
+                                                   final double degree) {
+        coverBufferedImage = rotateImage(coverBufferedImage, degree);
+        int bw = baseBufferedImage.getWidth();
+        int bh = baseBufferedImage.getHeight();
+        int cw = coverBufferedImage.getWidth();
+        int ch = coverBufferedImage.getHeight();
+        overlayImage(baseBufferedImage, coverBufferedImage, bw / 2 - cw / 2, bh / 2 - ch / 2);
+    }
+
 }

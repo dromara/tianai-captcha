@@ -14,7 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author: 天爱有情
@@ -71,7 +70,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         if (resource == null) {
             throw new IllegalArgumentException("查找模板异常， 该模板下未找到 ".concat(imageName));
         }
-        return getSlideImageResourceManager().getResourceInputStream(resource);
+        return getImageResourceManager().getResourceInputStream(resource);
     }
 
 }

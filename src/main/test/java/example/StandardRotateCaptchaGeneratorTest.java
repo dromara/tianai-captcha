@@ -1,18 +1,13 @@
 package example;
 
 import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
-import cloud.tianai.captcha.template.slider.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.RotateImageCaptchaInfo;
-import cloud.tianai.captcha.template.slider.generator.impl.StandardRotateCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.generator.impl.StandardRotateImageCaptchaGenerator;
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.ResourceStore;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.template.slider.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.impl.DefaultResourceStore;
-import cloud.tianai.captcha.template.slider.resource.impl.DefaultSliderCaptchaResourceManager;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class StandardRotateCaptchaGeneratorTest {
 
@@ -25,10 +20,10 @@ public class StandardRotateCaptchaGeneratorTest {
 //        resourceStore.addTemplate(CaptchaTypeConstant.ROTATE, template);
 //        resourceStore.addResource(CaptchaTypeConstant.ROTATE, new Resource("file", "E:\\projects\\tianai-captcha\\src\\main\\resources\\META-INF\\cut-image\\resource\\1.jpg"));
 
-        SliderCaptchaResourceManager sliderCaptchaResourceManager = new DefaultSliderCaptchaResourceManager(resourceStore);
+        ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager(resourceStore);
 
-        StandardRotateCaptchaGenerator standardRotateCaptchaGenerator = new StandardRotateCaptchaGenerator(sliderCaptchaResourceManager, true);
-        ImageCaptchaInfo imageCaptchaInfo = standardRotateCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.ROTATE);
+        StandardRotateImageCaptchaGenerator standardRotateImageCaptchaGenerator = new StandardRotateImageCaptchaGenerator(imageCaptchaResourceManager, true);
+        ImageCaptchaInfo imageCaptchaInfo = standardRotateImageCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.ROTATE);
         System.out.println("backgroundImage:" + imageCaptchaInfo.getBackgroundImage());
         System.out.println("sliderImage:" + imageCaptchaInfo.getSliderImage());
         System.out.println(((RotateImageCaptchaInfo)imageCaptchaInfo).getDegree());

@@ -3,8 +3,7 @@ package cloud.tianai.captcha.template.slider.generator;
 import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
 
 /**
  * @Author: 天爱有情
@@ -45,6 +44,6 @@ public interface ImageCaptchaGenerator {
      *
      * @return SliderCaptchaResourceManager
      */
-    SliderCaptchaResourceManager getSlideImageResourceManager();
+    ImageCaptchaResourceManager getImageResourceManager();
 
 }

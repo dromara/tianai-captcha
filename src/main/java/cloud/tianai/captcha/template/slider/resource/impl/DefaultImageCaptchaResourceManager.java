@@ -1,8 +1,8 @@
 package cloud.tianai.captcha.template.slider.resource.impl;
 
+import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.ResourceProvider;
 import cloud.tianai.captcha.template.slider.resource.ResourceStore;
-import cloud.tianai.captcha.template.slider.resource.SliderCaptchaResourceManager;
 import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.template.slider.resource.impl.provider.ClassPathResourceProvider;
 import cloud.tianai.captcha.template.slider.resource.impl.provider.FileResourceProvider;
@@ -19,18 +19,18 @@ import java.util.Map;
  * @date 2021/8/7 15:35
  * @Description 默认的滑块验证码资源管理
  */
-public class DefaultSliderCaptchaResourceManager implements SliderCaptchaResourceManager {
+public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceManager {
 
     private ResourceStore resourceStore;
 
     private List<ResourceProvider> resourceProviderList = new ArrayList<>(8);
 
 
-    public DefaultSliderCaptchaResourceManager() {
+    public DefaultImageCaptchaResourceManager() {
         init();
     }
 
-    public DefaultSliderCaptchaResourceManager(ResourceStore resourceStore) {
+    public DefaultImageCaptchaResourceManager(ResourceStore resourceStore) {
         this.resourceStore = resourceStore;
         init();
     }
