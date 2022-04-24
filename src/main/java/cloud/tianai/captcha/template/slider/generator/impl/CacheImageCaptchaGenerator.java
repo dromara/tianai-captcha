@@ -80,6 +80,8 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
                 } catch (Exception e) {
                     // cache所有
                     log.error("缓存队列扫描时出错， ex", e);
+                    // 删掉它
+                    queueMap.remove(k);
                     // 休眠
                     sleep();
                 }
