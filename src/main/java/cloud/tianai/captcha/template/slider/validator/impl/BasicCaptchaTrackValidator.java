@@ -12,7 +12,7 @@ import java.util.Map;
  * @date 2022/2/17 11:01
  * @Description 基本的行为轨迹校验
  */
-public class BasicCaptchaTrackValidator extends SimpleSliderCaptchaValidator {
+public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
 
     public BasicCaptchaTrackValidator() {
     }

@@ -8,9 +8,9 @@ import java.util.Map;
 /**
  * @Author: 天爱有情
  * @date 2022/2/17 10:54
- * @Description 滑块验证码校验器
+ * @Description 图片验证码校验器
  */
-public interface SliderCaptchaValidator {
+public interface ImageCaptchaValidator {
 
     /**
      * 计算滑块要背景图的百分比，基本校验

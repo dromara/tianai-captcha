@@ -2,7 +2,7 @@ package cloud.tianai.captcha.template.slider.validator.impl;
 
 import cloud.tianai.captcha.template.slider.common.util.CollectionUtils;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.template.slider.validator.SliderCaptchaValidator;
+import cloud.tianai.captcha.template.slider.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import lombok.Getter;
 import lombok.Setter;
@@ -18,7 +18,7 @@ import java.util.Map;
  * @Description 基本的滑块验证校验 ， 值进行基本校验， 目前只校验用户是否滑动到缺口处，不校验行为轨迹
  */
 @Slf4j
-public class SimpleSliderCaptchaValidator implements SliderCaptchaValidator {
+public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
 
     public static float DEFAULT_TOLERANT = 0.02f;
     /** 容错值. */
@@ -26,10 +26,10 @@ public class SimpleSliderCaptchaValidator implements SliderCaptchaValidator {
     @Setter
     public float defaultTolerant = DEFAULT_TOLERANT;
 
-    public SimpleSliderCaptchaValidator() {
+    public SimpleImageCaptchaValidator() {
     }
 
-    public SimpleSliderCaptchaValidator(float defaultTolerant) {
+    public SimpleImageCaptchaValidator(float defaultTolerant) {
         this.defaultTolerant = defaultTolerant;
     }
 
