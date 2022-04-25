@@ -25,18 +25,20 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     protected final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slider-captcha-queue"));
     protected Map<GenerateParam, ConcurrentLinkedQueue<ImageCaptchaInfo>> queueMap = new ConcurrentHashMap<>(8);
     protected Map<GenerateParam, AtomicInteger> posMap = new ConcurrentHashMap<>(8);
+    protected Map<GenerateParam, Long> lastUpdateMap = new ConcurrentHashMap<>(8);
     protected ImageCaptchaGenerator target;
     protected int size;
     /** 等待时间，一般报错或者拉取为空时会休眠一段时间再试. */
     protected int waitTime = 1000;
     /** 调度器检查缓存的间隔时间. */
-    protected int period = 100;
-
+    protected int period = 5000;
+    /** 10天内没有任何操作就删除已缓存的数据. */
+    protected long expireTime = TimeUnit.DAYS.toMillis(10);
     @Getter
     @Setter
     protected boolean requiredGetCaptcha = true;
 
-    public CacheImageCaptchaGenerator(ImageCaptchaGenerator target,  int size) {
+    public CacheImageCaptchaGenerator(ImageCaptchaGenerator target, int size) {
         this.target = target;
         this.size = size;
     }
@@ -46,6 +48,14 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
         this.size = size;
         this.waitTime = waitTime;
         this.period = period;
+    }
+
+    public CacheImageCaptchaGenerator(ImageCaptchaGenerator target, int size, int waitTime, int period, Long expireTime) {
+        this.target = target;
+        this.size = size;
+        this.waitTime = waitTime;
+        this.period = period;
+        this.expireTime = expireTime;
     }
 
     /**
@@ -62,6 +72,7 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
             queueMap.forEach((k, queue) -> {
                 try {
                     AtomicInteger pos = posMap.computeIfAbsent(k, k1 -> new AtomicInteger(0));
+                    int addCount = 0;
                     while (pos.get() < this.size) {
                         if (pos.get() >= size) {
                             return;
@@ -69,6 +80,7 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
                         ImageCaptchaInfo slideImageInfo = target.generateCaptchaImage(k);
                         if (slideImageInfo != null) {
                             boolean addStatus = queue.offer(slideImageInfo);
+                            addCount++;
                             if (addStatus) {
                                 // 添加记录
                                 pos.incrementAndGet();
@@ -77,11 +89,22 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
                             sleep();
                         }
                     }
+                    if (addCount == 0) {
+                        // 没有添加，检测最新更新时间 如果时间过长，直接清除数据
+                        Long lastUpdate = lastUpdateMap.get(k);
+                        if (lastUpdate != null && System.currentTimeMillis() - lastUpdate > expireTime) {
+                            queueMap.remove(k);
+                            posMap.remove(k);
+                            lastUpdateMap.remove(k);
+                        }
+                    }
                 } catch (Exception e) {
                     // cache所有
                     log.error("缓存队列扫描时出错， ex", e);
                     // 删掉它
                     queueMap.remove(k);
+                    posMap.remove(k);
+                    lastUpdateMap.remove(k);
                     // 休眠
                     sleep();
                 }
@@ -107,21 +130,31 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
 
     @SneakyThrows
     public ImageCaptchaInfo generateCaptchaImage(GenerateParam generateParam, boolean requiredGetCaptcha) {
-        ConcurrentLinkedQueue<ImageCaptchaInfo> queue = queueMap.computeIfAbsent(generateParam, g -> new ConcurrentLinkedQueue<>());
-        ImageCaptchaInfo poll = queue.poll();
-        if (poll == null && requiredGetCaptcha) {
-            log.warn("滑块验证码缓存不足, genParam:{}", generateParam);
-            // 如果池内没数据， 则直接生成
-            return target.generateCaptchaImage(generateParam);
-        }
-        // 减1
-        if (poll != null) {
-            AtomicInteger pos = posMap.get(generateParam);
-            if (pos != null) {
-                pos.decrementAndGet();
+        ConcurrentLinkedQueue<ImageCaptchaInfo> queue = queueMap.get(generateParam);
+        ImageCaptchaInfo captchaInfo = null;
+        if (queue != null) {
+            captchaInfo = queue.poll();
+            if (captchaInfo == null) {
+                log.warn("滑块验证码缓存不足, genParam:{}", generateParam);
+            }else {
+                AtomicInteger pos = posMap.get(generateParam);
+                if (pos != null) {
+                    pos.decrementAndGet();
+                }
             }
+        }else {
+            queueMap.putIfAbsent(generateParam, new ConcurrentLinkedQueue<>());
+            posMap.putIfAbsent(generateParam, new AtomicInteger(0));
         }
-        return poll;
+        if (captchaInfo == null && requiredGetCaptcha) {
+            // 直接生成 不走缓存
+            captchaInfo =  target.generateCaptchaImage(generateParam);
+        }
+        if (captchaInfo != null){
+            // 记录最新时间
+            lastUpdateMap.put(generateParam, System.currentTimeMillis());
+        }
+        return captchaInfo;
     }
 
     @Override
