@@ -11,4 +11,6 @@ public interface CaptchaTypeConstant {
     String SLIDER = "SLIDER";
     /** 旋转. */
     String ROTATE = "ROTATE";
+    /** 拼接.*/
+    String CONCAT = "CONCAT";
 }

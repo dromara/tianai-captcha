@@ -31,8 +31,12 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     }
 
     protected void init() {
+        // 滑块验证码
         addImageCaptchaGenerator(CaptchaTypeConstant.SLIDER, new StandardSliderImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource));
+        // 旋转验证码
         addImageCaptchaGenerator(CaptchaTypeConstant.ROTATE, new StandardRotateImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource));
+        // 拼接验证码
+        addImageCaptchaGenerator(CaptchaTypeConstant.CONCAT, new StandardConcatImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource));
     }
 
     public void addImageCaptchaGenerator(String key, ImageCaptchaGenerator captchaGenerator) {

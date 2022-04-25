@@ -175,23 +175,6 @@ public class CaptchaImageUtils {
         return image;
     }
 
-
-//    /**
-//     * 旋转图片
-//     *
-//     * @param bufferedImage 图片
-//     * @param degree        旋转xx度
-//     */
-//    public static void rotateImage(BufferedImage bufferedImage, int degree) {
-//        // 创建Graphics2D对象，用在底图对象上绘图
-//        Graphics2D g2d = bufferedImage.createGraphics();
-//        // 绘制
-//        g2d.rotate(Math.toRadians(degree), bufferedImage.getWidth() / 2, bufferedImage.getHeight()/2);
-//        g2d.drawImage(bufferedImage, 0, 0, bufferedImage.getWidth(), bufferedImage.getHeight(), null);
-//        // 释放图形上下文使用的系统资源
-//        g2d.dispose();
-//    }
-
     public static BufferedImage rotateImage(final BufferedImage bufferedimage,
                                             final double degree) {
         // 得到图片宽度。
@@ -225,4 +208,102 @@ public class CaptchaImageUtils {
         overlayImage(baseBufferedImage, coverBufferedImage, bw / 2 - cw / 2, bh / 2 - ch / 2);
     }
 
+
+    /**
+     * 通过x和y轴截取图片
+     *
+     * @param x      x
+     * @param y      y
+     * @param width  宽度
+     * @param height 高度
+     * @param img    截取的图片
+     * @return BufferedImage
+     */
+    public static BufferedImage subImage(int x, int y, int width, int height, BufferedImage img) {
+        int[] simgRgb = new int[width * height];
+        img.getRGB(x, y, width, height, simgRgb, 0, width);
+        // 得到图片透明度。
+        int type = img.getColorModel().getTransparency();
+        BufferedImage newImage = new BufferedImage(width, height, type);
+        newImage.setRGB(0, 0, width, height, simgRgb, 0, width);
+        return newImage;
+    }
+
+    /**
+     * 分隔图片
+     *
+     * @param pos       分隔点
+     * @param direction true为水平方向， false为垂直方向
+     * @param img       待分割的图片
+     * @return BufferedImage[]
+     */
+    public static BufferedImage[] splitImage(int pos, boolean direction, BufferedImage img) {
+        int startImageWidth;
+        int startImageHeight;
+        int endImageWidth;
+        int endImageHeight;
+        int endScanX;
+        int endScanY;
+        if (direction) {
+            startImageHeight = img.getHeight() - pos;
+            startImageWidth = img.getWidth();
+            endImageWidth = img.getWidth();
+            endImageHeight = pos;
+            endScanX = 0;
+            endScanY = startImageHeight;
+        } else {
+            startImageWidth = pos;
+            startImageHeight = img.getHeight();
+            endImageWidth = img.getWidth() - startImageWidth;
+            endImageHeight = img.getHeight();
+            endScanX = pos;
+            endScanY = 0;
+        }
+
+        // start
+        int[] rgbArr = new int[startImageWidth * startImageHeight];
+        img.getRGB(0, 0, startImageWidth, startImageHeight, rgbArr, 0, startImageWidth);
+        int type = img.getColorModel().getTransparency();
+        BufferedImage startImg = new BufferedImage(startImageWidth, startImageHeight, type);
+        startImg.setRGB(0, 0, startImageWidth, startImageHeight, rgbArr, 0, startImageWidth);
+        // end
+        rgbArr = new int[endImageWidth * endImageHeight];
+        img.getRGB(endScanX, endScanY, endImageWidth, endImageHeight, rgbArr, 0, endImageWidth);
+        BufferedImage endImg = new BufferedImage(endImageWidth, endImageHeight, type);
+        endImg.setRGB(0, 0, endImageWidth, endImageHeight, rgbArr, 0, endImageWidth);
+
+        BufferedImage[] splitImageArr = new BufferedImage[2];
+        splitImageArr[0] = startImg;
+        splitImageArr[1] = endImg;
+        return splitImageArr;
+    }
+
+
+    /**
+     * 拼接图片
+     *
+     * @param direction rue为水平方向， false为垂直方向
+     * @param width     拼接后图片宽度
+     * @param height    拼接后图片高度
+     * @param imgArr    拼接的图片数组
+     * @return BufferedImage
+     */
+    public static BufferedImage concatImage(boolean direction, int width, int height, BufferedImage... imgArr) {
+        int pos = 0;
+        BufferedImage newImage = new BufferedImage(width, height, imgArr[0].getColorModel().getTransparency());
+        for (BufferedImage img : imgArr) {
+            int[] rgbArr = new int[width * height];
+            img.getRGB(0, 0, img.getWidth(), img.getHeight(), rgbArr, 0, img.getWidth());
+            if (direction) {
+                newImage.setRGB(pos, 0, img.getWidth(), img.getHeight(), rgbArr, 0, img.getWidth());
+                pos += img.getWidth();
+                // 水平方向
+            } else {
+                // 垂直方向
+                newImage.setRGB(0, pos, img.getWidth(), img.getHeight(), rgbArr, 0, img.getWidth());
+                pos += img.getHeight();
+            }
+        }
+        return newImage;
+    }
 }
