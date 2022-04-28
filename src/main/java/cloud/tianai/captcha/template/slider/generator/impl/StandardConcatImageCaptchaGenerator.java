@@ -27,7 +27,7 @@ import static cloud.tianai.captcha.template.slider.generator.impl.StandardSlider
  */
 public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
-    protected final ImageCaptchaResourceManager imageCaptchaResourceManager;
+    protected ImageCaptchaResourceManager imageCaptchaResourceManager;
 
     public StandardConcatImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
@@ -79,7 +79,16 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
     private ImageCaptchaInfo wrapConcatCaptchaInfo(int randomX, BufferedImage bgImage, BufferedImage sliderImage, GenerateParam param) {
         String backGroundImageBase64 = transform(bgImage, param.getBackgroundFormatName());
         String sliderImageBase64 = transform(sliderImage, param.getSliderFormatName());
-        return ImageCaptchaInfo.of(backGroundImageBase64, sliderImageBase64, bgImage.getWidth(), bgImage.getHeight(), sliderImage.getWidth(), sliderImage.getHeight(), randomX);
+        ImageCaptchaInfo imageCaptchaInfo = ImageCaptchaInfo.of(backGroundImageBase64,
+                sliderImageBase64,
+                bgImage.getWidth(),
+                bgImage.getHeight(),
+                sliderImage.getWidth(),
+                sliderImage.getHeight(),
+                randomX,
+                CaptchaTypeConstant.CONCAT);
+        imageCaptchaInfo.setTolerant(0.05F);
+        return imageCaptchaInfo;
     }
 
     @Override

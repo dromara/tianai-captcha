@@ -13,4 +13,6 @@ public interface CaptchaTypeConstant {
     String ROTATE = "ROTATE";
     /** 拼接.*/
     String CONCAT = "CONCAT";
+    /** 文字点选.*/
+    String WORD_CLICK = "WORD_CLICK";
 }

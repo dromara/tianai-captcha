@@ -30,8 +30,12 @@ public class ImageCaptchaInfo {
     private Integer sliderImageWidth;
     /** 滑块图片高度. */
     private Integer sliderImageHeight;
-    /** 随机值.*/
+    /** 随机值. */
     private Integer randomX;
+    /** 容错值, 可以为空 默认 0.02容错,校验的时候用. */
+    private Float tolerant;
+    /** 验证码类型.*/
+    private String type;
     /**
      * 扩展字段
      */
@@ -43,7 +47,8 @@ public class ImageCaptchaInfo {
                             Integer bgImageHeight,
                             Integer sliderImageWidth,
                             Integer sliderImageHeight,
-                            Integer randomX) {
+                            Integer randomX,
+                            String type) {
         this.backgroundImage = backgroundImage;
         this.sliderImage = sliderImage;
         this.bgImageWidth = bgImageWidth;
@@ -51,6 +56,7 @@ public class ImageCaptchaInfo {
         this.sliderImageWidth = sliderImageWidth;
         this.sliderImageHeight = sliderImageHeight;
         this.randomX = randomX;
+        this.type = type;
     }
 
     public static ImageCaptchaInfo of(String backgroundImage,
@@ -59,8 +65,9 @@ public class ImageCaptchaInfo {
                                       Integer bgImageHeight,
                                       Integer sliderImageWidth,
                                       Integer sliderImageHeight,
-                                      Integer randomKey) {
-        return new ImageCaptchaInfo( backgroundImage, sliderImage, bgImageWidth, bgImageHeight, sliderImageWidth, sliderImageHeight, randomKey);
+                                      Integer randomKey,
+                                      String type) {
+        return new ImageCaptchaInfo(backgroundImage, sliderImage, bgImageWidth, bgImageHeight, sliderImageWidth, sliderImageHeight, randomKey, type);
     }
 
 }

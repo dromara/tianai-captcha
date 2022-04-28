@@ -56,7 +56,8 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
      * @param formatType    格式化类型
      * @return String
      */
-    public String transform(BufferedImage bufferedImage, String formatType) throws IOException {
+    @SneakyThrows(IOException.class)
+    public String transform(BufferedImage bufferedImage, String formatType) {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage, formatType, byteArrayOutputStream);
         //转换成字节码

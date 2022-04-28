@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.template.slider.generator.common.model.dto;
 
+import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -36,7 +37,7 @@ public class SliderImageCaptchaInfo extends ImageCaptchaInfo {
         sliderImageCaptchaInfo.setBgImageHeight(bgImageHeight);
         sliderImageCaptchaInfo.setSliderImageWidth(sliderImageWidth);
         sliderImageCaptchaInfo.setSliderImageHeight(sliderImageHeight);
-
+        sliderImageCaptchaInfo.setType(CaptchaTypeConstant.SLIDER);
         return sliderImageCaptchaInfo;
     }
 
