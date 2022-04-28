@@ -1,7 +1,7 @@
 package cloud.tianai.captcha.template.slider.generator.impl;
 
 import cloud.tianai.captcha.template.slider.generator.AbstractImageCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.template.slider.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
@@ -17,7 +17,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cloud.tianai.captcha.template.slider.common.util.CaptchaImageUtils.*;
+import static cloud.tianai.captcha.template.slider.generator.common.util.CaptchaImageUtils.*;
 import static cloud.tianai.captcha.template.slider.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
 
 /**

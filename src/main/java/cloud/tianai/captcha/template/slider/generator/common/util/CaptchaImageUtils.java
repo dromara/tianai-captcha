@@ -1,10 +1,13 @@
-package cloud.tianai.captcha.template.slider.common.util;
+package cloud.tianai.captcha.template.slider.generator.common.util;
 
 import lombok.SneakyThrows;
+import sun.font.FontDesignMetrics;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Area;
+import java.awt.geom.CubicCurve2D;
+import java.awt.geom.QuadCurve2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
@@ -12,6 +15,8 @@ import java.awt.image.WritableRaster;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author: 天爱有情
@@ -314,7 +319,146 @@ public class CaptchaImageUtils {
     }
 
     public static char getRandomChar() {
-        return (char)(0x4e00 + (int)(Math.random()*(0x9fa5 - 0x4e00 + 1)));
+        return (char) (0x4e00 + (int) (Math.random() * (0x9fa5 - 0x4e00 + 1)));
     }
+
+
+    @SneakyThrows
+    public static BufferedImage drawWordImg(Color fontColor,
+                                            String word,
+                                            Font font,
+                                            FontDesignMetrics metrics,
+                                            int imgWidth,
+                                            int imgHeight,
+                                            float deg) {
+        BufferedImage fillRect = new BufferedImage(imgWidth, imgHeight, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = fillRect.createGraphics();
+        g.setColor(new Color(255, 255, 255, 0));
+        g.fillRect(0, 0, imgWidth, imgHeight);
+        g.setColor(fontColor);
+        g.setFont(font);
+        float left = (imgWidth - font.getSize()) / 2f;
+        float top = (imgHeight - font.getSize()) / 2f + metrics.getAscent() - 6;
+        g.rotate(Math.toRadians(deg), imgWidth / 2f, imgHeight / 2f);
+        g.drawString(word, left, top);
+        g.dispose();
+        return fillRect;
+    }
+
+    /**
+     * 随机画干扰圆
+     *
+     * @param num   数量
+     * @param color 颜色
+     * @param g     Graphics2D
+     */
+    public static void drawOval(int num,
+                                Color color,
+                                Graphics2D g,
+                                int width,
+                                int height,
+                                Random random) {
+        for (int i = 0; i < num; i++) {
+            g.setColor(color == null ? getRandomColor(random) : color);
+            int w = 5 + random.nextInt(10);
+            int x = random.nextInt(width - 25);
+            int y = random.nextInt(height - 25);
+            g.drawOval(x, y, w, w);
+        }
+    }
+
+
+    /**
+     * 随机画贝塞尔曲线
+     *
+     * @param num   数量
+     * @param color 颜色
+     * @param g     Graphics2D
+     */
+    public static void drawBesselLine(int num, Color color,
+                                      Graphics2D g,
+                                      int width,
+                                      int height,
+                                      ThreadLocalRandom random) {
+        for (int i = 0; i < num; i++) {
+            g.setColor(color == null ? getRandomColor(random) : color);
+            int x1 = 5, y1 = random.nextInt(5, height / 2);
+            int x2 = width - 5, y2 = random.nextInt(height / 2, height - 5);
+            int ctrlx = random.nextInt(width / 4, width / 4 * 3);
+            int ctrly = random.nextInt(5, height - 5);
+            if (random.nextInt(2) == 0) {
+                int ty = y1;
+                y1 = y2;
+                y2 = ty;
+            }
+            if (random.nextInt(2) == 0) {  // 二阶贝塞尔曲线
+                QuadCurve2D shape = new QuadCurve2D.Double();
+                shape.setCurve(x1, y1, ctrlx, ctrly, x2, y2);
+                g.draw(shape);
+            } else {  // 三阶贝塞尔曲线
+                int ctrlx1 = random.nextInt(width / 4, width / 4 * 3);
+                int ctrly1 = random.nextInt(5, height - 5);
+                CubicCurve2D shape = new CubicCurve2D.Double(x1, y1, ctrlx, ctrly, ctrlx1, ctrly1, x2, y2);
+                g.draw(shape);
+            }
+        }
+    }
+
+    /**
+     * 生成简单的验证码图片
+     * @param data 验证码内容
+     * @param font 字体包
+     * @param metrics FontDesignMetrics
+     * @param width 验证码宽度
+     * @param height 验证码高度
+     * @param startX 起始X
+     * @param startY 起始Y
+     * @param interferenceLineNum 干扰线数量
+     * @param interferencePointNum 干扰点数量
+     * @return BufferedImage
+     */
+    public static BufferedImage genSimpleImgCaptcha(String data,
+                                                    Font font,
+                                                    FontDesignMetrics metrics,
+                                                    int width,
+                                                    int height,
+                                                    float startX,
+                                                    float startY,
+                                                    int interferenceLineNum,
+                                                    int interferencePointNum) {
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = bufferedImage.createGraphics();
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        g.setFont(font);
+        char[] chars = data.toCharArray();
+
+        for (int i = 0; i < chars.length; i++) {
+            g.setColor(getRandomColor(random));
+            g.drawString(String.valueOf(chars[i]), startX + i * font.getSize(), startY);
+        }
+        // 干扰点
+        if (interferencePointNum > 0) {
+            drawOval(interferencePointNum, null, g, width, height, random);
+        }
+        if (interferencePointNum > 0) {
+            g.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+            // 干扰线
+            drawBesselLine(interferenceLineNum, null, g, width, height, random);
+        }
+        return bufferedImage;
+    }
+
+    /**
+     * 随机获取颜色
+     * @return Color
+     */
+    public static Color getRandomColor(Random random) {
+        return new Color(
+                random.nextInt(255),
+                random.nextInt(255),
+                random.nextInt(255));
+
+    }
+
 
 }

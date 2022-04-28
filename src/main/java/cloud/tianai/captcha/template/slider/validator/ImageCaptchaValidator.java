@@ -15,11 +15,11 @@ public interface ImageCaptchaValidator {
     /**
      * 计算滑块要背景图的百分比，基本校验
      *
-     * @param x            凹槽的x轴
-     * @param bgImageWidth 背景图片的宽度
+     * @param pos    移动的位置
+     * @param maxPos 最大可移动的位置
      * @return float
      */
-    float calcPercentage(int x, int bgImageWidth);
+    float calcPercentage(Number pos, Number maxPos);
 
     /**
      * 校验滑块百分比
@@ -46,7 +46,7 @@ public interface ImageCaptchaValidator {
      * @param imageCaptchaInfo 生成的验证码数据
      * @return Map<String, Object>
      */
-    Map<String, Object> generateSliderCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo);
+    Map<String, Object> generateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo);
 
     /**
      * 校验用户滑动滑块是否正确

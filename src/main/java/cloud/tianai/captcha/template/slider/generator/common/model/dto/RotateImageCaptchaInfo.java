@@ -1,6 +1,6 @@
 package cloud.tianai.captcha.template.slider.generator.common.model.dto;
 
-import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.template.slider.common.constant.CaptchaTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -19,7 +19,7 @@ public class RotateImageCaptchaInfo extends ImageCaptchaInfo {
      */
     private Double degree;
     /** 旋转图片的容错值大一点. */
-    public static final Float DEFAULT_TOLERANT = 0.05F;
+    public static final Float DEFAULT_TOLERANT = 0.03F;
 
     public static RotateImageCaptchaInfo of(Double degree,
                                             Integer randomX,

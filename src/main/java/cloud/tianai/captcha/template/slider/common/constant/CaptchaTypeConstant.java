@@ -1,4 +1,4 @@
-package cloud.tianai.captcha.template.slider.generator.common.constant;
+package cloud.tianai.captcha.template.slider.common.constant;
 
 /**
  * @Author: 天爱有情
@@ -13,6 +13,6 @@ public interface CaptchaTypeConstant {
     String ROTATE = "ROTATE";
     /** 拼接.*/
     String CONCAT = "CONCAT";
-    /** 文字点选.*/
-    String WORD_CLICK = "WORD_CLICK";
+    /** 图片点选.*/
+    String IMAGE_CLICK = "IMAGE_CLICK";
 }

@@ -1,7 +1,6 @@
 package example;
 
-import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.template.slider.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.RotateImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.generator.impl.CacheImageCaptchaGenerator;
