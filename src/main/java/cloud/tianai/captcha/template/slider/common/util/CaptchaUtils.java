@@ -11,6 +11,7 @@ public class CaptchaUtils {
 
     /**
      * 是否是滑动验证码
+     *
      * @param type 类型
      * @return boolean
      */
@@ -22,11 +23,12 @@ public class CaptchaUtils {
 
     /**
      * 是否是点击验证码
+     *
      * @param type type
      * @return boolean
      */
     public static boolean isClickCaptcha(String type) {
-        return CaptchaTypeConstant.IMAGE_CLICK.equals(type);
+        return CaptchaTypeConstant.WORD_IMAGE_CLICK.equals(type) || CaptchaTypeConstant.IMAGE_CLICK.equals(type);
     }
 
 }

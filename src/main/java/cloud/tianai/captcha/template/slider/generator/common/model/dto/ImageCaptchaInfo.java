@@ -34,8 +34,10 @@ public class ImageCaptchaInfo {
     private Integer randomX;
     /** 容错值, 可以为空 默认 0.02容错,校验的时候用. */
     private Float tolerant;
-    /** 验证码类型.*/
+    /** 验证码类型. */
     private String type;
+    /** 透传字段，用于传给前端.*/
+    private Object data;
     /**
      * 扩展字段
      */

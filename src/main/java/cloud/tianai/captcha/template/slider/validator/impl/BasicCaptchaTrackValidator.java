@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.template.slider.validator.impl;
 
+import cloud.tianai.captcha.template.slider.common.util.CaptchaUtils;
 import cloud.tianai.captcha.template.slider.common.util.CollectionUtils;
 import cloud.tianai.captcha.template.slider.common.util.ObjectUtils;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
@@ -22,13 +23,17 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
     }
 
     @Override
-    public boolean valid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData) {
+    public boolean beforeValid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
         // 校验参数
         checkParam(sliderCaptchaTrack);
-        // 基础校验
-        boolean superValid = super.valid(sliderCaptchaTrack, sliderCaptchaValidData);
-        if (!superValid) {
-            return false;
+        return true;
+    }
+
+    @Override
+    public boolean afterValid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
+        if (!CaptchaUtils.isSliderCaptcha(type)){
+            // 不是滑动验证码的话暂时跳过，点选验证码行为轨迹还没做
+            return true;
         }
         // 进行行为轨迹检测
         long startSlidingTime = sliderCaptchaTrack.getStartSlidingTime().getTime();
@@ -93,7 +98,6 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
         return endAvgPosTime > startAvgPosTime;
     }
 
-
     public void checkParam(SliderCaptchaTrack sliderCaptchaTrack) {
         if (ObjectUtils.isEmpty(sliderCaptchaTrack.getBgImageWidth())) {
             throw new IllegalArgumentException("bgImageWidth must not be null");
@@ -120,8 +124,9 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
             Integer x = track.getX();
             Integer y = track.getY();
             Integer t = track.getT();
-            if (x == null || y == null || t == null) {
-                throw new IllegalArgumentException("track[x,y,t] must not be null");
+            String type = track.getType();
+            if (x == null || y == null || t == null || ObjectUtils.isEmpty(type)) {
+                throw new IllegalArgumentException("track[x,y,t,type] must not be null");
             }
         }
     }

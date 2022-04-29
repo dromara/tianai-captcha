@@ -1,7 +1,7 @@
 package cloud.tianai.captcha.template.slider.generator.impl;
 
-import cloud.tianai.captcha.template.slider.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.template.slider.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
@@ -51,18 +51,19 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
             InputStream resourceInputStream = imageCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage bgImage = wrapFile2BufferedImage(resourceInputStream);
-            int spacing = bgImage.getHeight() / 4;
-            BufferedImage[] bgImageSplit = splitImage(ThreadLocalRandom.current().nextInt(spacing, bgImage.getHeight() - spacing), true, bgImage);
-
-            spacing = bgImage.getWidth() / 8;
-            int randomX = ThreadLocalRandom.current().nextInt(spacing, bgImage.getWidth() - spacing);
+            int spacingY = bgImage.getHeight() / 4;
+            int randomY = ThreadLocalRandom.current().nextInt(spacingY, bgImage.getHeight() - spacingY);
+            BufferedImage[] bgImageSplit = splitImage(randomY, true, bgImage);
+            int spacingX = bgImage.getWidth() / 8;
+            int randomX = ThreadLocalRandom.current().nextInt(spacingX, bgImage.getWidth() - bgImage.getWidth() / 5);
             BufferedImage[] bgImageTopSplit = splitImage(randomX, false, bgImageSplit[0]);
 
             BufferedImage sliderImage = concatImage(true,
                     bgImageTopSplit[0].getWidth()
-                            + bgImageTopSplit[1].getWidth()
-                            + bgImageSplit[0].getWidth(), bgImageTopSplit[1].getHeight(), bgImageSplit[0], bgImageTopSplit[0]);
-            return wrapConcatCaptchaInfo(randomX, bgImageSplit[1], sliderImage, param);
+                            + bgImageTopSplit[1].getWidth(), bgImageTopSplit[0].getHeight(), bgImageTopSplit[1], bgImageTopSplit[0]);
+            bgImage = concatImage(false, bgImageSplit[1].getWidth(), sliderImage.getHeight() + bgImageSplit[1].getHeight(),
+                    sliderImage, bgImageSplit[1]);
+            return wrapConcatCaptchaInfo(randomX, randomY,bgImage,  param);
         } finally {
             // 使用完后关闭流
             for (InputStream inputStream : inputStreams) {
@@ -76,17 +77,17 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
     }
 
     @SneakyThrows
-    private ImageCaptchaInfo wrapConcatCaptchaInfo(int randomX, BufferedImage bgImage, BufferedImage sliderImage, GenerateParam param) {
+    private ImageCaptchaInfo wrapConcatCaptchaInfo(int randomX, int randomY, BufferedImage bgImage, GenerateParam param) {
         String backGroundImageBase64 = transform(bgImage, param.getBackgroundFormatName());
-        String sliderImageBase64 = transform(sliderImage, param.getSliderFormatName());
         ImageCaptchaInfo imageCaptchaInfo = ImageCaptchaInfo.of(backGroundImageBase64,
-                sliderImageBase64,
+                null,
                 bgImage.getWidth(),
                 bgImage.getHeight(),
-                sliderImage.getWidth(),
-                sliderImage.getHeight(),
+                null,
+                null,
                 randomX,
                 CaptchaTypeConstant.CONCAT);
+        imageCaptchaInfo.setData(randomY);
         imageCaptchaInfo.setTolerant(0.05F);
         return imageCaptchaInfo;
     }

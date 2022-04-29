@@ -7,6 +7,7 @@ import cloud.tianai.captcha.template.slider.common.util.ObjectUtils;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.validator.ImageCaptchaValidator;
+import cloud.tianai.captcha.template.slider.validator.common.constant.TrackTypeConstant;
 import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
 import lombok.Getter;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @Author: 天爱有情
@@ -25,14 +27,14 @@ import java.util.Map;
 public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
 
     public static float DEFAULT_TOLERANT = 0.02f;
+    public static final String PERCENTAGE_KEY = "percentage";
+    public static final String TOLERANT_KEY = "tolerant";
+    public static final String TYPE_KEY = "type";
+
     /** 容错值. */
     @Getter
     @Setter
     public float defaultTolerant = DEFAULT_TOLERANT;
-
-    public static final String PERCENTAGE_KEY = "percentage";
-    public static final String TOLERANT_KEY = "Tolerant";
-    public static final String TYPE_KEY = "type";
 
     public SimpleImageCaptchaValidator() {
     }
@@ -66,6 +68,14 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
     @Override
     public Map<String, Object> generateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo) {
         Map<String, Object> map = new HashMap<>(8);
+        if(beforeGenerateImageCaptchaValidData(imageCaptchaInfo, map)) {
+            doGenerateImageCaptchaValidData(map, imageCaptchaInfo);
+        }
+        afterGenerateImageCaptchaValidData(imageCaptchaInfo, map);
+        return map;
+    }
+
+    public  boolean beforeGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo, Map<String, Object> map) {
         // 容错值
         Float tolerant = imageCaptchaInfo.getTolerant();
         if (tolerant != null && tolerant > 0) {
@@ -77,13 +87,17 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
             type = CaptchaTypeConstant.SLIDER;
         }
         map.put(TYPE_KEY, type);
-
-        return afterGenerateImageCaptchaValidData(map, imageCaptchaInfo, type);
+        return true;
     }
 
-    public Map<String, Object> afterGenerateImageCaptchaValidData(Map<String, Object> map,
-                                                                  ImageCaptchaInfo imageCaptchaInfo,
-                                                                  String type) {
+    public  void afterGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo, Map<String, Object> map) {
+
+    }
+
+    public void doGenerateImageCaptchaValidData(Map<String, Object> map,
+                                                ImageCaptchaInfo imageCaptchaInfo) {
+        // type
+        String type = (String) map.getOrDefault(TYPE_KEY, CaptchaTypeConstant.SLIDER);
         if (CaptchaUtils.isSliderCaptcha(type)) {
             // 滑动验证码
             addPercentage(imageCaptchaInfo, map);
@@ -93,7 +107,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
             if (expand == null) {
                 throw new IllegalArgumentException("点选验证码扩展数据转换为 List<ClickImageCheckDefinition> 失败， info=" + imageCaptchaInfo);
             }
-            List<ClickImageCheckDefinition> clickImageCheckDefinitionList = null;
+            List<ClickImageCheckDefinition> clickImageCheckDefinitionList;
             try {
                 clickImageCheckDefinitionList = (List<ClickImageCheckDefinition>) expand;
             } catch (Exception e) {
@@ -116,17 +130,15 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
                     map.put(TOLERANT_KEY, tolerant);
                 }
             }
-            // 添加点选验证
+            // 添加点选验证数据
             map.put(PERCENTAGE_KEY, sb.toString());
         }
-        return map;
     }
 
     @Override
     public boolean valid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData) {
-
         // 读容错值
-        Float tolerantData = getFloatParam(TOLERANT_KEY, sliderCaptchaValidData, defaultTolerant);
+        Float tolerant = getFloatParam(TOLERANT_KEY, sliderCaptchaValidData, defaultTolerant);
         // 读验证码类型
         String type = getStringParam(TYPE_KEY, sliderCaptchaValidData, CaptchaTypeConstant.SLIDER);
         Integer bgImageWidth = sliderCaptchaTrack.getBgImageWidth();
@@ -139,13 +151,49 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
             // 没有滑动轨迹
             return false;
         }
-        return afterValid(sliderCaptchaTrack, sliderCaptchaValidData, tolerantData, type);
+        // 验证前
+        if (!beforeValid(sliderCaptchaTrack, sliderCaptchaValidData, tolerant, type)) {
+            return false;
+        }
+        // 验证
+        boolean valid = doValid(sliderCaptchaTrack, sliderCaptchaValidData, tolerant, type);
+        if (valid) {
+            // 验证后
+            valid = afterValid(sliderCaptchaTrack, sliderCaptchaValidData, tolerant, type);
+        }
+        return valid;
     }
 
-    public boolean afterValid(SliderCaptchaTrack sliderCaptchaTrack,
-                              Map<String, Object> sliderCaptchaValidData,
-                              Float tolerant,
-                              String type) {
+    /**
+     * 验证前
+     *
+     * @param sliderCaptchaTrack     sliderCaptchaTrack
+     * @param sliderCaptchaValidData sliderCaptchaValidData
+     * @param tolerant               tolerant
+     * @param type                   type
+     * @return boolean
+     */
+    public boolean beforeValid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
+        return true;
+    }
+
+    /**
+     * 验证后
+     *
+     * @param sliderCaptchaTrack     sliderCaptchaTrack
+     * @param sliderCaptchaValidData sliderCaptchaValidData
+     * @param tolerant               tolerant
+     * @param type                   type
+     * @return boolean
+     */
+    public boolean afterValid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
+        return true;
+    }
+
+    public boolean doValid(SliderCaptchaTrack sliderCaptchaTrack,
+                           Map<String, Object> sliderCaptchaValidData,
+                           Float tolerant,
+                           String type) {
         if (CaptchaUtils.isSliderCaptcha(type)) {
             // 滑动类型验证码
             return doValidSliderCaptcha(sliderCaptchaTrack, sliderCaptchaValidData, tolerant, type);
@@ -160,10 +208,11 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
 
     /**
      * 校验点选验证码
-     * @param sliderCaptchaTrack  sliderCaptchaTrack
+     *
+     * @param sliderCaptchaTrack     sliderCaptchaTrack
      * @param sliderCaptchaValidData sliderCaptchaValidData
-     * @param tolerant tolerant
-     * @param type type
+     * @param tolerant               tolerant
+     * @param type                   type
      * @return boolean
      */
     public boolean doValidClickCaptcha(SliderCaptchaTrack sliderCaptchaTrack,
@@ -176,18 +225,26 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
         }
         String[] splitArr = validStr.split(";");
         List<SliderCaptchaTrack.Track> trackList = sliderCaptchaTrack.getTrackList();
-        if (trackList.size() != splitArr.length) {
+        if (trackList.size() < splitArr.length) {
+            return false;
+        }
+        // 取出点击事件的轨迹数据
+        List<SliderCaptchaTrack.Track> clickTrackList = trackList
+                .stream()
+                .filter(t -> TrackTypeConstant.CLICK.equalsIgnoreCase(t.getType()))
+                .collect(Collectors.toList());
+        if (clickTrackList.size() != splitArr.length) {
             return false;
         }
         for (int i = 0; i < splitArr.length; i++) {
-            SliderCaptchaTrack.Track track = trackList.get(i);
+            SliderCaptchaTrack.Track track = clickTrackList.get(i);
             String posStr = splitArr[i];
             String[] posArr = posStr.split(",");
             float xPercentage = Float.parseFloat(posArr[0]);
             float yPercentage = Float.parseFloat(posArr[1]);
 
             float calcXPercentage = calcPercentage(track.getX(), sliderCaptchaTrack.getBgImageWidth());
-            float calcYPercentage = calcPercentage(track.getY(), sliderCaptchaTrack.getBgImageWidth());
+            float calcYPercentage = calcPercentage(track.getY(), sliderCaptchaTrack.getBgImageHeight());
 
             if (!checkPercentage(calcXPercentage, xPercentage, tolerant)
                     || !checkPercentage(calcYPercentage, yPercentage, tolerant)) {
@@ -199,10 +256,11 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
 
     /**
      * 校验滑动验证码
-     * @param sliderCaptchaTrack sliderCaptchaTrack
+     *
+     * @param sliderCaptchaTrack     sliderCaptchaTrack
      * @param sliderCaptchaValidData sliderCaptchaValidData
-     * @param tolerant tolerant
-     * @param type type
+     * @param tolerant               tolerant
+     * @param type                   type
      * @return boolean
      */
     public boolean doValidSliderCaptcha(SliderCaptchaTrack sliderCaptchaTrack,

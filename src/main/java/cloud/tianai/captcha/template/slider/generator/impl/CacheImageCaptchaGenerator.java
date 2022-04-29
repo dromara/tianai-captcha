@@ -136,21 +136,21 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
             captchaInfo = queue.poll();
             if (captchaInfo == null) {
                 log.warn("滑块验证码缓存不足, genParam:{}", generateParam);
-            }else {
+            } else {
                 AtomicInteger pos = posMap.get(generateParam);
                 if (pos != null) {
                     pos.decrementAndGet();
                 }
             }
-        }else {
+        } else {
             queueMap.putIfAbsent(generateParam, new ConcurrentLinkedQueue<>());
             posMap.putIfAbsent(generateParam, new AtomicInteger(0));
         }
         if (captchaInfo == null && requiredGetCaptcha) {
             // 直接生成 不走缓存
-            captchaInfo =  target.generateCaptchaImage(generateParam);
+            captchaInfo = target.generateCaptchaImage(generateParam);
         }
-        if (captchaInfo != null){
+        if (captchaInfo != null) {
             // 记录最新时间
             lastUpdateMap.put(generateParam, System.currentTimeMillis());
         }

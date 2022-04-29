@@ -406,14 +406,15 @@ public class CaptchaImageUtils {
 
     /**
      * 生成简单的验证码图片
-     * @param data 验证码内容
-     * @param font 字体包
-     * @param metrics FontDesignMetrics
-     * @param width 验证码宽度
-     * @param height 验证码高度
-     * @param startX 起始X
-     * @param startY 起始Y
-     * @param interferenceLineNum 干扰线数量
+     *
+     * @param data                 验证码内容
+     * @param font                 字体包
+     * @param metrics              FontDesignMetrics
+     * @param width                验证码宽度
+     * @param height               验证码高度
+     * @param startX               起始X
+     * @param startY               起始Y
+     * @param interferenceLineNum  干扰线数量
      * @param interferencePointNum 干扰点数量
      * @return BufferedImage
      */
@@ -450,6 +451,7 @@ public class CaptchaImageUtils {
 
     /**
      * 随机获取颜色
+     *
      * @return Color
      */
     public static Color getRandomColor(Random random) {

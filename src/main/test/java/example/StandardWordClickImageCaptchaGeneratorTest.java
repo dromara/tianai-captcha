@@ -19,7 +19,7 @@ public class StandardWordClickImageCaptchaGeneratorTest {
                 new StandardRandomWordClickImageCaptchaGenerator(imageCaptchaResourceManager, true);
 
         GenerateParam generateParam = new GenerateParam();
-        generateParam.setType(CaptchaTypeConstant.IMAGE_CLICK);
+        generateParam.setType(CaptchaTypeConstant.WORD_IMAGE_CLICK);
         generateParam.setSliderFormatName("png");
         ImageCaptchaInfo imageCaptchaInfo = defaultImageCaptchaResourceManager.generateCaptchaImage(generateParam);
 

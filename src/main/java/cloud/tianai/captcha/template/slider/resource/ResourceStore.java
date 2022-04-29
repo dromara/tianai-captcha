@@ -31,7 +31,7 @@ public interface ResourceStore {
      *
      * @return List<Resource>
      */
-    Map<String,List<Resource>> listAllResources();
+    Map<String, List<Resource>> listAllResources();
 
     /**
      * 获取某个type下的所有资源对象

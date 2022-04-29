@@ -1,9 +1,9 @@
 package cloud.tianai.captcha.template.slider.generator.impl;
 
+import cloud.tianai.captcha.template.slider.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.template.slider.common.util.ObjectUtils;
 import cloud.tianai.captcha.template.slider.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.template.slider.generator.ImageCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
@@ -24,6 +24,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     private boolean initDefaultResource;
 
     private String defaultCaptcha = CaptchaTypeConstant.SLIDER;
+
     public MultiImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
         this.initDefaultResource = initDefaultResource;
@@ -37,11 +38,14 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
         addImageCaptchaGenerator(CaptchaTypeConstant.ROTATE, new StandardRotateImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource));
         // 拼接验证码
         addImageCaptchaGenerator(CaptchaTypeConstant.CONCAT, new StandardConcatImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource));
+        // 点选文字验证码
+        addImageCaptchaGenerator(CaptchaTypeConstant.WORD_IMAGE_CLICK, new StandardRandomWordClickImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource));
     }
 
     public void addImageCaptchaGenerator(String key, ImageCaptchaGenerator captchaGenerator) {
         imageCaptchaGeneratorMap.put(key, captchaGenerator);
     }
+
     public ImageCaptchaGenerator removeImageCaptchaGenerator(String key) {
         return imageCaptchaGeneratorMap.remove(key);
     }
@@ -49,7 +53,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     @Override
     public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
         String type = param.getType();
-        if (ObjectUtils.isEmpty(type)){
+        if (ObjectUtils.isEmpty(type)) {
             param.setType(defaultCaptcha);
             type = defaultCaptcha;
         }

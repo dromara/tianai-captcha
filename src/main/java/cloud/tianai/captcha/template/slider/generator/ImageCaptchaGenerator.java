@@ -15,6 +15,7 @@ public interface ImageCaptchaGenerator {
 
     /**
      * 生成验证码图片
+     *
      * @param type 类型 {@link CaptchaTypeConstant}
      * @return SliderCaptchaInfo
      */
@@ -23,7 +24,8 @@ public interface ImageCaptchaGenerator {
 
     /**
      * 生成滑块验证码
-     * @param type type {@link CaptchaTypeConstant}
+     *
+     * @param type             type {@link CaptchaTypeConstant}
      * @param targetFormatName jpeg或者webp格式
      * @param matrixFormatName png或者webp格式
      * @return SliderCaptchaInfo

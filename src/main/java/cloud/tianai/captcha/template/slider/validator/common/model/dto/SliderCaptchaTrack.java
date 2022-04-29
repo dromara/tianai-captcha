@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.template.slider.validator.common.model.dto;
 
+import cloud.tianai.captcha.template.slider.validator.common.constant.TrackTypeConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,8 +36,13 @@ public class SliderCaptchaTrack {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Track {
+        /** x. */
         private Integer x;
+        /** y. */
         private Integer y;
+        /** 时间. */
         private Integer t;
+        /** 类型. */
+        private String type = TrackTypeConstant.MOVE;
     }
 }
