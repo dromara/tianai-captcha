@@ -62,7 +62,7 @@ import cloud.tianai.captcha.template.slider.generator.SliderCaptchaGenerator;
 
 public class Test2 {
     public static void main(String[] args) {
-        SliderCaptchaGenerator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
+        SliderCaptchaValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
 
         // 用户传来的行为轨迹和进行校验 
         // - sliderCaptchaTrack为前端传来的滑动轨迹数据
