@@ -173,7 +173,8 @@ public class Test {
 - 自定义图片资源大小为 590*360 格式为jpg
 
 ```java
- import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
+ import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
@@ -186,9 +187,9 @@ public class Test {
         // 通过资源管理器或者资源存储器
         ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加classpath目录下的 aa.jpg 图片      
-        resourceStore.addResource(new Resource(ClassPathResourceProvider.NAME, "/aa.jpg"));
+        resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(ClassPathResourceProvider.NAME, "/aa.jpg"));
         // 添加远程url图片资源
-        resourceStore.addResource(new Resource(URLResourceProvider.NAME, "http://www.xx.com/aa.jpg"));
+        resourceStore.addResource(CaptchaTypeConstant.SLIDER,new Resource(URLResourceProvider.NAME, "http://www.xx.com/aa.jpg"));
         // 内置了通过url 和 classpath读取图片资源，如果想扩展可实现 ResourceProvider 接口，进行自定义扩展
     }
 }
@@ -198,10 +199,14 @@ public class Test {
 
 - 系统内置了2套模板，可以到QQ群:1021884609 文件中获取更多模板或者自己制作模板
 - 模板图片格式
+  - 滑块验证码
     - 滑块大小为 110*110 格式为png
     - 凹槽大小为 110*110 格式为png
     - 模板大小为 110*360 格式为png，该图为固定格式，是一张纯透明图片
-
+  - 旋转验证码
+    - 滑块大小为 200*200 格式为png
+    - 凹槽大小为 200*200 格式为png
+    - 模板大小为 360*360 格式为png，该图为固定格式，是一张纯透明图片
 ```java
 import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
@@ -218,7 +223,7 @@ public class Test {
         template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/active.png"));
         template1.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/fixed.png"));
         template1.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/matrix.png"));
-        resourceStore.addTemplate(template1);
+        resourceStore.addTemplate(CaptchaTypeConstant.SLIDER,template1);
         // 模板与三张图片组成 滑块、凹槽、背景图 
         // 同样默认支持 classpath 和 url 两种获取图片资源， 如果想扩展可实现 ResourceProvider 接口，进行自定义扩展
     }
