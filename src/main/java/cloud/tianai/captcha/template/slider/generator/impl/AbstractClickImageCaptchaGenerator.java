@@ -93,8 +93,6 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
                 }
             }
         }
-
-//        return null;
     }
 
 

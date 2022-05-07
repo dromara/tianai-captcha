@@ -16,6 +16,7 @@ public interface ImageCaptchaResourceManager {
     /**
      * 随机获取某个模板
      *
+     * @param type 验证码类型
      * @return Map<String, Resource>
      */
     Map<String, Resource> randomGetTemplate(String type);
@@ -23,6 +24,7 @@ public interface ImageCaptchaResourceManager {
     /**
      * 随机获取某个资源对象
      *
+     * @param type 验证码类型
      * @return Resource
      */
     Resource randomGetResource(String type);

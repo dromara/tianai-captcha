@@ -3,7 +3,7 @@ package cloud.tianai.captcha.template.slider.validator.impl;
 import cloud.tianai.captcha.template.slider.common.util.CaptchaUtils;
 import cloud.tianai.captcha.template.slider.common.util.CollectionUtils;
 import cloud.tianai.captcha.template.slider.common.util.ObjectUtils;
-import cloud.tianai.captcha.template.slider.validator.common.model.dto.SliderCaptchaTrack;
+import cloud.tianai.captcha.template.slider.validator.common.model.dto.ImageCaptchaTrack;
 
 import java.util.List;
 import java.util.Map;
@@ -23,23 +23,23 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
     }
 
     @Override
-    public boolean beforeValid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
+    public boolean beforeValid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
         // 校验参数
-        checkParam(sliderCaptchaTrack);
+        checkParam(imageCaptchaTrack);
         return true;
     }
 
     @Override
-    public boolean afterValid(SliderCaptchaTrack sliderCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
+    public boolean afterValid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
         if (!CaptchaUtils.isSliderCaptcha(type)){
             // 不是滑动验证码的话暂时跳过，点选验证码行为轨迹还没做
             return true;
         }
         // 进行行为轨迹检测
-        long startSlidingTime = sliderCaptchaTrack.getStartSlidingTime().getTime();
-        long endSlidingTime = sliderCaptchaTrack.getEntSlidingTime().getTime();
-        Integer bgImageWidth = sliderCaptchaTrack.getBgImageWidth();
-        List<SliderCaptchaTrack.Track> trackList = sliderCaptchaTrack.getTrackList();
+        long startSlidingTime = imageCaptchaTrack.getStartSlidingTime().getTime();
+        long endSlidingTime = imageCaptchaTrack.getEntSlidingTime().getTime();
+        Integer bgImageWidth = imageCaptchaTrack.getBgImageWidth();
+        List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
         // 这里只进行基本检测, 用一些简单算法进行校验，如有需要可扩展
         // 检测1: 滑动时间如果小于300毫秒 返回false
         // 检测2: 轨迹数据要是少于背10，或者大于背景宽度的五倍 返回false
@@ -58,14 +58,14 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
             return false;
         }
         // 检测3
-        SliderCaptchaTrack.Track firstTrack = trackList.get(0);
+        ImageCaptchaTrack.Track firstTrack = trackList.get(0);
         if (firstTrack.getX() > 10 || firstTrack.getX() < -10 || firstTrack.getY() > 10 || firstTrack.getY() < -10) {
             return false;
         }
         int check4 = 0;
         int check7 = 0;
         for (int i = 1; i < trackList.size(); i++) {
-            SliderCaptchaTrack.Track track = trackList.get(i);
+            ImageCaptchaTrack.Track track = trackList.get(i);
             int x = track.getX();
             int y = track.getY();
             // check4
@@ -77,7 +77,7 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
                 check7++;
             }
             // check5
-            SliderCaptchaTrack.Track preTrack = trackList.get(i - 1);
+            ImageCaptchaTrack.Track preTrack = trackList.get(i - 1);
             if ((track.getX() - preTrack.getX()) > 50 || (track.getY() - preTrack.getY()) > 50) {
                 return false;
             }
@@ -88,39 +88,33 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
 
         // check6
         int splitPos = (int) (trackList.size() * 0.7);
-        SliderCaptchaTrack.Track splitPostTrack = trackList.get(splitPos - 1);
+        ImageCaptchaTrack.Track splitPostTrack = trackList.get(splitPos - 1);
         int posTime = splitPostTrack.getT();
         float startAvgPosTime = posTime / (float) splitPos;
 
-        SliderCaptchaTrack.Track lastTrack = trackList.get(trackList.size() - 1);
+        ImageCaptchaTrack.Track lastTrack = trackList.get(trackList.size() - 1);
         float endAvgPosTime = lastTrack.getT() / (float) (trackList.size() - splitPos);
 
         return endAvgPosTime > startAvgPosTime;
     }
 
-    public void checkParam(SliderCaptchaTrack sliderCaptchaTrack) {
-        if (ObjectUtils.isEmpty(sliderCaptchaTrack.getBgImageWidth())) {
+    public void checkParam(ImageCaptchaTrack imageCaptchaTrack) {
+        if (ObjectUtils.isEmpty(imageCaptchaTrack.getBgImageWidth())) {
             throw new IllegalArgumentException("bgImageWidth must not be null");
         }
-        if (ObjectUtils.isEmpty(sliderCaptchaTrack.getBgImageHeight())) {
+        if (ObjectUtils.isEmpty(imageCaptchaTrack.getBgImageHeight())) {
             throw new IllegalArgumentException("bgImageHeight must not be null");
         }
-        if (ObjectUtils.isEmpty(sliderCaptchaTrack.getSliderImageWidth())) {
-            throw new IllegalArgumentException("sliderImageWidth must not be null");
-        }
-        if (ObjectUtils.isEmpty(sliderCaptchaTrack.getSliderImageHeight())) {
-            throw new IllegalArgumentException("sliderImageHeight must not be null");
-        }
-        if (ObjectUtils.isEmpty(sliderCaptchaTrack.getStartSlidingTime())) {
+        if (ObjectUtils.isEmpty(imageCaptchaTrack.getStartSlidingTime())) {
             throw new IllegalArgumentException("startSlidingTime must not be null");
         }
-        if (ObjectUtils.isEmpty(sliderCaptchaTrack.getEntSlidingTime())) {
+        if (ObjectUtils.isEmpty(imageCaptchaTrack.getEntSlidingTime())) {
             throw new IllegalArgumentException("entSlidingTime must not be null");
         }
-        if (CollectionUtils.isEmpty(sliderCaptchaTrack.getTrackList())) {
+        if (CollectionUtils.isEmpty(imageCaptchaTrack.getTrackList())) {
             throw new IllegalArgumentException("trackList must not be null");
         }
-        for (SliderCaptchaTrack.Track track : sliderCaptchaTrack.getTrackList()) {
+        for (ImageCaptchaTrack.Track track : imageCaptchaTrack.getTrackList()) {
             Integer x = track.getX();
             Integer y = track.getY();
             Integer t = track.getT();

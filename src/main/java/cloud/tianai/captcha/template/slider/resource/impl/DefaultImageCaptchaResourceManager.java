@@ -21,9 +21,10 @@ import java.util.Map;
  */
 public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceManager {
 
+    /** 资源存储. */
     private ResourceStore resourceStore;
-
-    private List<ResourceProvider> resourceProviderList = new ArrayList<>(8);
+    /** 资源转换 转换为stream流. */
+    private final List<ResourceProvider> resourceProviderList = new ArrayList<>(8);
 
 
     public DefaultImageCaptchaResourceManager() {

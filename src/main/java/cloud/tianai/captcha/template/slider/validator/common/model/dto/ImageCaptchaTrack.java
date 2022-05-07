@@ -11,10 +11,10 @@ import java.util.List;
 /**
  * @Author: 天爱有情
  * @date 2022/2/17 9:23
- * @Description 滑块验证码滑动轨迹
+ * @Description 图片验证码滑动轨迹
  */
 @Data
-public class SliderCaptchaTrack {
+public class ImageCaptchaTrack {
 
     /** 背景图片宽度. */
     private Integer bgImageWidth;
@@ -32,7 +32,6 @@ public class SliderCaptchaTrack {
     private List<Track> trackList;
 
     @Data
-    //#I4WQ4F
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Track {

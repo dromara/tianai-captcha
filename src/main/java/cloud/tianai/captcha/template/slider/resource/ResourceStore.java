@@ -5,11 +5,17 @@ import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @Author: 天爱有情
+ * @date 2022/5/7 9:04
+ * @Description 资源存储
+ */
 public interface ResourceStore {
 
     /**
      * 添加资源
      *
+     * @param type     验证码类型
      * @param resource 资源
      */
     void addResource(String type, Resource resource);
@@ -67,7 +73,8 @@ public interface ResourceStore {
     /**
      * 添加模板
      *
-     * @param template template
+     * @param type     验证码类型
+     * @param template 模板
      */
     void addTemplate(String type, Map<String, Resource> template);
 
@@ -86,6 +93,7 @@ public interface ResourceStore {
     /**
      * 获取所有模板通过type
      *
+     * @param type 验证码类型
      * @return List<Map < String, Resource>>
      */
     List<Map<String, Resource>> listTemplatesByType(String type);

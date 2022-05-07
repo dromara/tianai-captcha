@@ -93,7 +93,6 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
             // 随机x， 转换为角度
             int randomX = ThreadLocalRandom.current().nextInt(fixedTemplate.getWidth() + 10, targetBackground.getWidth() - 10);
             double degree = 360d - randomX / ((targetBackground.getWidth()) / 360d);
-//            int degree = ThreadLocalRandom.current().nextInt(10, 350);
             centerOverlayAndRotateImage(matrixTemplate, cutImage, degree);
             return wrapRotateCaptchaInfo(degree, randomX, targetBackground, matrixTemplate, param);
         } finally {

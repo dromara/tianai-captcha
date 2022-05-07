@@ -19,5 +19,11 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
         return resourceInputStream;
     }
 
+    /**
+     * 通过 Resource 获取  InputStream
+     *
+     * @param data data
+     * @return InputStream
+     */
     public abstract InputStream doGetResourceInputStream(Resource data);
 }

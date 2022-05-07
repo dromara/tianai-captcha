@@ -391,7 +391,8 @@ public class CaptchaImageUtils {
                 y1 = y2;
                 y2 = ty;
             }
-            if (random.nextInt(2) == 0) {  // 二阶贝塞尔曲线
+            // 二阶贝塞尔曲线
+            if (random.nextInt(2) == 0) {
                 QuadCurve2D shape = new QuadCurve2D.Double();
                 shape.setCurve(x1, y1, ctrlx, ctrly, x2, y2);
                 g.draw(shape);
