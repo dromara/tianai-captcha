@@ -48,6 +48,8 @@ import cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.impl.StandardSliderCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
+import cloud.tianai.captcha.validator.ImageCaptchaValidator;
+import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
 
 public class Test {
     public static void main(String[] args) throws InterruptedException {
@@ -69,7 +71,7 @@ public class Test {
         // ImageCaptchaValidator负责校验用户滑动滑块是否正确和生成滑块的一些校验数据; 比如滑块到凹槽的百分比值
         ImageCaptchaValidator imageCaptchaValidator = new BasicCaptchaTrackValidator();
         // 这个map数据应该存到缓存中，校验的时候需要用到该数据
-        Map<String, Object> map = imageCaptchaValidator.generateSliderCaptchaValidData(imageCaptchaInfo);
+        Map<String, Object> map = imageCaptchaValidator.generateImageCaptchaValidData(imageCaptchaInfo);
     }
 }
 ```
