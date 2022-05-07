@@ -74,7 +74,7 @@ public class Test {
 }
 ```
 
-### 3. 使用`ImageCaptchaGenerator`校验器 验证
+### 3. 使用`ImageCaptchaValidator`校验器 验证
 
 ```java
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
@@ -103,7 +103,7 @@ public class Test2 {
 > 其中生成器、校验器、资源管理器等都是基于接口模式实现 可插拔的，可以替换为自定义实现，灵活度高
 
 - 生成器(`ImageCaptchaGenerator`)
-    - 主要负责生成滑块验证码所需的图片
+    - 主要负责生成行为验证码所需的图片
 - 校验器(`ImageCaptchaValidator`)
     - 主要负责校验用户滑动的行为轨迹是否合规
 - 资源管理器(`ImageCaptchaResourceManager`)
