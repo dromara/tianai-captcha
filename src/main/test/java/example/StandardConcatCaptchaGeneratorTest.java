@@ -1,15 +1,15 @@
 package example;
 
-import cloud.tianai.captcha.template.slider.common.constant.CaptchaTypeConstant;
-import cloud.tianai.captcha.template.slider.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.template.slider.generator.common.model.dto.RotateImageCaptchaInfo;
-import cloud.tianai.captcha.template.slider.generator.impl.CacheImageCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.impl.StandardConcatImageCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.generator.impl.StandardRotateImageCaptchaGenerator;
-import cloud.tianai.captcha.template.slider.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.resource.ResourceStore;
-import cloud.tianai.captcha.template.slider.resource.impl.DefaultImageCaptchaResourceManager;
-import cloud.tianai.captcha.template.slider.resource.impl.DefaultResourceStore;
+import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.RotateImageCaptchaInfo;
+import cloud.tianai.captcha.generator.impl.CacheImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.impl.StandardConcatImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.impl.StandardRotateImageCaptchaGenerator;
+import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
+import cloud.tianai.captcha.resource.ResourceStore;
+import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
+import cloud.tianai.captcha.resource.impl.DefaultResourceStore;
 
 import java.util.concurrent.TimeUnit;
 

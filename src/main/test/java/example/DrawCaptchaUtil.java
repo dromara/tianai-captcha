@@ -1,7 +1,7 @@
 package example;
 
-import cloud.tianai.captcha.template.slider.resource.common.model.dto.Resource;
-import cloud.tianai.captcha.template.slider.resource.impl.provider.ClassPathResourceProvider;
+import cloud.tianai.captcha.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 import sun.font.FontDesignMetrics;
 
