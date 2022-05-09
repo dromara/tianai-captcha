@@ -463,5 +463,24 @@ public class CaptchaImageUtils {
 
     }
 
+    /**
+     * 后缀是否是jpg
+     *
+     * @param type type
+     * @return boolean
+     */
+    public static boolean isJpeg(String type) {
+        return "jpg".equalsIgnoreCase(type) || "jpeg".equalsIgnoreCase(type);
+    }
+
+    /**
+     * 后缀是否是 png
+     *
+     * @param type type
+     * @return boolean
+     */
+    public static boolean isPng(String type) {
+        return "png".equalsIgnoreCase(type);
+    }
 
 }
