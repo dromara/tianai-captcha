@@ -3,16 +3,15 @@ package cloud.tianai.captcha.generator;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
+import cloud.tianai.captcha.generator.common.util.ImgWriter;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Base64;
 import java.util.Map;
@@ -59,7 +58,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
      * @param formatType    格式化类型
      * @return String
      */
-    @SneakyThrows(IOException.class)
+    @SneakyThrows(Exception.class)
     public String transform(BufferedImage bufferedImage, String formatType) {
         // 这里判断处理一下,加一些警告日志
         String result = beforeTransform(bufferedImage, formatType);
@@ -67,7 +66,9 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
             return result;
         }
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        ImageIO.write(bufferedImage, formatType, byteArrayOutputStream);
+        long currentTimeMillis = System.currentTimeMillis();
+        ImgWriter.write(bufferedImage, formatType, byteArrayOutputStream, -1);
+        System.out.println("耗时:" + (System.currentTimeMillis() - currentTimeMillis));
         //转换成字节码
         byte[] data = byteArrayOutputStream.toByteArray();
         String base64 = Base64.getEncoder().encodeToString(data);

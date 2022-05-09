@@ -26,7 +26,7 @@ public class CaptchaGenTest {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加一些系统的资源文件
-        resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(FileResourceProvider.NAME, "C:\\Users\\Thinkpad\\Desktop\\111\\test.png"));
+        resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(FileResourceProvider.NAME, "C:\\Users\\Thinkpad\\Desktop\\111\\66.jpg"));
 
         // 添加一些系统的 模板文件
         Map<String, Resource> template1 = new HashMap<>(4);
@@ -40,18 +40,20 @@ public class CaptchaGenTest {
         MultiImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager, false);
         GenerateParam generateParam = GenerateParam.builder()
                 .type(CaptchaTypeConstant.SLIDER)
-                .backgroundFormatName("jpg")
-                .sliderFormatName("png")
+                .backgroundFormatName("webp")
+                .sliderFormatName("webp")
                 .obfuscate(false)
                 .build();
-        ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(generateParam);
-        System.out.println(imageCaptchaInfo.getBackgroundImage());
-//        System.out.println(imageCaptchaInfo.getSliderImage());
+//        for (int i = 0; i < 10; i++) {
+            ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(generateParam);
+            System.out.println(imageCaptchaInfo.getBackgroundImage());
+            System.out.println(imageCaptchaInfo.getSliderImage());
 
-        // 负责计算一些数据存到缓存中，用于校验使用
-        // ImageCaptchaValidator负责校验用户滑动滑块是否正确和生成滑块的一些校验数据; 比如滑块到凹槽的百分比值
-        ImageCaptchaValidator imageCaptchaValidator = new BasicCaptchaTrackValidator();
-        // 这个map数据应该存到缓存中，校验的时候需要用到该数据
-        Map<String, Object> map = imageCaptchaValidator.generateImageCaptchaValidData(imageCaptchaInfo);
+            // 负责计算一些数据存到缓存中，用于校验使用
+            // ImageCaptchaValidator负责校验用户滑动滑块是否正确和生成滑块的一些校验数据; 比如滑块到凹槽的百分比值
+            ImageCaptchaValidator imageCaptchaValidator = new BasicCaptchaTrackValidator();
+            // 这个map数据应该存到缓存中，校验的时候需要用到该数据
+            Map<String, Object> map = imageCaptchaValidator.generateImageCaptchaValidData(imageCaptchaInfo);
+//        }
     }
 }

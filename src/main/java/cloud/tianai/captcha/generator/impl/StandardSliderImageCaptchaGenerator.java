@@ -69,7 +69,7 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
             inputStreams.add(resourceInputStream);
             BufferedImage cutBackground = CaptchaImageUtils.wrapFile2BufferedImage(resourceInputStream);
             // 拷贝一份图片
-            BufferedImage targetBackground = CaptchaImageUtils.deepCopyBufferedImage(cutBackground);
+            BufferedImage targetBackground = CaptchaImageUtils.copyImage(cutBackground, cutBackground.getType());
 
             InputStream fixedTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME);
             inputStreams.add(fixedTemplateInput);

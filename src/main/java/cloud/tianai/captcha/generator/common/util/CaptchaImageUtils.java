@@ -9,9 +9,8 @@ import java.awt.geom.Area;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.QuadCurve2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
-import java.awt.image.WritableRaster;
+import java.awt.image.RenderedImage;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,6 +23,10 @@ import java.util.concurrent.ThreadLocalRandom;
  * @Description image Utils
  */
 public class CaptchaImageUtils {
+
+    public static final String TYPE_JPG = "jpg";
+    public static final String TYPE_JPEG = "jpeg";
+    public static final String TYPE_PNG = "png";
 
     @SneakyThrows
     public static BufferedImage wrapFile2BufferedImage(URL resourceImage) {
@@ -134,19 +137,6 @@ public class CaptchaImageUtils {
     }
 
     /**
-     * 深度拷贝图片
-     *
-     * @param bi 原图片
-     * @return BufferedImage
-     */
-    public static BufferedImage deepCopyBufferedImage(BufferedImage bi) {
-        ColorModel cm = bi.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(bi.getRaster().createCompatibleWritableRaster());
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-    }
-
-    /**
      * 通过模板图片抠图（不透明部分）
      *
      * @param origin   源图片
@@ -180,6 +170,13 @@ public class CaptchaImageUtils {
         return image;
     }
 
+    /**
+     * 旋转图片
+     *
+     * @param bufferedimage
+     * @param degree
+     * @return
+     */
     public static BufferedImage rotateImage(final BufferedImage bufferedimage,
                                             final double degree) {
         // 得到图片宽度。
@@ -463,6 +460,91 @@ public class CaptchaImageUtils {
 
     }
 
+    public static RenderedImage toRenderedImage(Image img) {
+        if (img instanceof RenderedImage) {
+            return (RenderedImage) img;
+        }
+        return copyImage(img, BufferedImage.TYPE_INT_RGB);
+    }
+
+    /**
+     * 转换成指定类型的 BufferedImage
+     *
+     * @param image     image
+     * @param imageType imageType
+     * @return BufferedImage
+     */
+    public static BufferedImage toBufferedImage(Image image, String imageType) {
+        final int type = TYPE_PNG.equalsIgnoreCase(imageType)
+                ? BufferedImage.TYPE_INT_ARGB
+                : BufferedImage.TYPE_INT_RGB;
+        return toBufferedImage(image, type);
+    }
+
+    /**
+     * 转换成指定类型的 BufferedImage
+     *
+     * @param image     image
+     * @param imageType imageType
+     * @return BufferedImage
+     */
+    public static BufferedImage toBufferedImage(Image image, int imageType) {
+        BufferedImage bufferedImage;
+        if (image instanceof BufferedImage) {
+            bufferedImage = (BufferedImage) image;
+            if (imageType != bufferedImage.getType()) {
+                bufferedImage = copyImage(image, imageType);
+            }
+        } else {
+            bufferedImage = copyImage(image, imageType);
+        }
+        return bufferedImage;
+    }
+
+    /**
+     * 拷贝图片
+     *
+     * @param img       img
+     * @param imageType imageType
+     * @return BufferedImage
+     */
+    public static BufferedImage copyImage(Image img, int imageType) {
+        return copyImage(img, imageType, null);
+    }
+
+    /**
+     * 拷贝图片
+     *
+     * @param img             img
+     * @param imageType       imageType
+     * @param backgroundColor backgroundColor
+     * @return BufferedImage
+     */
+    public static BufferedImage copyImage(Image img, int imageType, Color backgroundColor) {
+        final BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), imageType);
+        final Graphics2D bGr = createGraphics(bimage, backgroundColor);
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+        return bimage;
+    }
+
+    /**
+     * 创建画板
+     *
+     * @param image image
+     * @param color color
+     * @return Graphics2D
+     */
+    public static Graphics2D createGraphics(BufferedImage image, Color color) {
+        final Graphics2D g = image.createGraphics();
+        if (null != color) {
+            // 填充背景
+            g.setColor(color);
+            g.fillRect(0, 0, image.getWidth(), image.getHeight());
+        }
+        return g;
+    }
+
     /**
      * 后缀是否是jpg
      *
@@ -470,7 +552,7 @@ public class CaptchaImageUtils {
      * @return boolean
      */
     public static boolean isJpeg(String type) {
-        return "jpg".equalsIgnoreCase(type) || "jpeg".equalsIgnoreCase(type);
+        return TYPE_JPG.equalsIgnoreCase(type) || TYPE_JPEG.equalsIgnoreCase(type);
     }
 
     /**
@@ -480,7 +562,6 @@ public class CaptchaImageUtils {
      * @return boolean
      */
     public static boolean isPng(String type) {
-        return "png".equalsIgnoreCase(type);
+        return TYPE_PNG.equalsIgnoreCase(type);
     }
-
 }
