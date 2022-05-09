@@ -8,9 +8,7 @@ import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.QuadCurve2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.PixelGrabber;
-import java.awt.image.RenderedImage;
+import java.awt.image.*;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
@@ -564,4 +562,5 @@ public class CaptchaImageUtils {
     public static boolean isPng(String type) {
         return TYPE_PNG.equalsIgnoreCase(type);
     }
+
 }

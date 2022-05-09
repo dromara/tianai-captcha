@@ -10,6 +10,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -66,9 +67,12 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
             return result;
         }
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        long currentTimeMillis = System.currentTimeMillis();
-        ImgWriter.write(bufferedImage, formatType, byteArrayOutputStream, -1);
-        System.out.println("耗时:" + (System.currentTimeMillis() - currentTimeMillis));
+        if (CaptchaImageUtils.isPng(formatType) || CaptchaImageUtils.isJpeg(formatType)) {
+            // 如果是 jpg 或者 png图片的话 用hutool的生成
+            ImgWriter.write(bufferedImage, formatType, byteArrayOutputStream, -1);
+        }else {
+            ImageIO.write(bufferedImage, formatType, byteArrayOutputStream);
+        }
         //转换成字节码
         byte[] data = byteArrayOutputStream.toByteArray();
         String base64 = Base64.getEncoder().encodeToString(data);
