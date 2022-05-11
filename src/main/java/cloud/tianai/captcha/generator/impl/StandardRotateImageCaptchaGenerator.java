@@ -11,16 +11,6 @@ import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
-import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
-import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
-import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
-import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.generator.common.model.dto.RotateImageCaptchaInfo;
-import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.resource.ResourceStore;
-import cloud.tianai.captcha.resource.common.model.dto.Resource;
-import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 
 import java.awt.image.BufferedImage;
@@ -32,10 +22,6 @@ import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cloud.tianai.captcha.generator.common.util.CaptchaImageUtils.*;
-import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
-import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH;
-
 /**
  * @Author: 天爱有情
  * @date 2022/4/22 16:43
@@ -46,7 +32,12 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
     protected final ImageCaptchaResourceManager imageCaptchaResourceManager;
 
     public StandardRotateImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
+        super(imageCaptchaResourceManager, initDefaultResource);
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+    }
+
+    @Override
+    protected void doInit() {
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -131,11 +122,6 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
                 backgroundImage.getWidth(), backgroundImage.getHeight(),
                 sliderImage.getWidth(), sliderImage.getHeight()
         );
-    }
-
-    @Override
-    public ImageCaptchaResourceManager getImageResourceManager() {
-        return imageCaptchaResourceManager;
     }
 
 }

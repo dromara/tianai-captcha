@@ -3,10 +3,6 @@ package cloud.tianai.captcha.generator.impl;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.util.FontUtils;
 import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
-import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
-import cloud.tianai.captcha.common.util.FontUtils;
-import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
@@ -14,65 +10,77 @@ import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.SneakyThrows;
 import sun.font.FontDesignMetrics;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
-import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
 
 /**
  * @Author: 天爱有情
  * @date 2022/4/27 11:46
  * @Description 点选验证码
  */
-@Data
 public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickImageCaptchaGenerator {
 
-    protected ImageCaptchaResourceManager imageCaptchaResourceManager;
     /** 字体包. */
+    @Getter
+    @Setter
     protected Font font;
+    @Getter
+    @Setter
     protected FontDesignMetrics metrics;
+    @Getter
+    @Setter
     protected Integer clickImgWidth = 80;
+    @Getter
+    @Setter
     protected Integer clickImgHeight = 80;
+    @Getter
+    @Setter
     protected int tipImageInterferenceLineNum = 2;
+    @Getter
+    @Setter
     protected int tipImageInterferencePointNum = 5;
 
     @SneakyThrows
     public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
+        super(imageCaptchaResourceManager, initDefaultResource);
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+
+    }
+
+    @Override
+    @SneakyThrows({IOException.class, FontFormatException.class})
+    protected void doInit() {
+        if (this.font == null) {
+            // 使用默认字体
+            Resource fontResource = new Resource(null, "META-INF/fonts/SIMSUN.TTC");
+            InputStream inputStream = new ClassPathResourceProvider().doGetResourceInputStream(fontResource);
+            Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
+            this.font = font.deriveFont(Font.BOLD, 70);
+        }
+        this.metrics = FontDesignMetrics.getMetrics(font);
         if (initDefaultResource) {
             initDefaultResource();
         }
-        // 使用默认字体
-        Resource fontResource = new Resource(null, "META-INF/fonts/SIMSUN.TTC");
-        InputStream inputStream = new ClassPathResourceProvider().doGetResourceInputStream(fontResource);
-        Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-        font = font.deriveFont(Font.BOLD, 70);
-        this.metrics = FontDesignMetrics.getMetrics(font);
-        this.font = font;
-        setClickImgHeight(clickImgWidth);
-        setClickImgWidth(clickImgHeight);
     }
 
     public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager,
                                                         boolean initDefaultResource,
                                                         Font font) {
+        super(imageCaptchaResourceManager, initDefaultResource);
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
         this.font = font;
-        this.metrics = FontDesignMetrics.getMetrics(font);
-        setClickImgWidth(font.getSize() + 10);
-        setClickImgHeight(font.getSize() + 10);
-        if (initDefaultResource) {
-            initDefaultResource();
-        }
     }
+
 
     public void initDefaultResource() {
         ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
@@ -130,11 +138,6 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         clickImageCaptchaInfo.setType(CaptchaTypeConstant.WORD_IMAGE_CLICK);
         clickImageCaptchaInfo.setExpand(checkClickImageCheckDefinitionList);
         return clickImageCaptchaInfo;
-    }
-
-    @Override
-    public ImageCaptchaResourceManager getImageResourceManager() {
-        return imageCaptchaResourceManager;
     }
 
 }

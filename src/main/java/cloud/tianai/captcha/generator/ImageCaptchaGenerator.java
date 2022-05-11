@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.generator;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
@@ -13,6 +12,11 @@ import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
  */
 public interface ImageCaptchaGenerator {
 
+
+    /**
+     * 初始化
+     */
+    ImageCaptchaGenerator init();
 
     /**
      * 生成验证码图片

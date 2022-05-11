@@ -4,6 +4,7 @@ import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.generator.common.util.ImgWriter;
+import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.Getter;
 import lombok.Setter;
@@ -35,6 +36,41 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     @Setter
     /** 默认滑块图片类型. */
     public String defaultSliderImageType = DEFAULT_SLIDER_IMAGE_TYPE;
+
+    @Getter
+    @Setter
+    /** 资源管理器. */
+    protected ImageCaptchaResourceManager imageCaptchaResourceManager;
+    /** 初始化默认资源. */
+    @Getter
+    @Setter
+    protected boolean initDefaultResource = false;
+
+    @Getter
+    private boolean init = false;
+
+    public AbstractImageCaptchaGenerator() {
+    }
+
+    @Override
+    public ImageCaptchaGenerator init() {
+        if (init) {
+            return this;
+        }
+        try {
+            doInit();
+        } catch (Exception e) {
+            log.error("[{}]初始化失败,ex", this.getClass().getSimpleName(), e);
+            throw e;
+        }
+        init = true;
+        return this;
+    }
+
+    public AbstractImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
+        this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+        this.initDefaultResource = initDefaultResource;
+    }
 
     @Override
     public ImageCaptchaInfo generateCaptchaImage(String type) {
@@ -70,7 +106,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         if (CaptchaImageUtils.isPng(formatType) || CaptchaImageUtils.isJpeg(formatType)) {
             // 如果是 jpg 或者 png图片的话 用hutool的生成
             ImgWriter.write(bufferedImage, formatType, byteArrayOutputStream, -1);
-        }else {
+        } else {
             ImageIO.write(bufferedImage, formatType, byteArrayOutputStream);
         }
         //转换成字节码
@@ -104,4 +140,14 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         return getImageResourceManager().getResourceInputStream(resource);
     }
 
+
+    /**
+     * 初始化
+     */
+    protected abstract void doInit();
+
+    @Override
+    public ImageCaptchaResourceManager getImageResourceManager() {
+        return imageCaptchaResourceManager;
+    }
 }

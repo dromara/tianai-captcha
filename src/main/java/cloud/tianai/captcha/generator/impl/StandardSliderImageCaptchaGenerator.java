@@ -1,13 +1,12 @@
 package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
-import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.model.dto.SliderImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -23,8 +22,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cloud.tianai.captcha.generator.common.util.CaptchaImageUtils.*;
 
 /**
  * @Author: 天爱有情
@@ -43,12 +40,13 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
      */
     public static final String DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH = "META-INF/cut-image/template";
 
-    protected final ImageCaptchaResourceManager imageCaptchaResourceManager;
-
-
     public StandardSliderImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager,
                                                boolean initDefaultResource) {
-        this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+        super(imageCaptchaResourceManager, initDefaultResource);
+    }
+
+    @Override
+    protected void doInit() {
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -138,11 +136,6 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
                 backgroundImage.getWidth(), backgroundImage.getHeight(),
                 sliderImage.getWidth(), sliderImage.getHeight()
         );
-    }
-
-    @Override
-    public ImageCaptchaResourceManager getImageResourceManager() {
-        return imageCaptchaResourceManager;
     }
 
     protected int randomObfuscateX(int sliderX, int slWidth, int bgWidth) {

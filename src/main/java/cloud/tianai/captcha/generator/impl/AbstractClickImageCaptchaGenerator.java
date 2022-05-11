@@ -1,12 +1,11 @@
 package cloud.tianai.captcha.generator.impl;
 
-import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
-import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
+import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.*;
 
@@ -15,8 +14,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cloud.tianai.captcha.generator.common.util.CaptchaImageUtils.wrapFile2BufferedImage;
 
 /**
  * @Author: 天爱有情
@@ -33,6 +30,14 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
     @Getter
     @Setter
     protected Integer interferenceCount = 2;
+
+
+    public AbstractClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
+        super(imageCaptchaResourceManager, initDefaultResource);
+    }
+
+    public AbstractClickImageCaptchaGenerator() {
+    }
 
     @SneakyThrows
     @Override
@@ -96,7 +101,6 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
             }
         }
     }
-
 
     /**
      * 随机获取点击的图片

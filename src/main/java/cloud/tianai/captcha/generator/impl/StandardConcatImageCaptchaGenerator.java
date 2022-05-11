@@ -30,7 +30,11 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
     protected ImageCaptchaResourceManager imageCaptchaResourceManager;
 
     public StandardConcatImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
-        this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+        super(imageCaptchaResourceManager, initDefaultResource);
+    }
+
+    @Override
+    protected void doInit() {
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -63,7 +67,7 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
                             + bgImageTopSplit[1].getWidth(), bgImageTopSplit[0].getHeight(), bgImageTopSplit[1], bgImageTopSplit[0]);
             bgImage = concatImage(false, bgImageSplit[1].getWidth(), sliderImage.getHeight() + bgImageSplit[1].getHeight(),
                     sliderImage, bgImageSplit[1]);
-            return wrapConcatCaptchaInfo(randomX, randomY,bgImage,  param);
+            return wrapConcatCaptchaInfo(randomX, randomY, bgImage, param);
         } finally {
             // 使用完后关闭流
             for (InputStream inputStream : inputStreams) {
@@ -90,10 +94,5 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
         imageCaptchaInfo.setData(randomY);
         imageCaptchaInfo.setTolerant(0.05F);
         return imageCaptchaInfo;
-    }
-
-    @Override
-    public ImageCaptchaResourceManager getImageResourceManager() {
-        return imageCaptchaResourceManager;
     }
 }
