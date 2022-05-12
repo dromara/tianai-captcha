@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.validator.common.model.dto;
 
 import cloud.tianai.captcha.validator.common.constant.TrackTypeConstant;
-import cloud.tianai.captcha.validator.common.constant.TrackTypeConstant;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,9 +27,21 @@ public class ImageCaptchaTrack {
     /** 滑动开始时间. */
     private Date startSlidingTime;
     /** 滑动结束时间. */
-    private Date entSlidingTime;
+    private Date endSlidingTime;
     /** 滑动的轨迹. */
     private List<Track> trackList;
+
+    /**
+     * 兼容一下旧版本
+     *
+     * @return Date
+     */
+    public Date getEntSlidingTime() {
+        return endSlidingTime;
+    }
+    public void setEntSlidingTime(Date entSlidingTime) {
+        this.endSlidingTime = entSlidingTime;
+    }
 
     @Data
     @NoArgsConstructor

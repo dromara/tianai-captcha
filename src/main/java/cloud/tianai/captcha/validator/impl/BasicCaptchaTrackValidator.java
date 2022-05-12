@@ -41,7 +41,7 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
         }
         // 进行行为轨迹检测
         long startSlidingTime = imageCaptchaTrack.getStartSlidingTime().getTime();
-        long endSlidingTime = imageCaptchaTrack.getEntSlidingTime().getTime();
+        long endSlidingTime = imageCaptchaTrack.getEndSlidingTime().getTime();
         Integer bgImageWidth = imageCaptchaTrack.getBgImageWidth();
         List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
         // 这里只进行基本检测, 用一些简单算法进行校验，如有需要可扩展
@@ -112,8 +112,8 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
         if (ObjectUtils.isEmpty(imageCaptchaTrack.getStartSlidingTime())) {
             throw new IllegalArgumentException("startSlidingTime must not be null");
         }
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getEntSlidingTime())) {
-            throw new IllegalArgumentException("entSlidingTime must not be null");
+        if (ObjectUtils.isEmpty(imageCaptchaTrack.getEndSlidingTime())) {
+            throw new IllegalArgumentException("endSlidingTime must not be null");
         }
         if (CollectionUtils.isEmpty(imageCaptchaTrack.getTrackList())) {
             throw new IllegalArgumentException("trackList must not be null");
