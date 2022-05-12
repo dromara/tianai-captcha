@@ -21,8 +21,8 @@ import java.util.function.BiFunction;
  */
 public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
-    private Map<String, ImageCaptchaGenerator> imageCaptchaGeneratorMap = new HashMap<>(4);
-    private Map<String, BiFunction<String, MultiImageCaptchaGenerator, ImageCaptchaGenerator>> imageCaptchaGeneratorProviderMap = new HashMap<>(4);
+    protected Map<String, ImageCaptchaGenerator> imageCaptchaGeneratorMap = new HashMap<>(4);
+    protected Map<String, BiFunction<String, MultiImageCaptchaGenerator, ImageCaptchaGenerator>> imageCaptchaGeneratorProviderMap = new HashMap<>(4);
 
     @Setter
     @Getter
@@ -79,6 +79,11 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
             param.setType(defaultCaptcha);
             type = defaultCaptcha;
         }
+        ImageCaptchaGenerator imageCaptchaGenerator = requireGetCaptchaGenerator(type);
+        return imageCaptchaGenerator.generateCaptchaImage(param);
+    }
+
+    public ImageCaptchaGenerator requireGetCaptchaGenerator(String type) {
         ImageCaptchaGenerator imageCaptchaGenerator = imageCaptchaGeneratorMap.get(type);
         if (imageCaptchaGenerator == null) {
             BiFunction<String, MultiImageCaptchaGenerator, ImageCaptchaGenerator> provider = imageCaptchaGeneratorProviderMap.get(type);
@@ -87,7 +92,6 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
             }
             imageCaptchaGenerator = imageCaptchaGeneratorMap.computeIfAbsent(type, k -> provider.apply(k, this));
         }
-
-        return imageCaptchaGenerator.generateCaptchaImage(param);
+        return imageCaptchaGenerator;
     }
 }
