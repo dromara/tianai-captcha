@@ -13,10 +13,11 @@ import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
-import sun.font.FontDesignMetrics;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -36,9 +37,6 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
     protected Font font;
     @Getter
     @Setter
-    protected FontDesignMetrics metrics;
-    @Getter
-    @Setter
     protected Integer clickImgWidth = 80;
     @Getter
     @Setter
@@ -49,6 +47,16 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
     @Getter
     @Setter
     protected int tipImageInterferencePointNum = 5;
+
+    /**
+     * 因为在画文字图形的时候 y 值不能准确通过 除法计算得出， 字体大小不一致中间的容错值不可估计，
+     * 所以通过 线性回归模型 计算出  intercept和coef 用于计算 容错值
+     * 训练数据为 宋体 字体大小为 30~150 随机选择7组数据进行训练， 训练后r2结果为 0.9967106324620846
+     */
+    protected float intercept = 0.39583333f;
+    protected float coef = 0.14645833f;
+
+    protected float currentFontTopCoef = 0.0f;
 
     @SneakyThrows
     public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
@@ -67,7 +75,8 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
             Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
             this.font = font.deriveFont(Font.BOLD, 70);
         }
-        this.metrics = FontDesignMetrics.getMetrics(font);
+        // 计算容错
+        currentFontTopCoef = coef * font.getSize() + intercept;
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -88,20 +97,25 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         resourceStore.addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
     }
 
+    @SneakyThrows
     @Override
     public ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions) {
         String tips = imageCheckDefinitions.stream().map(ClickImageCheckDefinition::getTip).collect(Collectors.joining());
         // 生成随机颜色
-        int fontWidth = metrics.stringWidth(tips);
-        int width = fontWidth + 5;
-        int height = metrics.getHeight() + 5;
+        int fontWidth = tips.length() * font.getSize();
+        int width = fontWidth + 6;
+        int height = font.getSize() + 6;
         float left = (width - fontWidth) / 2f;
-        float top = 5 / 2f + metrics.getAscent();
+        float top = 6 / 2f + font.getSize() - currentFontTopCoef;
         BufferedImage bufferedImage = CaptchaImageUtils.genSimpleImgCaptcha(tips,
-                font, metrics, width, height, left, top, tipImageInterferenceLineNum, tipImageInterferencePointNum);
+                font, width, height, left, top, tipImageInterferenceLineNum, tipImageInterferencePointNum);
+        FileOutputStream fileOutputStream = new FileOutputStream("d:/aaa/" + tips + ".png");
+        ImageIO.write(bufferedImage, "png", fileOutputStream);
+        fileOutputStream.close();
         return new ImgWrapper(bufferedImage, tips);
     }
 
+    @SneakyThrows
     @Override
     public ImgWrapper randomGetClickImg() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -114,10 +128,13 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         BufferedImage fontImage = CaptchaImageUtils.drawWordImg(randomColor,
                 randomWord,
                 font,
-                this.metrics,
+                currentFontTopCoef,
                 clickImgWidth,
                 clickImgHeight,
                 randomDeg);
+        FileOutputStream fileOutputStream = new FileOutputStream("d:/aaa/" + randomWord + ".png");
+        ImageIO.write(fontImage, "png", fileOutputStream);
+        fileOutputStream.close();
         return new ImgWrapper(fontImage, randomWord);
     }
 

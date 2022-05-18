@@ -1,6 +1,7 @@
 package example;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.impl.StandardRandomWordClickImageCaptchaGenerator;
@@ -15,8 +16,8 @@ public class StandardWordClickImageCaptchaGeneratorTest {
     public static void main(String[] args) {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
 
-        StandardRandomWordClickImageCaptchaGenerator defaultImageCaptchaResourceManager =
-                new StandardRandomWordClickImageCaptchaGenerator(imageCaptchaResourceManager, true);
+        ImageCaptchaGenerator defaultImageCaptchaResourceManager =
+                new StandardRandomWordClickImageCaptchaGenerator(imageCaptchaResourceManager, true).init();
 
         GenerateParam generateParam = new GenerateParam();
         generateParam.setType(CaptchaTypeConstant.WORD_IMAGE_CLICK);

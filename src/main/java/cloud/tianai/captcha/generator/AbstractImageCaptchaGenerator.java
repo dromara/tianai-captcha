@@ -57,13 +57,15 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         if (init) {
             return this;
         }
+        init = true;
         try {
+            log.info("图片验证码[{}]初始化...", this.getClass().getSimpleName());
             doInit();
         } catch (Exception e) {
+            init = false;
             log.error("[{}]初始化失败,ex", this.getClass().getSimpleName(), e);
             throw e;
         }
-        init = true;
         return this;
     }
 

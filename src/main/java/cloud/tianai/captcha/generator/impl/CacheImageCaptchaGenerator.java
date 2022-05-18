@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.util.NamedThreadFactory;
-import cloud.tianai.captcha.common.util.NamedThreadFactory;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
@@ -69,49 +68,46 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     private void init(int z) {
         this.size = z;
         // 初始化一个队列扫描
-        scheduledExecutor.scheduleAtFixedRate(() -> {
-            queueMap.forEach((k, queue) -> {
-                try {
-                    AtomicInteger pos = posMap.computeIfAbsent(k, k1 -> new AtomicInteger(0));
-                    int addCount = 0;
-                    while (pos.get() < this.size) {
-                        if (pos.get() >= size) {
-                            return;
-                        }
-                        ImageCaptchaInfo slideImageInfo = target.generateCaptchaImage(k);
-                        if (slideImageInfo != null) {
-                            boolean addStatus = queue.offer(slideImageInfo);
-                            addCount++;
-                            if (addStatus) {
-                                // 添加记录
-                                pos.incrementAndGet();
-                            }
-                        } else {
-                            sleep();
-                        }
+        scheduledExecutor.scheduleAtFixedRate(() -> queueMap.forEach((k, queue) -> {
+            try {
+                AtomicInteger pos = posMap.computeIfAbsent(k, k1 -> new AtomicInteger(0));
+                int addCount = 0;
+                while (pos.get() < this.size) {
+                    if (pos.get() >= size) {
+                        return;
                     }
-                    if (addCount == 0) {
-                        // 没有添加，检测最新更新时间 如果时间过长，直接清除数据
-                        Long lastUpdate = lastUpdateMap.get(k);
-                        if (lastUpdate != null && System.currentTimeMillis() - lastUpdate > expireTime) {
-                            queueMap.remove(k);
-                            posMap.remove(k);
-                            lastUpdateMap.remove(k);
+                    ImageCaptchaInfo slideImageInfo = target.generateCaptchaImage(k);
+                    if (slideImageInfo != null) {
+                        boolean addStatus = queue.offer(slideImageInfo);
+                        addCount++;
+                        if (addStatus) {
+                            // 添加记录
+                            pos.incrementAndGet();
                         }
+                    } else {
+                        sleep();
                     }
-                } catch (Exception e) {
-                    // cache所有
-                    log.error("缓存队列扫描时出错， ex", e);
-                    // 删掉它
-                    queueMap.remove(k);
-                    posMap.remove(k);
-                    lastUpdateMap.remove(k);
-                    // 休眠
-                    sleep();
                 }
-            });
-
-        }, 0, period, TimeUnit.MILLISECONDS);
+                if (addCount == 0) {
+                    // 没有添加，检测最新更新时间 如果时间过长，直接清除数据
+                    Long lastUpdate = lastUpdateMap.get(k);
+                    if (lastUpdate != null && System.currentTimeMillis() - lastUpdate > expireTime) {
+                        queueMap.remove(k);
+                        posMap.remove(k);
+                        lastUpdateMap.remove(k);
+                    }
+                }
+            } catch (Exception e) {
+                // cache所有
+                log.error("缓存队列扫描时出错， ex", e);
+                // 删掉它
+                queueMap.remove(k);
+                posMap.remove(k);
+                lastUpdateMap.remove(k);
+                // 休眠
+                sleep();
+            }
+        }), 0, period, TimeUnit.MILLISECONDS);
     }
 
     private void sleep() {
@@ -119,6 +115,11 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
             TimeUnit.MILLISECONDS.sleep(waitTime);
         } catch (InterruptedException ignored) {
         }
+    }
+
+    @Override
+    public ImageCaptchaGenerator init() {
+        return target.init();
     }
 
     @SneakyThrows
@@ -176,20 +177,4 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     public ImageCaptchaResourceManager getImageResourceManager() {
         return target.getImageResourceManager();
     }
-
-
-//    public static void main(String[] args) throws InterruptedException {
-//        SliderCaptchaTemplate captchaTemplate = new DefaultSliderCaptchaTemplate("jpeg", "png", true);
-//
-//        captchaTemplate = new CacheSliderCaptchaTemplate(captchaTemplate, 20);
-//        TimeUnit.SECONDS.sleep(5);
-//        for (int i = 0; i < 100; i++) {
-//            long start = System.currentTimeMillis();
-//            SliderCaptchaInfo info = captchaTemplate.getSlideImageInfo();
-//            long end = System.currentTimeMillis();
-//            System.out.println("耗时:" + (end - start));
-//            TimeUnit.MILLISECONDS.sleep(10);
-//        }
-//    }
-
 }

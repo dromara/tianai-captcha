@@ -322,7 +322,7 @@ public class CaptchaImageUtils {
     public static BufferedImage drawWordImg(Color fontColor,
                                             String word,
                                             Font font,
-                                            FontDesignMetrics metrics,
+                                            float fontTopCoef,
                                             int imgWidth,
                                             int imgHeight,
                                             float deg) {
@@ -333,7 +333,7 @@ public class CaptchaImageUtils {
         g.setColor(fontColor);
         g.setFont(font);
         float left = (imgWidth - font.getSize()) / 2f;
-        float top = (imgHeight - font.getSize()) / 2f + metrics.getAscent() - 6;
+        float top = (imgHeight - font.getSize()) / 2f + font.getSize() - fontTopCoef;
         g.rotate(Math.toRadians(deg), imgWidth / 2f, imgHeight / 2f);
         g.drawString(word, left, top);
         g.dispose();
@@ -405,7 +405,6 @@ public class CaptchaImageUtils {
      *
      * @param data                 验证码内容
      * @param font                 字体包
-     * @param metrics              FontDesignMetrics
      * @param width                验证码宽度
      * @param height               验证码高度
      * @param startX               起始X
@@ -416,7 +415,6 @@ public class CaptchaImageUtils {
      */
     public static BufferedImage genSimpleImgCaptcha(String data,
                                                     Font font,
-                                                    FontDesignMetrics metrics,
                                                     int width,
                                                     int height,
                                                     float startX,
