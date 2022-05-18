@@ -1,8 +1,6 @@
 package cloud.tianai.captcha.generator.common.util;
 
 import lombok.SneakyThrows;
-import sun.font.FontDesignMetrics;
-
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Area;
