@@ -65,12 +65,6 @@
             <version>1.18.12</version>
             <optional>true</optional>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.scijava/native-lib-loader -->
-        <dependency>
-            <groupId>org.scijava</groupId>
-            <artifactId>native-lib-loader</artifactId>
-            <version>2.3.4</version>
-        </dependency>
     </dependencies>
 
     <build>

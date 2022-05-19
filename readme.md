@@ -20,9 +20,6 @@
     - 滑动还原验证码
     - 文字点选验证码
     - 后面会陆续支持市面上更多好玩的验证码玩法... 敬请期待
-
-- 该滑块验证码实现了 普通图片和 **webp**(拷贝github大神开源的webp图片生成代码)图片两种格式
-
 ## 快速上手
 
 如果是SpringBoot开发者可直接使用SpringBoot快速启动器[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter)
