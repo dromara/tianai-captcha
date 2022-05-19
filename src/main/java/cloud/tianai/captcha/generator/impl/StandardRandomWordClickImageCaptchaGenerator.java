@@ -14,10 +14,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -94,7 +92,6 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         resourceStore.addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
     }
 
-    @SneakyThrows
     @Override
     public ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions) {
         String tips = imageCheckDefinitions.stream().map(ClickImageCheckDefinition::getTip).collect(Collectors.joining());
@@ -106,13 +103,9 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         float top = 6 / 2f + font.getSize() - currentFontTopCoef;
         BufferedImage bufferedImage = CaptchaImageUtils.genSimpleImgCaptcha(tips,
                 font, width, height, left, top, tipImageInterferenceLineNum, tipImageInterferencePointNum);
-        FileOutputStream fileOutputStream = new FileOutputStream("d:/aaa/" + tips + ".png");
-        ImageIO.write(bufferedImage, "png", fileOutputStream);
-        fileOutputStream.close();
         return new ImgWrapper(bufferedImage, tips);
     }
 
-    @SneakyThrows
     @Override
     public ImgWrapper randomGetClickImg() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
@@ -129,9 +122,6 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
                 clickImgWidth,
                 clickImgHeight,
                 randomDeg);
-        FileOutputStream fileOutputStream = new FileOutputStream("d:/aaa/" + randomWord + ".png");
-        ImageIO.write(fontImage, "png", fileOutputStream);
-        fileOutputStream.close();
         return new ImgWrapper(fontImage, randomWord);
     }
 
