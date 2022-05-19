@@ -41,11 +41,6 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     @Setter
     /** 资源管理器. */
     protected ImageCaptchaResourceManager imageCaptchaResourceManager;
-    /** 初始化默认资源. */
-    @Getter
-    @Setter
-    protected boolean initDefaultResource = false;
-
     @Getter
     private boolean init = false;
 
@@ -53,14 +48,14 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     }
 
     @Override
-    public ImageCaptchaGenerator init() {
+    public ImageCaptchaGenerator init(boolean initDefaultResource) {
         if (init) {
             return this;
         }
         init = true;
         try {
             log.info("图片验证码[{}]初始化...", this.getClass().getSimpleName());
-            doInit();
+            doInit(initDefaultResource);
         } catch (Exception e) {
             init = false;
             log.error("[{}]初始化失败,ex", this.getClass().getSimpleName(), e);
@@ -69,9 +64,8 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         return this;
     }
 
-    public AbstractImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
+    public AbstractImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
-        this.initDefaultResource = initDefaultResource;
     }
 
     @Override
@@ -89,6 +83,13 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
                 .obfuscate(false)
                 .build());
     }
+
+    @Override
+    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
+        assertInit();
+        return doGenerateCaptchaImage(param);
+    }
+
 
     /**
      * 将图片转换成字符串格式
@@ -143,10 +144,26 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     }
 
 
+    protected void assertInit() {
+        if (!init) {
+            throw new IllegalStateException("请先调用 init(...) 初始化方法进行初始化");
+        }
+    }
+
     /**
      * 初始化
+     *
+     * @param initDefaultResource 是否初始化默认资源
      */
-    protected abstract void doInit();
+    protected abstract void doInit(boolean initDefaultResource);
+
+    /**
+     * 生成验证码方法
+     *
+     * @param param param
+     * @return ImageCaptchaInfo
+     */
+    protected abstract ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param);
 
     @Override
     public ImageCaptchaResourceManager getImageResourceManager() {

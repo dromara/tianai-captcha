@@ -32,8 +32,8 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
     protected Integer interferenceCount = 2;
 
 
-    public AbstractClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
-        super(imageCaptchaResourceManager, initDefaultResource);
+    public AbstractClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        super(imageCaptchaResourceManager);
     }
 
     public AbstractClickImageCaptchaGenerator() {
@@ -41,7 +41,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
 
     @SneakyThrows
     @Override
-    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
+    public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
         // 文字点选验证码不需要模板 只需要背景图
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {

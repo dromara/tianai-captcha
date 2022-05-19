@@ -31,13 +31,13 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     protected final ImageCaptchaResourceManager imageCaptchaResourceManager;
 
-    public StandardRotateImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
-        super(imageCaptchaResourceManager, initDefaultResource);
+    public StandardRotateImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        super(imageCaptchaResourceManager);
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
     }
 
     @Override
-    protected void doInit() {
+    protected void doInit(boolean initDefaultResource) {
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -57,7 +57,7 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
     }
 
     @Override
-    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
+    public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
         // 旋转验证码没有混淆
         Map<String, Resource> templateImages = imageCaptchaResourceManager.randomGetTemplate(param.getType());
         if (templateImages == null || templateImages.isEmpty()) {

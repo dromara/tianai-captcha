@@ -4,15 +4,19 @@ import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.util.ObjectUtils;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.ImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.impl.provider.StandardConcatImageCaptchaGeneratorProvider;
+import cloud.tianai.captcha.generator.impl.provider.StandardRandomWordClickImageCaptchaGeneratorProvider;
+import cloud.tianai.captcha.generator.impl.provider.StandardRotateImageCaptchaGeneratorProvider;
+import cloud.tianai.captcha.generator.impl.provider.StandardSliderImageImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.function.BiFunction;
 
 /**
  * @Author: 天爱有情
@@ -22,42 +26,40 @@ import java.util.function.BiFunction;
 public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
     protected Map<String, ImageCaptchaGenerator> imageCaptchaGeneratorMap = new HashMap<>(4);
-    protected Map<String, BiFunction<String, MultiImageCaptchaGenerator, ImageCaptchaGenerator>> imageCaptchaGeneratorProviderMap = new HashMap<>(4);
+    protected Map<String, ImageCaptchaGeneratorProvider> imageCaptchaGeneratorProviderMap = new HashMap<>(4);
 
     @Setter
     @Getter
     private String defaultCaptcha = CaptchaTypeConstant.SLIDER;
 
-    public MultiImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
-        super(imageCaptchaResourceManager, initDefaultResource);
+    protected boolean initDefaultResource = false;
+    public MultiImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        super(imageCaptchaResourceManager);
     }
 
     @Override
-    protected void doInit() {
+    protected void doInit(boolean initDefaultResource) {
+        this.initDefaultResource = initDefaultResource;
         // 滑块验证码
-        addImageCaptchaGeneratorProvider(CaptchaTypeConstant.SLIDER, (type, context) ->
-                new StandardSliderImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource).init());
+        addImageCaptchaGeneratorProvider(new StandardSliderImageImageCaptchaGeneratorProvider());
         // 旋转验证码
-        addImageCaptchaGeneratorProvider(CaptchaTypeConstant.ROTATE, (type, context) ->
-                new StandardRotateImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource).init());
+        addImageCaptchaGeneratorProvider(new StandardRotateImageCaptchaGeneratorProvider());
         // 拼接验证码
-        addImageCaptchaGeneratorProvider(CaptchaTypeConstant.CONCAT, (type, context) ->
-                new StandardConcatImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource).init());
+        addImageCaptchaGeneratorProvider(new StandardConcatImageCaptchaGeneratorProvider());
         // 点选文字验证码
-        addImageCaptchaGeneratorProvider(CaptchaTypeConstant.WORD_IMAGE_CLICK, (type, context) ->
-                new StandardRandomWordClickImageCaptchaGenerator(imageCaptchaResourceManager, initDefaultResource).init());
+        addImageCaptchaGeneratorProvider(new StandardRandomWordClickImageCaptchaGeneratorProvider());
     }
 
-    public void addImageCaptchaGeneratorProvider(String key, BiFunction<String, MultiImageCaptchaGenerator, ImageCaptchaGenerator> provider) {
-        imageCaptchaGeneratorProviderMap.put(key, provider);
+    public void addImageCaptchaGeneratorProvider(ImageCaptchaGeneratorProvider provider) {
+        imageCaptchaGeneratorProviderMap.put(provider.getType(), provider);
     }
 
-    public BiFunction<String, MultiImageCaptchaGenerator, ImageCaptchaGenerator> removeImageCaptchaGeneratorProvider(String key) {
-        return imageCaptchaGeneratorProviderMap.remove(key);
+    public ImageCaptchaGeneratorProvider removeImageCaptchaGeneratorProvider(String type) {
+        return imageCaptchaGeneratorProviderMap.remove(type);
     }
 
-    public BiFunction<String, MultiImageCaptchaGenerator, ImageCaptchaGenerator> getImageCaptchaGeneratorProvider(String key) {
-        return imageCaptchaGeneratorProviderMap.get(key);
+    public ImageCaptchaGeneratorProvider getImageCaptchaGeneratorProvider(String type) {
+        return imageCaptchaGeneratorProviderMap.get(type);
     }
 
     public void addImageCaptchaGenerator(String key, ImageCaptchaGenerator captchaGenerator) {
@@ -73,7 +75,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     }
 
     @Override
-    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
+    public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
         String type = param.getType();
         if (ObjectUtils.isEmpty(type)) {
             param.setType(defaultCaptcha);
@@ -86,11 +88,13 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     public ImageCaptchaGenerator requireGetCaptchaGenerator(String type) {
         ImageCaptchaGenerator imageCaptchaGenerator = imageCaptchaGeneratorMap.get(type);
         if (imageCaptchaGenerator == null) {
-            BiFunction<String, MultiImageCaptchaGenerator, ImageCaptchaGenerator> provider = imageCaptchaGeneratorProviderMap.get(type);
+            ImageCaptchaGeneratorProvider provider = imageCaptchaGeneratorProviderMap.get(type);
             if (provider == null) {
                 throw new IllegalArgumentException("生成验证码失败，错误的type类型:" + type);
             }
-            imageCaptchaGenerator = imageCaptchaGeneratorMap.computeIfAbsent(type, k -> provider.apply(k, this));
+            imageCaptchaGenerator = imageCaptchaGeneratorMap.computeIfAbsent(type, k ->
+                    // get and init
+                    provider.get(getImageCaptchaResourceManager()).init(initDefaultResource));
         }
         return imageCaptchaGenerator;
     }

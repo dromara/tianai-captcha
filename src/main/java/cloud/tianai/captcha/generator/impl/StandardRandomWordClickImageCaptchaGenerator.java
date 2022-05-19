@@ -59,15 +59,15 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
     protected float currentFontTopCoef = 0.0f;
 
     @SneakyThrows
-    public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
-        super(imageCaptchaResourceManager, initDefaultResource);
+    public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        super(imageCaptchaResourceManager);
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
 
     }
 
     @Override
     @SneakyThrows({IOException.class, FontFormatException.class})
-    protected void doInit() {
+    protected void doInit(boolean initDefaultResource) {
         if (this.font == null) {
             // 使用默认字体
             Resource fontResource = new Resource(null, "META-INF/fonts/SIMSUN.TTC");
@@ -82,11 +82,8 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         }
     }
 
-    public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager,
-                                                        boolean initDefaultResource,
-                                                        Font font) {
-        super(imageCaptchaResourceManager, initDefaultResource);
-        this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+    public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, Font font) {
+        super(imageCaptchaResourceManager);
         this.font = font;
     }
 

@@ -17,7 +17,6 @@ import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
 import java.util.HashMap;
 import java.util.Map;
 
-import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
 import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH;
 
 public class CaptchaGenTest {
@@ -37,7 +36,8 @@ public class CaptchaGenTest {
 
 
 
-        MultiImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager, false);
+        MultiImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager);
+        imageCaptchaGenerator.init(false);
         GenerateParam generateParam = GenerateParam.builder()
                 .type(CaptchaTypeConstant.SLIDER)
                 .backgroundFormatName("webp")

@@ -27,14 +27,12 @@ import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGene
  */
 public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
-    protected ImageCaptchaResourceManager imageCaptchaResourceManager;
-
-    public StandardConcatImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, boolean initDefaultResource) {
-        super(imageCaptchaResourceManager, initDefaultResource);
+    public StandardConcatImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        super(imageCaptchaResourceManager);
     }
 
     @Override
-    protected void doInit() {
+    protected void doInit(boolean initDefaultResource) {
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -47,7 +45,7 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
     }
 
     @Override
-    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
+    public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
         // 拼接验证码不需要模板 只需要背景图
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {

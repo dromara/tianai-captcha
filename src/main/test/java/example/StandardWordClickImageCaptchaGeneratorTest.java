@@ -17,7 +17,7 @@ public class StandardWordClickImageCaptchaGeneratorTest {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
 
         ImageCaptchaGenerator defaultImageCaptchaResourceManager =
-                new StandardRandomWordClickImageCaptchaGenerator(imageCaptchaResourceManager, true).init();
+                new StandardRandomWordClickImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
 
         GenerateParam generateParam = new GenerateParam();
         generateParam.setType(CaptchaTypeConstant.WORD_IMAGE_CLICK);

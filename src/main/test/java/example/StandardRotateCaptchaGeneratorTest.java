@@ -25,9 +25,9 @@ public class StandardRotateCaptchaGeneratorTest {
 
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager(resourceStore);
 
-        CacheImageCaptchaGenerator standardRotateImageCaptchaGenerator = new CacheImageCaptchaGenerator(new StandardRotateImageCaptchaGenerator(imageCaptchaResourceManager, true),
+        CacheImageCaptchaGenerator standardRotateImageCaptchaGenerator = new CacheImageCaptchaGenerator(new StandardRotateImageCaptchaGenerator(imageCaptchaResourceManager),
                 20, 1000, 100, TimeUnit.MINUTES.toMillis(3));
-        standardRotateImageCaptchaGenerator.initSchedule();
+        standardRotateImageCaptchaGenerator.init(true);
         ImageCaptchaInfo imageCaptchaInfo = standardRotateImageCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.ROTATE);
         System.out.println("backgroundImage:" + imageCaptchaInfo.getBackgroundImage());
         System.out.println("sliderImage:" + imageCaptchaInfo.getSliderImage());

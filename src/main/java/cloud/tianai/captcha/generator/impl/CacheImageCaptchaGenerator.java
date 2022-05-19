@@ -38,6 +38,8 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     @Setter
     protected boolean requiredGetCaptcha = true;
 
+    private boolean init = false;
+
     public CacheImageCaptchaGenerator(ImageCaptchaGenerator target, int size) {
         this.target = target;
         this.size = size;
@@ -66,6 +68,9 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     }
 
     private void init(int z) {
+        if (init) {
+            return;
+        }
         this.size = z;
         // 初始化一个队列扫描
         scheduledExecutor.scheduleAtFixedRate(() -> queueMap.forEach((k, queue) -> {
@@ -108,6 +113,7 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
                 sleep();
             }
         }), 0, period, TimeUnit.MILLISECONDS);
+        init = true;
     }
 
     private void sleep() {
@@ -118,8 +124,11 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     }
 
     @Override
-    public ImageCaptchaGenerator init() {
-        return target.init();
+    public ImageCaptchaGenerator init(boolean initDefaultResource) {
+        ImageCaptchaGenerator captchaGenerator = target.init(initDefaultResource);
+        // 初始化缓存
+        init(size);;
+        return captchaGenerator;
     }
 
     @SneakyThrows
@@ -161,11 +170,7 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
 
     @Override
     public ImageCaptchaInfo generateCaptchaImage(String type, String targetFormatName, String matrixFormatName) {
-        return generateCaptchaImage(GenerateParam.builder()
-                .type(type)
-                .backgroundFormatName(targetFormatName)
-                .sliderFormatName(matrixFormatName)
-                .build(), true);
+        return generateCaptchaImage(GenerateParam.builder().type(type).backgroundFormatName(targetFormatName).sliderFormatName(matrixFormatName).build(), true);
     }
 
     @Override

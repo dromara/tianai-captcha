@@ -40,13 +40,12 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
      */
     public static final String DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH = "META-INF/cut-image/template";
 
-    public StandardSliderImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager,
-                                               boolean initDefaultResource) {
-        super(imageCaptchaResourceManager, initDefaultResource);
+    public StandardSliderImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        super(imageCaptchaResourceManager);
     }
 
     @Override
-    protected void doInit() {
+    protected void doInit(boolean initDefaultResource) {
         if (initDefaultResource) {
             initDefaultResource();
         }
@@ -54,7 +53,7 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     @SneakyThrows
     @Override
-    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
+    public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
         Boolean obfuscate = param.getObfuscate();
         Map<String, Resource> templateImages = imageCaptchaResourceManager.randomGetTemplate(param.getType());
         if (templateImages == null || templateImages.isEmpty()) {
