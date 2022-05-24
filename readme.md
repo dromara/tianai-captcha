@@ -38,27 +38,30 @@
 ### 2. 使用 `ImageCaptchaGenerator`生成器生成验证码
 
 ```java
+package example.readme;
+
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
-import cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator;
-import cloud.tianai.captcha.generator.impl.StandardSliderCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
 
+import java.util.Map;
+
 public class Test {
     public static void main(String[] args) throws InterruptedException {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
-        MultiImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager, true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
         /*
                 生成滑块验证码图片, 可选项
                 SLIDER (滑块验证码)
                 ROTATE (旋转验证码)
                 CONCAT (滑动还原验证码)
                 WORD_IMAGE_CLICK (文字点选验证码)
-                
+
                 更多验证码支持 详见 cloud.tianai.captcha.common.constant.CaptchaTypeConstant
          */
         ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.SLIDER);
@@ -71,20 +74,28 @@ public class Test {
         Map<String, Object> map = imageCaptchaValidator.generateImageCaptchaValidData(imageCaptchaInfo);
     }
 }
+
 ```
 
 ### 3. 使用`ImageCaptchaValidator`校验器 验证
 
 ```java
-import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
-import cloud.tianai.captcha.generator.SliderCaptchaGenerator;
+package example.readme;
+
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
+import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
+
+import java.util.Map;
 
 public class Test2 {
     public static void main(String[] args) {
         ImageCaptchaValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
 
-        // 用户传来的行为轨迹和进行校验 
+        ImageCaptchaTrack imageCaptchaTrack = null;
+        Map<String, Object> map = null;
+        Float percentage = null;
+        // 用户传来的行为轨迹和进行校验
         // - imageCaptchaTrack为前端传来的滑动轨迹数据
         // - map 为生成验证码时缓存的map数据
         boolean check = sliderCaptchaValidator.valid(imageCaptchaTrack, map);
@@ -94,6 +105,7 @@ public class Test2 {
         check = sliderCaptchaValidator.checkPercentage(0.2f, percentage);
     }
 }
+
 ```
 
 ## 整体架构设计
@@ -117,19 +129,22 @@ public class Test2 {
 ### 生成带有混淆滑块的图片
 
 ```java
+package example.readme;
+
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 
-public class Test {
+public class Test3 {
     public static void main(String[] args) {
         // 资源管理器
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 标准验证码生成器
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager, true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
         // 生成 具有混淆的 滑块验证码 (目前只有滑块验证码支持混淆滑块， 旋转验证，滑动还原，点选验证 均不支持混淆功能)
         ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(GenerateParam.builder()
                 .type(CaptchaTypeConstant.SLIDER)
@@ -140,33 +155,40 @@ public class Test {
                 .build());
     }
 }
+
 ```
 
 ### 生成webp格式的滑块图片
 
 ```java
+package example.readme;
+
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
+import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 
-public class Test {
+public class Test4 {
     public static void main(String[] args) {
         // 资源管理器
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 标准验证码生成器
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager, true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
         // 生成旋转验证码 图片类型为 webp
-        // 注意 tianai-captcha 后面默认删除了生成webp格式图片需要用户自定义添加webp转换的工具，需要用户自定义添加和扩展
+        // 注意 tianai-captcha-1.3.2 后面默认删除了生成webp格式图片需要用户自定义添加webp转换的工具，需要用户自定义添加和扩展
         // 参考 https://bitbucket.org/luciad/webp-imageio
-        SliderCaptchaInfo slideImageInfo = sliderCaptchaGenerator.generateSlideImageInfo(GenerateParam.builder()
+        ImageCaptchaInfo slideImageInfo = imageCaptchaGenerator.generateCaptchaImage(GenerateParam.builder()
                 .type(CaptchaTypeConstant.ROTATE)
                 .sliderFormatName("webp")
                 .backgroundFormatName("webp")
                 .build());
+        System.out.println(slideImageInfo);
     }
 }
+
 ```
 
 ### 添加自定义图片资源
@@ -174,7 +196,9 @@ public class Test {
 - 自定义图片资源大小为 590*360 格式为jpg
 
 ```java
- import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+package example.readme;
+
+import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -182,18 +206,19 @@ import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import cloud.tianai.captcha.resource.impl.provider.URLResourceProvider;
 
-public class Test {
+public class Test5 {
     public static void main(String[] args) {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 通过资源管理器或者资源存储器
         ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
-        // 添加classpath目录下的 aa.jpg 图片      
+        // 添加classpath目录下的 aa.jpg 图片
         resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(ClassPathResourceProvider.NAME, "/aa.jpg"));
         // 添加远程url图片资源
         resourceStore.addResource(CaptchaTypeConstant.SLIDER,new Resource(URLResourceProvider.NAME, "http://www.xx.com/aa.jpg"));
         // 内置了通过url 和 classpath读取图片资源，如果想扩展可实现 ResourceProvider 接口，进行自定义扩展
     }
 }
+
 ```
 
 ### 添加自定义模板资源
@@ -209,12 +234,20 @@ public class Test {
     - 凹槽大小为 200*200 格式为png
     - 模板大小为 360*360 格式为png，该图为固定格式，是一张纯透明图片
 ```java
+package example.readme;
+
+import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
+import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
+import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 
-public class Test {
+import java.util.HashMap;
+import java.util.Map;
+
+public class Test6 {
     public static void main(String[] args) {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 通过资源管理器或者资源存储器
@@ -234,16 +267,22 @@ public class Test {
 - 清除内置的图片资源和模板资源
 
  ```java
+package example.readme;
+
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
+import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
+import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 
-public class Test {
+public class Test6 {
     public static void main(String[] args) {
+        ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         //为方便快速上手 系统本身自带了一张图片和两套滑块模板，如果不想用系统自带的可以不让它加载系统自带的
         // 第二个构造参数设置为false时将不加载默认的图片和模板
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager, false);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(false);
     }
 }
+
  ```
 
 ### 自定义 `imageCaptchaValidator` 校验器
@@ -260,20 +299,43 @@ public class Test {
 ### 自定义 `ResourceProvider` 实现自定义文件读取策略， 比如 oss之类的
 
 ```java
- import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
+package example.readme;
+
+import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
+import cloud.tianai.captcha.resource.ResourceProvider;
+import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 
-public class Test {
+import java.io.InputStream;
+
+public class Test7 {
     public static void main(String[] args) {
-        // 实现了 ResourceProvider 后
+        // 自定义 ResourceProvider
+        ResourceProvider resourceProvider = new ResourceProvider() {
+            @Override
+            public InputStream getResourceInputStream(Resource data) {
+                return null;
+            }
+
+            @Override
+            public boolean supported(String type) {
+                return false;
+            }
+
+            @Override
+            public String getName() {
+                return null;
+            }
+        };
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager, true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(false);
         // 注册
-        imageCaptchaResourceManager.registerResourceProvider(new CustomResourceProvider());
+        imageCaptchaResourceManager.registerResourceProvider(resourceProvider);
     }
 }
+
 ```
 
 ### 扩展，对`StandardImageCaptchaGenerator`增加了缓存模块
@@ -281,6 +343,8 @@ public class Test {
 > 由于实时生成滑块图片可能会有一点性能影响，内部基于`StandardSliderCaptchaGenerator`进行了提前缓存生成好的图片，`CacheSliderCaptchaGenerator` 这只是基本的缓存逻辑，比较简单，用户可以定义一些更加有意思的扩展，用于突破性能瓶颈
 
 ```java
+package example.readme;
+
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
@@ -289,15 +353,16 @@ import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 
-public class Test {
+public class Test8 {
     public static void main(String[] args) throws InterruptedException {
         // 使用 CacheSliderCaptchaGenerator 对滑块验证码进行缓存，使其提前生成滑块图片
         // 参数一: 真正实现 滑块的 SliderCaptchaGenerator
         // 参数二: 默认提前缓存多少个
         // 参数三: 出错后 等待xx时间再进行生成
-        // 参数四: 检查时间间隔    
+        // 参数四: 检查时间间隔
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
-        ImageCaptchaGenerator imageCaptchaGenerator = new CacheImageCaptchaGenerator(new MultiImageCaptchaGenerator(imageCaptchaResourceManager, true), 10, 1000, 100);
+        ImageCaptchaGenerator imageCaptchaGenerator = new CacheImageCaptchaGenerator(new MultiImageCaptchaGenerator(imageCaptchaResourceManager), 10, 1000, 100);
+        imageCaptchaGenerator.init(true);
         // 生成滑块图片
         ImageCaptchaInfo slideImageInfo = imageCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.SLIDER);
         // 获取背景图片的base64
