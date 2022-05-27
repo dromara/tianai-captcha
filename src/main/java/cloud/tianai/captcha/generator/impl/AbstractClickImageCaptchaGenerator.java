@@ -31,7 +31,6 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
     @Setter
     protected Integer interferenceCount = 2;
 
-
     public AbstractClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
     }
@@ -53,9 +52,13 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
             List<ClickImageCheckDefinition> clickImageCheckDefinitionList = new ArrayList<>(interferenceCount);
             int allImages = interferenceCount + checkClickCount;
             int avg = bgImage.getWidth() / allImages;
+            List<String> imgTips = randomGetClickImgTips(allImages);
+            if (allImages < imgTips.size()) {
+                throw new IllegalStateException("随机生成点击图片小于请求数量， 请求生成数量=" + allImages + ",实际生成数量=" + imgTips.size());
+            }
             for (int i = 0; i < allImages; i++) {
                 // 随机获取点击图片
-                ImgWrapper imgWrapper = randomGetClickImg();
+                ImgWrapper imgWrapper = getClickImg(imgTips.get(i));
                 BufferedImage image = imgWrapper.getImage();
                 int clickImgWidth = image.getWidth();
                 int clickImgHeight = image.getHeight();
@@ -78,17 +81,10 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
                 clickImageCheckDefinition.setHeight(clickImgHeight);
                 clickImageCheckDefinitionList.add(clickImageCheckDefinition);
             }
-            // 打乱
-            Collections.shuffle(clickImageCheckDefinitionList);
-            // 拿出参与校验的数据
-            List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = new ArrayList<>(checkClickCount);
-            for (int i = 0; i < checkClickCount; i++) {
-                ClickImageCheckDefinition clickImageCheckDefinition = clickImageCheckDefinitionList.get(i);
-                checkClickImageCheckDefinitionList.add(clickImageCheckDefinition);
-            }
-            // 将校验的文字生成提示图片
-            ImgWrapper tipImage = genTipImage(checkClickImageCheckDefinitionList);
-            return wrapClickImageCaptchaInfo(param, bgImage, tipImage.getImage(), checkClickImageCheckDefinitionList);
+            List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = getCheckClickImageCheckDefinitionList(clickImageCheckDefinitionList,
+                    checkClickCount);
+            // wrap
+            return wrapClickImageCaptchaInfo(param, bgImage, checkClickImageCheckDefinitionList);
 
         } finally {
             // 使用完后关闭流
@@ -103,31 +99,50 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
     }
 
     /**
-     * 随机获取点击的图片
+     * 从总的图片中 去除要校验的图片数据 以及顺序
      *
-     * @return ImgWrapper
+     * @param allCheckDefinitionList 总的点选图片
+     * @param checkClickCount        参与校验的数据
+     * @return List<ClickImageCheckDefinition>
      */
-    public abstract ImgWrapper randomGetClickImg();
+    protected List<ClickImageCheckDefinition> getCheckClickImageCheckDefinitionList(List<ClickImageCheckDefinition> allCheckDefinitionList,
+                                                                                    Integer checkClickCount) {
+        // 打乱
+        Collections.shuffle(allCheckDefinitionList);
+        // 拿出参与校验的数据
+        List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = new ArrayList<>(checkClickCount);
+        for (int i = 0; i < checkClickCount; i++) {
+            ClickImageCheckDefinition clickImageCheckDefinition = allCheckDefinitionList.get(i);
+            checkClickImageCheckDefinitionList.add(clickImageCheckDefinition);
+        }
+        return checkClickImageCheckDefinitionList;
+    }
 
     /**
-     * 生成 tip 图片
+     * 随机获取一组数据用于生成随机图
      *
-     * @param imageCheckDefinitions imageCheckDefinitions
+     * @param tipSize tipSize
+     * @return List<String>
+     */
+    protected abstract List<String> randomGetClickImgTips(int tipSize);
+
+    /**
+     * 随机获取点击的图片
+     *
+     * @param tip 提示数据,根据改数据生成图片
      * @return ImgWrapper
      */
-    public abstract ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions);
+    public abstract ImgWrapper getClickImg(String tip);
 
     /**
      * 包装 ImageCaptchaInfo
      *
      * @param param                              param
      * @param bgImage                            bgImage
-     * @param tipImage                           tipImage
      * @param checkClickImageCheckDefinitionList checkClickImageCheckDefinitionList
      * @return ImageCaptchaInfo
      */
     public abstract ImageCaptchaInfo wrapClickImageCaptchaInfo(GenerateParam param, BufferedImage bgImage,
-                                                               BufferedImage tipImage,
                                                                List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList);
 
     /**

@@ -18,6 +18,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -47,8 +48,8 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
     protected int tipImageInterferencePointNum = 5;
 
     /**
-     * 因为在画文字图形的时候 y 值不能准确通过 除法计算得出， 字体大小不一致中间的容错值不可估计，
-     * 所以通过 线性回归模型 计算出  intercept和coef 用于计算 容错值
+     * 因为在画文字图形的时候 y 值不能准确通过 除法计算得出， 字体大小不一致中间的容错值算不准确
+     * 方案: 通过 线性回归模型 计算出  intercept和coef 用于计算 容错值
      * 训练数据为 宋体 字体大小为 30~150 随机选择7组数据进行训练， 训练后r2结果为 0.9967106324620846
      */
     protected float intercept = 0.39583333f;
@@ -61,6 +62,18 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         super(imageCaptchaResourceManager);
         this.imageCaptchaResourceManager = imageCaptchaResourceManager;
 
+    }
+
+    @Override
+    protected List<String> randomGetClickImgTips(int tipSize) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        List<String> tipList = new ArrayList<>(tipSize);
+        for (int i = 0; i < tipSize; i++) {
+            String randomWord = FontUtils.getRandomChar(random);
+            tipList.add(randomWord);
+        }
+        // 随机文字
+        return tipList;
     }
 
     @Override
@@ -85,14 +98,12 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         this.font = font;
     }
 
-
     public void initDefaultResource() {
         ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加一些系统的资源文件
         resourceStore.addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
     }
 
-    @Override
     public ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions) {
         String tips = imageCheckDefinitions.stream().map(ClickImageCheckDefinition::getTip).collect(Collectors.joining());
         // 生成随机颜色
@@ -107,29 +118,28 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
     }
 
     @Override
-    public ImgWrapper randomGetClickImg() {
+    public ImgWrapper getClickImg(String tip) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        // 随机文字
-        String randomWord = FontUtils.getRandomChar(random);
         // 随机颜色
         Color randomColor = CaptchaImageUtils.getRandomColor(random);
         // 随机角度
         int randomDeg = ThreadLocalRandom.current().nextInt(0, 85);
         BufferedImage fontImage = CaptchaImageUtils.drawWordImg(randomColor,
-                randomWord,
+                tip,
                 font,
                 currentFontTopCoef,
                 clickImgWidth,
                 clickImgHeight,
                 randomDeg);
-        return new ImgWrapper(fontImage, randomWord);
+        return new ImgWrapper(fontImage, tip);
     }
 
 
     @Override
     public ImageCaptchaInfo wrapClickImageCaptchaInfo(GenerateParam param, BufferedImage bgImage,
-                                                      BufferedImage tipImage,
                                                       List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList) {
+        // 提示图片
+        BufferedImage tipImage = genTipImage(checkClickImageCheckDefinitionList).getImage();
         ImageCaptchaInfo clickImageCaptchaInfo = new ImageCaptchaInfo();
         clickImageCaptchaInfo.setBackgroundImage(transform(bgImage, param.getBackgroundFormatName()));
         clickImageCaptchaInfo.setSliderImage(transform(tipImage, param.getSliderFormatName()));
