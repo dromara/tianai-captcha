@@ -30,7 +30,8 @@ public class ImageCaptchaTrack {
     private Date endSlidingTime;
     /** 滑动的轨迹. */
     private List<Track> trackList;
-
+    /** 扩展数据，用户传输加密数据等.*/
+    private Object data;
     /**
      * 兼容一下旧版本
      *

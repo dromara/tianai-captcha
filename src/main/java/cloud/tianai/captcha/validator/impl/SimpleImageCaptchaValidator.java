@@ -154,6 +154,11 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
         Float tolerant = getFloatParam(TOLERANT_KEY, sliderCaptchaValidData, defaultTolerant);
         // 读验证码类型
         String type = getStringParam(TYPE_KEY, sliderCaptchaValidData, CaptchaTypeConstant.SLIDER);
+        // 验证前
+        // 在验证前必须读取 容错值 和验证码类型
+        if (!beforeValid(imageCaptchaTrack, sliderCaptchaValidData, tolerant, type)) {
+            return false;
+        }
         Integer bgImageWidth = imageCaptchaTrack.getBgImageWidth();
         if (bgImageWidth == null || bgImageWidth < 1) {
             // 没有背景图片宽度
@@ -162,10 +167,6 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
         List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
         if (CollectionUtils.isEmpty(trackList)) {
             // 没有滑动轨迹
-            return false;
-        }
-        // 验证前
-        if (!beforeValid(imageCaptchaTrack, sliderCaptchaValidData, tolerant, type)) {
             return false;
         }
         // 验证
