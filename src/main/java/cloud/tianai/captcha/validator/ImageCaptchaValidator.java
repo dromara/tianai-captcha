@@ -1,8 +1,6 @@
 package cloud.tianai.captcha.validator;
 
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 
 import java.util.Map;
@@ -53,7 +51,7 @@ public interface ImageCaptchaValidator {
     /**
      * 校验用户滑动滑块是否正确
      *
-     * @param imageCaptchaTrack     包含了滑动轨迹，展示的图片宽高，滑动时间等参数
+     * @param imageCaptchaTrack      包含了滑动轨迹，展示的图片宽高，滑动时间等参数
      * @param sliderCaptchaValidData generateSliderCaptchaValidData(生成的数据
      * @return boolean
      */

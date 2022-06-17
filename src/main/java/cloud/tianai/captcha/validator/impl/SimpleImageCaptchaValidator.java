@@ -6,15 +6,6 @@ import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.common.util.ObjectUtils;
 import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
-import cloud.tianai.captcha.common.util.CaptchaUtils;
-import cloud.tianai.captcha.common.util.CollectionUtils;
-import cloud.tianai.captcha.common.util.ObjectUtils;
-import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
-import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.validator.ImageCaptchaValidator;
-import cloud.tianai.captcha.validator.common.constant.TrackTypeConstant;
-import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.common.constant.TrackTypeConstant;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
@@ -181,7 +172,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
     /**
      * 验证前
      *
-     * @param imageCaptchaTrack     sliderCaptchaTrack
+     * @param imageCaptchaTrack      sliderCaptchaTrack
      * @param sliderCaptchaValidData sliderCaptchaValidData
      * @param tolerant               tolerant
      * @param type                   type
@@ -194,7 +185,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
     /**
      * 验证后
      *
-     * @param imageCaptchaTrack     sliderCaptchaTrack
+     * @param imageCaptchaTrack      sliderCaptchaTrack
      * @param sliderCaptchaValidData sliderCaptchaValidData
      * @param tolerant               tolerant
      * @param type                   type
@@ -223,7 +214,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
     /**
      * 校验点选验证码
      *
-     * @param imageCaptchaTrack     sliderCaptchaTrack
+     * @param imageCaptchaTrack      sliderCaptchaTrack
      * @param sliderCaptchaValidData sliderCaptchaValidData
      * @param tolerant               tolerant
      * @param type                   type
@@ -271,7 +262,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
     /**
      * 校验滑动验证码
      *
-     * @param imageCaptchaTrack     sliderCaptchaTrack
+     * @param imageCaptchaTrack      sliderCaptchaTrack
      * @param sliderCaptchaValidData sliderCaptchaValidData
      * @param tolerant               tolerant
      * @param type                   type
@@ -295,11 +286,11 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
         return checkPercentage(calcPercentage, oriPercentage, tolerant);
     }
 
-    protected Float getFloatParam(String key, Map<String, Object> sliderCaptchaValidData) {
+    public Float getFloatParam(String key, Map<String, Object> sliderCaptchaValidData) {
         return getFloatParam(key, sliderCaptchaValidData, null);
     }
 
-    protected Float getFloatParam(String key, Map<String, Object> sliderCaptchaValidData, Float defaultData) {
+    public Float getFloatParam(String key, Map<String, Object> sliderCaptchaValidData, Float defaultData) {
         Object data = sliderCaptchaValidData.get(key);
         if (data != null) {
             if (data instanceof Number) {
@@ -317,7 +308,10 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
         return defaultData;
     }
 
-    protected String getStringParam(String key, Map<String, Object> sliderCaptchaValidData, String defaultData) {
+    public String getStringParam(String key, Map<String, Object> sliderCaptchaValidData, String defaultData) {
+        if (CollectionUtils.isEmpty(sliderCaptchaValidData)) {
+            return defaultData;
+        }
         Object data = sliderCaptchaValidData.get(key);
         if (data != null) {
             if (data instanceof String) {
