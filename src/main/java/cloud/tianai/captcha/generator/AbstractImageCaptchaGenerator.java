@@ -119,18 +119,18 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     }
 
     public String beforeTransform(BufferedImage bufferedImage, String formatType) {
-        int type = bufferedImage.getType();
-        if (BufferedImage.TYPE_4BYTE_ABGR == type) {
-            // png , 如果转换的是jpg的话
-            if (CaptchaImageUtils.isJpeg(formatType)) {
-                // bufferedImage为 png， 但是转换的图片为 jpg
-                if (log.isWarnEnabled()) {
-                    log.warn("图片验证码转换警告， 原图为 png格式时，指定转换的图片为jpg格式时可能会导致转换异常，如果转换的图片为出现错误，请设置指定转换的类型与原图的类型一致");
-                } else {
-                    System.err.println("图片验证码转换警告， 原图为 png格式时，指定转换的图片为jpg格式时可能会导致转换异常，如果转换的图片为出现错误，请设置指定转换的类型与原图的类型一致");
-                }
-            }
-        }
+//        int type = bufferedImage.getType();
+//        if (BufferedImage.TYPE_4BYTE_ABGR == type) {
+//            // png , 如果转换的是jpg的话
+//            if (CaptchaImageUtils.isJpeg(formatType)) {
+//                // bufferedImage为 png， 但是转换的图片为 jpg
+//                if (log.isWarnEnabled()) {
+//                    log.warn("图片验证码转换警告， 原图为 png格式时，指定转换的图片为jpg格式时可能会导致转换异常，如果转换的图片为出现错误，请设置指定转换的类型与原图的类型一致");
+//                } else {
+//                    System.err.println("图片验证码转换警告， 原图为 png格式时，指定转换的图片为jpg格式时可能会导致转换异常，如果转换的图片为出现错误，请设置指定转换的类型与原图的类型一致");
+//                }
+//            }
+//        }
         // 其它的暂时不考虑
         return null;
     }
