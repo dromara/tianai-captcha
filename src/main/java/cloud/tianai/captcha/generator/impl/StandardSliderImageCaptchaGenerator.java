@@ -2,6 +2,7 @@ package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
@@ -42,6 +43,11 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     public StandardSliderImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
+    }
+
+    public StandardSliderImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform) {
+        super(imageCaptchaResourceManager);
+        setImageTransform(imageTransform);
     }
 
     @Override
@@ -127,8 +133,8 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
                                                         GenerateParam param) {
         String backgroundFormatName = param.getBackgroundFormatName();
         String sliderFormatName = param.getSliderFormatName();
-        String backGroundImageBase64 = transform(backgroundImage, backgroundFormatName);
-        String sliderImageBase64 = transform(sliderImage, sliderFormatName);
+        String backGroundImageBase64 = getImageTransform().transform(backgroundImage, backgroundFormatName);
+        String sliderImageBase64 = getImageTransform().transform(sliderImage, sliderFormatName);
         return SliderImageCaptchaInfo.of(randomX, randomY,
                 backGroundImageBase64,
                 sliderImageBase64,

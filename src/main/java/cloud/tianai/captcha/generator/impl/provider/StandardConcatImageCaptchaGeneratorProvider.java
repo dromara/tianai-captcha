@@ -3,8 +3,10 @@ package cloud.tianai.captcha.generator.impl.provider;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGeneratorProvider;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.impl.StandardConcatImageCaptchaGenerator;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
+
 /**
  * @Author: 天爱有情
  * @date 2022/5/19 15:12
@@ -12,8 +14,8 @@ import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
  */
 public class StandardConcatImageCaptchaGeneratorProvider implements ImageCaptchaGeneratorProvider {
     @Override
-    public ImageCaptchaGenerator get(ImageCaptchaResourceManager resourceManager) {
-        return new StandardConcatImageCaptchaGenerator(resourceManager);
+    public ImageCaptchaGenerator get(ImageCaptchaResourceManager resourceManager, ImageTransform imageTransform) {
+        return new StandardConcatImageCaptchaGenerator(resourceManager, imageTransform);
     }
 
     @Override

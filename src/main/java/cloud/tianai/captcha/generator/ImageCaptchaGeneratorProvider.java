@@ -14,9 +14,10 @@ public interface ImageCaptchaGeneratorProvider {
      * 生成/获取 ImageCaptchaGenerator
      *
      * @param resourceManager resourceManager
+     * @param imageTransform imageTransform
      * @return ImageCaptchaGenerator
      */
-    ImageCaptchaGenerator get(ImageCaptchaResourceManager resourceManager);
+    ImageCaptchaGenerator get(ImageCaptchaResourceManager resourceManager, ImageTransform imageTransform);
 
     /**
      * 验证码类型

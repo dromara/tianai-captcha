@@ -2,8 +2,7 @@ package cloud.tianai.captcha.generator;
 
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
-import cloud.tianai.captcha.generator.common.util.ImgWriter;
+import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.Getter;
@@ -11,11 +10,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.Base64;
 import java.util.Map;
 
 /**
@@ -37,10 +32,12 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     /** 默认滑块图片类型. */
     public String defaultSliderImageType = DEFAULT_SLIDER_IMAGE_TYPE;
 
-    @Getter
-    @Setter
     /** 资源管理器. */
     protected ImageCaptchaResourceManager imageCaptchaResourceManager;
+
+    /** 图片转换器. */
+    protected ImageTransform imageTransform;
+
     @Getter
     private boolean init = false;
 
@@ -55,6 +52,10 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         init = true;
         try {
             log.info("图片验证码[{}]初始化...", this.getClass().getSimpleName());
+            // 设置默认图片转换器
+            if (getImageTransform() == null) {
+                setImageTransform(new Base64ImageTransform());
+            }
             doInit(initDefaultResource);
         } catch (Exception e) {
             init = false;
@@ -90,51 +91,6 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         return doGenerateCaptchaImage(param);
     }
 
-
-    /**
-     * 将图片转换成字符串格式
-     *
-     * @param bufferedImage 图片
-     * @param formatType    格式化类型
-     * @return String
-     */
-    @SneakyThrows(Exception.class)
-    public String transform(BufferedImage bufferedImage, String formatType) {
-        // 这里判断处理一下,加一些警告日志
-        String result = beforeTransform(bufferedImage, formatType);
-        if (result != null) {
-            return result;
-        }
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        if (CaptchaImageUtils.isPng(formatType) || CaptchaImageUtils.isJpeg(formatType)) {
-            // 如果是 jpg 或者 png图片的话 用hutool的生成
-            ImgWriter.write(bufferedImage, formatType, byteArrayOutputStream, -1);
-        } else {
-            ImageIO.write(bufferedImage, formatType, byteArrayOutputStream);
-        }
-        //转换成字节码
-        byte[] data = byteArrayOutputStream.toByteArray();
-        String base64 = Base64.getEncoder().encodeToString(data);
-        return "data:image/" + formatType + ";base64,".concat(base64);
-    }
-
-    public String beforeTransform(BufferedImage bufferedImage, String formatType) {
-//        int type = bufferedImage.getType();
-//        if (BufferedImage.TYPE_4BYTE_ABGR == type) {
-//            // png , 如果转换的是jpg的话
-//            if (CaptchaImageUtils.isJpeg(formatType)) {
-//                // bufferedImage为 png， 但是转换的图片为 jpg
-//                if (log.isWarnEnabled()) {
-//                    log.warn("图片验证码转换警告， 原图为 png格式时，指定转换的图片为jpg格式时可能会导致转换异常，如果转换的图片为出现错误，请设置指定转换的类型与原图的类型一致");
-//                } else {
-//                    System.err.println("图片验证码转换警告， 原图为 png格式时，指定转换的图片为jpg格式时可能会导致转换异常，如果转换的图片为出现错误，请设置指定转换的类型与原图的类型一致");
-//                }
-//            }
-//        }
-        // 其它的暂时不考虑
-        return null;
-    }
-
     protected InputStream getTemplateFile(Map<String, Resource> templateImages, String imageName) {
         Resource resource = templateImages.get(imageName);
         if (resource == null) {
@@ -168,5 +124,20 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     @Override
     public ImageCaptchaResourceManager getImageResourceManager() {
         return imageCaptchaResourceManager;
+    }
+
+    @Override
+    public void setImageResourceManager(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+    }
+
+    @Override
+    public ImageTransform getImageTransform() {
+        return imageTransform;
+    }
+
+    @Override
+    public void setImageTransform(ImageTransform imageTransform) {
+        this.imageTransform = imageTransform;
     }
 }

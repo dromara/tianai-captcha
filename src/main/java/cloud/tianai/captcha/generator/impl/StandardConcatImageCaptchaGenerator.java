@@ -2,6 +2,7 @@ package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
@@ -29,6 +30,11 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     public StandardConcatImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
+    }
+
+    public StandardConcatImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform) {
+        super(imageCaptchaResourceManager);
+        setImageTransform(imageTransform);
     }
 
     @Override
@@ -80,7 +86,7 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     @SneakyThrows
     private ImageCaptchaInfo wrapConcatCaptchaInfo(int randomX, int randomY, BufferedImage bgImage, GenerateParam param) {
-        String backGroundImageBase64 = transform(bgImage, param.getBackgroundFormatName());
+        String backGroundImageBase64 = getImageTransform().transform(bgImage, param.getBackgroundFormatName());
         ImageCaptchaInfo imageCaptchaInfo = ImageCaptchaInfo.of(backGroundImageBase64,
                 null,
                 bgImage.getWidth(),

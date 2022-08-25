@@ -2,6 +2,7 @@ package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.util.NamedThreadFactory;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
@@ -181,5 +182,20 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     @Override
     public ImageCaptchaResourceManager getImageResourceManager() {
         return target.getImageResourceManager();
+    }
+
+    @Override
+    public void setImageResourceManager(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        target.setImageResourceManager(imageCaptchaResourceManager);
+    }
+
+    @Override
+    public ImageTransform getImageTransform() {
+        return target.getImageTransform();
+    }
+
+    @Override
+    public void setImageTransform(ImageTransform imageTransform) {
+        target.setImageTransform(imageTransform);
     }
 }

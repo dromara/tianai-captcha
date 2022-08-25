@@ -5,6 +5,7 @@ import cloud.tianai.captcha.common.util.ObjectUtils;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGeneratorProvider;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.impl.provider.StandardConcatImageCaptchaGeneratorProvider;
@@ -33,8 +34,14 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     private String defaultCaptcha = CaptchaTypeConstant.SLIDER;
 
     protected boolean initDefaultResource = false;
+
     public MultiImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
+    }
+
+    public MultiImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform) {
+        super(imageCaptchaResourceManager);
+        setImageTransform(imageTransform);
     }
 
     @Override
@@ -94,8 +101,24 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
             }
             imageCaptchaGenerator = imageCaptchaGeneratorMap.computeIfAbsent(type, k ->
                     // get and init
-                    provider.get(getImageCaptchaResourceManager()).init(initDefaultResource));
+                    provider.get(getImageResourceManager(), getImageTransform()).init(initDefaultResource));
         }
         return imageCaptchaGenerator;
+    }
+
+    @Override
+    public void setImageResourceManager(ImageCaptchaResourceManager imageCaptchaResourceManager) {
+        super.setImageResourceManager(imageCaptchaResourceManager);
+        for (ImageCaptchaGenerator imageCaptchaGenerator : imageCaptchaGeneratorMap.values()) {
+            imageCaptchaGenerator.setImageResourceManager(imageCaptchaResourceManager);
+        }
+    }
+
+    @Override
+    public void setImageTransform(ImageTransform imageTransform) {
+        super.setImageTransform(imageTransform);
+        for (ImageCaptchaGenerator imageCaptchaGenerator : imageCaptchaGeneratorMap.values()) {
+            imageCaptchaGenerator.setImageTransform(imageTransform);
+        }
     }
 }

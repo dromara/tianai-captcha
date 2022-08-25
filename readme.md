@@ -32,7 +32,7 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha</artifactId>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
 </dependency>
 ```
 
@@ -55,7 +55,8 @@ import java.util.Map;
 public class Test {
     public static void main(String[] args) throws InterruptedException {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
+        ImageTransform imageTransform = new Base64ImageTransform();
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform).init(true);
         /*
                 生成滑块验证码图片, 可选项
                 SLIDER (滑块验证码)
@@ -124,6 +125,8 @@ public class Test2 {
         - 资源存储(`ResourceStore`) 负责存储背景图和模板图
         - 资源提供者(`ResourceProvider`) 负责将资源存储器中对应的资源转换为文件流
             - 一般资源存储器中存储的是图片的url地址或者id之类， 资源提供者 就是负责将url或者别的id转换为真正的图片文件
+- 图片转换器 (`ImageTransform`)
+  - 主要负责将图片文件流转换成字符串类型，可以是base64格式/url 或其它加密格式，默认实现是bas64格式
 
 ## 扩展
 
@@ -134,9 +137,11 @@ package example.readme;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 
@@ -144,8 +149,9 @@ public class Test3 {
     public static void main(String[] args) {
         // 资源管理器
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
+        ImageTransform imageTransform = new Base64ImageTransform();
         // 标准验证码生成器
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform).init(true);
         // 生成 具有混淆的 滑块验证码 (目前只有滑块验证码支持混淆滑块， 旋转验证，滑动还原，点选验证 均不支持混淆功能)
         ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(GenerateParam.builder()
                 .type(CaptchaTypeConstant.SLIDER)
@@ -176,8 +182,9 @@ public class Test4 {
     public static void main(String[] args) {
         // 资源管理器
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
+        ImageTransform imageTransform = new Base64ImageTransform();
         // 标准验证码生成器
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform).init(true);
         // 生成旋转验证码 图片类型为 webp
         // 注意 tianai-captcha-1.3.2 后面默认删除了生成webp格式图片需要用户自定义添加webp转换的工具，需要用户自定义添加和扩展
         // 参考 https://bitbucket.org/luciad/webp-imageio
@@ -278,9 +285,10 @@ import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 public class Test6 {
     public static void main(String[] args) {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
+        ImageTransform imageTransform = new Base64ImageTransform();
         //为方便快速上手 系统本身自带了一张图片和两套滑块模板，如果不想用系统自带的可以不让它加载系统自带的
         // 第二个构造参数设置为false时将不加载默认的图片和模板
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(false);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager, imageTransform).init(false);
     }
 }
 
@@ -331,7 +339,8 @@ public class Test7 {
             }
         };
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(false);
+        ImageTransform imageTransform = new Base64ImageTransform();
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform).init(false);
         // 注册
         imageCaptchaResourceManager.registerResourceProvider(resourceProvider);
     }
@@ -362,7 +371,8 @@ public class Test8 {
         // 参数三: 出错后 等待xx时间再进行生成
         // 参数四: 检查时间间隔
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
-        ImageCaptchaGenerator imageCaptchaGenerator = new CacheImageCaptchaGenerator(new MultiImageCaptchaGenerator(imageCaptchaResourceManager), 10, 1000, 100);
+        ImageTransform imageTransform = new Base64ImageTransform();
+        ImageCaptchaGenerator imageCaptchaGenerator = new CacheImageCaptchaGenerator(new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform), 10, 1000, 100);
         imageCaptchaGenerator.init(true);
         // 生成滑块图片
         ImageCaptchaInfo slideImageInfo = imageCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.SLIDER);

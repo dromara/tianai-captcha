@@ -2,6 +2,7 @@ package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
@@ -29,11 +30,13 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
-    protected final ImageCaptchaResourceManager imageCaptchaResourceManager;
-
     public StandardRotateImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
-        this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+    }
+
+    public StandardRotateImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform) {
+        super(imageCaptchaResourceManager);
+        setImageTransform(imageTransform);
     }
 
     @Override
@@ -113,8 +116,8 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
     private ImageCaptchaInfo wrapRotateCaptchaInfo(double degree, int randomX, BufferedImage backgroundImage, BufferedImage sliderImage, GenerateParam param) {
         String backgroundFormatName = param.getBackgroundFormatName();
         String sliderFormatName = param.getSliderFormatName();
-        String backGroundImageBase64 = transform(backgroundImage, backgroundFormatName);
-        String sliderImageBase64 = transform(sliderImage, sliderFormatName);
+        String backGroundImageBase64 = getImageTransform().transform(backgroundImage, backgroundFormatName);
+        String sliderImageBase64 = getImageTransform().transform(sliderImage, sliderFormatName);
         return RotateImageCaptchaInfo.of(degree,
                 randomX,
                 backGroundImageBase64,

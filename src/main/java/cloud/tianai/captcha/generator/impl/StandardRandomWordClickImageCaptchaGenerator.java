@@ -2,6 +2,7 @@ package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.util.FontUtils;
+import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
@@ -57,11 +58,13 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
 
     protected float currentFontTopCoef = 0.0f;
 
-    @SneakyThrows
     public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
-        this.imageCaptchaResourceManager = imageCaptchaResourceManager;
+    }
 
+    public StandardRandomWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform) {
+        super(imageCaptchaResourceManager);
+        setImageTransform(imageTransform);
     }
 
     @Override
@@ -141,8 +144,8 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         // 提示图片
         BufferedImage tipImage = genTipImage(checkClickImageCheckDefinitionList).getImage();
         ImageCaptchaInfo clickImageCaptchaInfo = new ImageCaptchaInfo();
-        clickImageCaptchaInfo.setBackgroundImage(transform(bgImage, param.getBackgroundFormatName()));
-        clickImageCaptchaInfo.setSliderImage(transform(tipImage, param.getSliderFormatName()));
+        clickImageCaptchaInfo.setBackgroundImage(getImageTransform().transform(bgImage, param.getBackgroundFormatName()));
+        clickImageCaptchaInfo.setSliderImage(getImageTransform().transform(tipImage, param.getSliderFormatName()));
         clickImageCaptchaInfo.setBgImageWidth(bgImage.getWidth());
         clickImageCaptchaInfo.setBgImageHeight(bgImage.getHeight());
         clickImageCaptchaInfo.setSliderImageWidth(tipImage.getWidth());

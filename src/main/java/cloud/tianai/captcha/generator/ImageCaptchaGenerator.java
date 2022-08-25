@@ -15,6 +15,7 @@ public interface ImageCaptchaGenerator {
 
     /**
      * 初始化
+     *
      * @param initDefaultResource 是否初始化默认资源
      * @return ImageCaptchaGenerator
      */
@@ -54,5 +55,27 @@ public interface ImageCaptchaGenerator {
      * @return SliderCaptchaResourceManager
      */
     ImageCaptchaResourceManager getImageResourceManager();
+
+    /**
+     * 设置滑块验证码资源管理器
+     *
+     * @param imageCaptchaResourceManager
+     */
+    void setImageResourceManager(ImageCaptchaResourceManager imageCaptchaResourceManager);
+
+    /**
+     * 获取图片转换器
+     *
+     * @return ImageTransform
+     */
+    ImageTransform getImageTransform();
+
+    /**
+     * 设置图片转换器
+     *
+     * @param imageTransform imageTransform
+     * @return ImageTransform
+     */
+    void setImageTransform(ImageTransform imageTransform);
 
 }
