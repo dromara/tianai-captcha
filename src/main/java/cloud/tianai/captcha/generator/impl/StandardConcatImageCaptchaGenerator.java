@@ -55,7 +55,7 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
         // 拼接验证码不需要模板 只需要背景图
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {
-            Resource resourceImage = imageCaptchaResourceManager.randomGetResource(param.getType());
+            Resource resourceImage = requiredRandomGetResource(param.getType());
             InputStream resourceInputStream = imageCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage bgImage = wrapFile2BufferedImage(resourceInputStream);

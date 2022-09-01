@@ -62,13 +62,10 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
     @Override
     public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
         // 旋转验证码没有混淆
-        Map<String, Resource> templateImages = imageCaptchaResourceManager.randomGetTemplate(param.getType());
-        if (templateImages == null || templateImages.isEmpty()) {
-            return null;
-        }
+        Map<String, Resource> templateImages = requiredRandomGetTemplate(param.getType());
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {
-            Resource resourceImage = imageCaptchaResourceManager.randomGetResource(param.getType());
+            Resource resourceImage = requiredRandomGetResource(param.getType());
             InputStream resourceInputStream = imageCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage cutBackground = CaptchaImageUtils.wrapFile2BufferedImage(resourceInputStream);

@@ -1,5 +1,7 @@
 package cloud.tianai.captcha.generator;
 
+import cloud.tianai.captcha.common.exception.ImageCaptchaException;
+import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
@@ -90,6 +92,24 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         assertInit();
         return doGenerateCaptchaImage(param);
     }
+
+
+    protected Map<String, Resource> requiredRandomGetTemplate(String type) {
+        Map<String, Resource> templateMap = imageCaptchaResourceManager.randomGetTemplate(type);
+        if (CollectionUtils.isEmpty(templateMap)) {
+            throw new ImageCaptchaException("随机获取模板资源失败， 获取到的资源为空, type=" + type);
+        }
+        return templateMap;
+    }
+
+    protected Resource requiredRandomGetResource(String type) {
+        Resource resource = imageCaptchaResourceManager.randomGetResource(type);
+        if (resource == null) {
+            throw new ImageCaptchaException("随机获取资源失败， 获取到的资源为空, type=" + type);
+        }
+        return resource;
+    }
+
 
     protected InputStream getTemplateFile(Map<String, Resource> templateImages, String imageName) {
         Resource resource = templateImages.get(imageName);

@@ -44,7 +44,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
         // 文字点选验证码不需要模板 只需要背景图
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {
-            Resource resourceImage = getImageResourceManager().randomGetResource(param.getType());
+            Resource resourceImage = requiredRandomGetResource(param.getType());
             InputStream resourceInputStream = getImageResourceManager().getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage bgImage = CaptchaImageUtils.wrapFile2BufferedImage(resourceInputStream);

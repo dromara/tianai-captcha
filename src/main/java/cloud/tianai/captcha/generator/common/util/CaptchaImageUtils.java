@@ -169,18 +169,18 @@ public class CaptchaImageUtils {
     /**
      * 旋转图片
      *
-     * @param bufferedimage
+     * @param bufferedImage
      * @param degree
      * @return
      */
-    public static BufferedImage rotateImage(final BufferedImage bufferedimage,
+    public static BufferedImage rotateImage(final BufferedImage bufferedImage,
                                             final double degree) {
         // 得到图片宽度。
-        int w = bufferedimage.getWidth();
+        int w = bufferedImage.getWidth();
         // 得到图片高度。
-        int h = bufferedimage.getHeight();
+        int h = bufferedImage.getHeight();
         // 得到图片透明度。
-        int type = bufferedimage.getColorModel().getTransparency();
+        int type = bufferedImage.getColorModel().getTransparency();
         BufferedImage img;// 空的图片。
         Graphics2D graphics2d;// 空的画笔。
         (graphics2d = (img = new BufferedImage(w, h, type))
@@ -190,7 +190,7 @@ public class CaptchaImageUtils {
         // 旋转，degree是整型，度数，比如垂直90度。
         graphics2d.rotate(Math.toRadians(degree), w / 2, h / 2);
         // 从bufferedimagecopy图片至img，0,0是img的坐标。
-        graphics2d.drawImage(bufferedimage, 0, 0, null);
+        graphics2d.drawImage(bufferedImage, 0, 0, null);
         graphics2d.dispose();
         // 返回复制好的图片，原图片依然没有变，没有旋转，下次还可以使用。
         return img;
