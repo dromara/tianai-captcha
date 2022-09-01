@@ -2,6 +2,7 @@ package example.readme;
 
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceProvider;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -29,7 +30,7 @@ public class Test7 {
             }
         };
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(false);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,new Base64ImageTransform()).init(false);
         // 注册
         imageCaptchaResourceManager.registerResourceProvider(resourceProvider);
     }
