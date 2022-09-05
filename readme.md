@@ -386,6 +386,5 @@ public class Test8 {
 ```
 # qq群: 1021884609
 
-![输入图片说明](efe765f55a64c57b4ced55e53eaca0a.jpg)
 
 
