@@ -155,8 +155,8 @@ public class Test3 {
         // 生成 具有混淆的 滑块验证码 (目前只有滑块验证码支持混淆滑块， 旋转验证，滑动还原，点选验证 均不支持混淆功能)
         ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(GenerateParam.builder()
                 .type(CaptchaTypeConstant.SLIDER)
-                .sliderFormatName("jpeg")
-                .backgroundFormatName("png")
+                .sliderFormatName("png")
+                .backgroundFormatName("jpeg")
                 // 是否添加混淆滑块
                 .obfuscate(true)
                 .build());
