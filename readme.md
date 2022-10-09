@@ -4,7 +4,8 @@
 ---
 ## pc版在线体验 [在线体验](https://www.tianai.cloud)
 ---
-## 微信小程序在线体验（如果是大转盘就是在调试中...） ![](image/xiaochengxu.jpg)
+![](image/xiaochengxu.jpg)
+## 微信小程序在线体验（如果是大转盘就是在调试中...） 
 ---
 ## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 
