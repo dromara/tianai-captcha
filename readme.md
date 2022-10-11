@@ -1,8 +1,12 @@
 ## 可能是开源界最好用的行为验证码工具
 
 > (作者用爱发电，可能修复bug和更新的速度不会很频繁，检测出bug或者建议欢迎广大同学提交lssues，同时也希望广大网友们加入进来一起维护该项目，打造出开源界最好用的行为验证码工具， 同时也希望广大企业联系作者进行私人定制来请作者喝杯咖啡o(*￣3￣)o)
-## [在线体验](https://www.tianai.cloud)
-
+---
+## pc版在线体验 [在线体验](https://www.tianai.cloud)
+---
+![](image/xiaochengxu.jpg)
+## 微信小程序在线体验（如果是大转盘就是在调试中...） 
+---
 ## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 
 ![](image/1.png)
@@ -126,7 +130,7 @@ public class Test2 {
         - 资源提供者(`ResourceProvider`) 负责将资源存储器中对应的资源转换为文件流
             - 一般资源存储器中存储的是图片的url地址或者id之类， 资源提供者 就是负责将url或者别的id转换为真正的图片文件
 - 图片转换器 (`ImageTransform`)
-  - 主要负责将图片文件流转换成字符串类型，可以是base64格式/url 或其它加密格式，默认实现是bas64格式
+  - 主要负责将图片文件流转换成字符串类型，可以是base64格式/url 或其它加密格式，默认实现是bas64格式;
 
 ## 扩展
 
@@ -155,8 +159,8 @@ public class Test3 {
         // 生成 具有混淆的 滑块验证码 (目前只有滑块验证码支持混淆滑块， 旋转验证，滑动还原，点选验证 均不支持混淆功能)
         ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(GenerateParam.builder()
                 .type(CaptchaTypeConstant.SLIDER)
-                .sliderFormatName("jpeg")
-                .backgroundFormatName("png")
+                .sliderFormatName("png")
+                .backgroundFormatName("jpeg")
                 // 是否添加混淆滑块
                 .obfuscate(true)
                 .build());
@@ -385,3 +389,6 @@ public class Test8 {
 }
 ```
 # qq群: 1021884609
+
+
+
