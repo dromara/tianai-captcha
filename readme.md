@@ -4,19 +4,19 @@
 ---
 ## pc版在线体验 [在线体验](https://www.tianai.cloud)
 ---
-![](image/xiaochengxu.jpg)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/xiaochengxu.jpg)
 ## 微信小程序在线体验（如果是大转盘就是在调试中...） 
 ---
 ## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 
-![](image/1.png)
-![](image/4.png)
-![](image/6.png)
-![](image/7.png)
-![](image/9.png)
-![](image/10.png)
-![](image/11.png)
-![](image/12.png)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/1.png)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/4.png)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/6.png)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/7.png)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/9.png)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/10.png)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/11.png)
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/12.png)
 
 ## 简单介绍
 - tianai-captcha 目前支持的行为验证码类型
