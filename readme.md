@@ -389,3 +389,5 @@ public class Test8 {
 }
 ```
 # qq群: 1021884609
+# 微信群: 
+![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/qun2.jpg)
