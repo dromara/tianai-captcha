@@ -4,19 +4,19 @@
 ---
 ## pc版在线体验 [在线体验](https://www.tianai.cloud)
 ---
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/xiaochengxu.jpg)
+![](http://minio.tianai.cloud/public/xiaochengxu.jpg)
 ## 微信小程序在线体验
 ---
 ## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/1.png)
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/4.png)
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/6.png)
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/7.png)
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/9.png)
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/10.png)
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/11.png)
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/12.png)
+![](http://minio.tianai.cloud/public/1.png)
+![](http://minio.tianai.cloud/public/4.png)
+![](http://minio.tianai.cloud/public/6.png)
+![](http://minio.tianai.cloud/public/7.png)
+![](http://minio.tianai.cloud/public/9.png)
+![](http://minio.tianai.cloud/public/10.png)
+![](http://minio.tianai.cloud/public/11.png)
+![](http://minio.tianai.cloud/public/12.png)
 
 ## 简单介绍
 - tianai-captcha 目前支持的行为验证码类型
@@ -390,4 +390,4 @@ public class Test8 {
 ```
 # qq群: 1021884609
 # 微信群: 
-![](https://public.cdn.bjjbkj.cn/app/static/captcha/image/qun2.jpg)
+![](http://minio.tianai.cloud/public/qun2.jpg)
