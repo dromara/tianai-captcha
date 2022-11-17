@@ -391,3 +391,4 @@ public class Test8 {
 # qq群: 1021884609
 # 微信群: 
 ![](https://minio.tianai.cloud/public/qun2.jpg)
+## 微信群加不上的话 加微信好友 微信号: youseeseeyou-1ttd 拉你入群
