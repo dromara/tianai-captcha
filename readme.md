@@ -4,9 +4,6 @@
 ---
 ## pc版在线体验 [在线体验](https://www.tianai.cloud)
 ---
-![](https://minio.tianai.cloud/public/xiaochengxu.jpg)
-## 微信小程序在线体验
----
 ## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
 
 ![](https://minio.tianai.cloud/public/1.png)
