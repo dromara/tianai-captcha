@@ -6,11 +6,13 @@ import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.ImageTransformData;
 import cloud.tianai.captcha.generator.common.model.dto.RotateImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 
@@ -22,6 +24,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_TAG;
 
 /**
  * @Author: 天爱有情
@@ -52,7 +56,7 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
         resourceStore.addResource(CaptchaTypeConstant.ROTATE, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
 
         // 添加一些系统的 模板文件
-        Map<String, Resource> template1 = new HashMap<>(4);
+        ResourceMap template1 = new ResourceMap(DEFAULT_TAG, 4);
         template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/active.png")));
         template1.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/fixed.png")));
         template1.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/matrix.png")));
@@ -62,10 +66,10 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
     @Override
     public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
         // 旋转验证码没有混淆
-        Map<String, Resource> templateImages = requiredRandomGetTemplate(param.getType());
+        ResourceMap templateImages = requiredRandomGetTemplate(param.getType(), param.getTemplateImageTag());
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {
-            Resource resourceImage = requiredRandomGetResource(param.getType());
+            Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
             InputStream resourceInputStream = imageCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage cutBackground = CaptchaImageUtils.wrapFile2BufferedImage(resourceInputStream);
@@ -96,7 +100,7 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
             int randomX = ThreadLocalRandom.current().nextInt(fixedTemplate.getWidth() + 10, targetBackground.getWidth() - 10);
             double degree = 360d - randomX / ((targetBackground.getWidth()) / 360d);
             CaptchaImageUtils.centerOverlayAndRotateImage(matrixTemplate, cutImage, degree);
-            return wrapRotateCaptchaInfo(degree, randomX, targetBackground, matrixTemplate, param);
+            return wrapRotateCaptchaInfo(degree, randomX, targetBackground, matrixTemplate, param, templateImages, resourceImage);
         } finally {
             // 使用完后关闭流
             for (InputStream inputStream : inputStreams) {
@@ -110,15 +114,14 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
     }
 
     @SneakyThrows
-    private ImageCaptchaInfo wrapRotateCaptchaInfo(double degree, int randomX, BufferedImage backgroundImage, BufferedImage sliderImage, GenerateParam param) {
-        String backgroundFormatName = param.getBackgroundFormatName();
-        String sliderFormatName = param.getSliderFormatName();
-        String backGroundImageBase64 = getImageTransform().transform(backgroundImage, backgroundFormatName);
-        String sliderImageBase64 = getImageTransform().transform(sliderImage, sliderFormatName);
+    private ImageCaptchaInfo wrapRotateCaptchaInfo(double degree, int randomX, BufferedImage backgroundImage, BufferedImage sliderImage, GenerateParam param, ResourceMap templateResource, Resource resourceImage) {
+        ImageTransformData transform = getImageTransform().transform(param, backgroundImage, sliderImage, resourceImage, templateResource);
         return RotateImageCaptchaInfo.of(degree,
                 randomX,
-                backGroundImageBase64,
-                sliderImageBase64,
+                transform.getBackgroundImageUrl(),
+                transform.getTemplateImageUrl(),
+                resourceImage.getTag(),
+                templateResource.getTag(),
                 backgroundImage.getWidth(), backgroundImage.getHeight(),
                 sliderImage.getWidth(), sliderImage.getHeight()
         );

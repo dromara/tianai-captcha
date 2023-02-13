@@ -122,8 +122,8 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
                 ClickImageCheckDefinition definition = clickImageCheckDefinitionList.get(i);
                 Integer x = definition.getX();
                 Integer y = definition.getY();
-                Integer width = imageCaptchaInfo.getBgImageWidth();
-                Integer height = imageCaptchaInfo.getBgImageHeight();
+                Integer width = imageCaptchaInfo.getBackgroundImageWidth();
+                Integer height = imageCaptchaInfo.getBackgroundImageHeight();
                 float vx = calcPercentage(x, width);
                 float vy = calcPercentage(y, height);
                 sb.append(vx).append(",").append(vy).append(";");
@@ -327,8 +327,8 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
         return defaultData;
     }
 
-    protected void addPercentage(ImageCaptchaInfo imageCaptchaInfo, Map<String, Object> sliderCaptchaValidData) {
-        float percentage = calcPercentage(imageCaptchaInfo.getRandomX(), imageCaptchaInfo.getBgImageWidth());
-        sliderCaptchaValidData.put(PERCENTAGE_KEY, percentage);
+    protected void addPercentage(ImageCaptchaInfo imageCaptchaInfo, Map<String, Object> imageCaptchaValidData) {
+        float percentage = calcPercentage(imageCaptchaInfo.getRandomX(), imageCaptchaInfo.getBackgroundImageWidth());
+        imageCaptchaValidData.put(PERCENTAGE_KEY, percentage);
     }
 }

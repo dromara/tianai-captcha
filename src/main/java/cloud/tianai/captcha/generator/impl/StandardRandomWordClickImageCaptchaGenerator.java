@@ -6,6 +6,7 @@ import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.ImageTransformData;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
@@ -20,6 +21,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -47,6 +49,14 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
     @Getter
     @Setter
     protected int tipImageInterferencePointNum = 5;
+    /** 参与校验的数量. */
+    @Getter
+    @Setter
+    protected Integer checkClickCount = 4;
+    /** 干扰数量. */
+    @Getter
+    @Setter
+    protected Integer interferenceCount = 2;
 
     /**
      * 因为在画文字图形的时候 y 值不能准确通过 除法计算得出， 字体大小不一致中间的容错值算不准确
@@ -66,14 +76,14 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         super(imageCaptchaResourceManager);
         setImageTransform(imageTransform);
     }
-
     @Override
-    protected List<String> randomGetClickImgTips(int tipSize) {
+    protected List<Resource> randomGetClickImgTips(GenerateParam param) {
+        int tipSize = interferenceCount + checkClickCount;
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        List<String> tipList = new ArrayList<>(tipSize);
+        List<Resource> tipList = new ArrayList<>(tipSize);
         for (int i = 0; i < tipSize; i++) {
             String randomWord = FontUtils.getRandomChar(random);
-            tipList.add(randomWord);
+            tipList.add(new Resource(null, randomWord));
         }
         // 随机文字
         return tipList;
@@ -108,7 +118,7 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
     }
 
     public ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions) {
-        String tips = imageCheckDefinitions.stream().map(ClickImageCheckDefinition::getTip).collect(Collectors.joining());
+        String tips = imageCheckDefinitions.stream().map(c -> c.getTip().getData()).collect(Collectors.joining());
         // 生成随机颜色
         int fontWidth = tips.length() * font.getSize();
         int width = fontWidth + 6;
@@ -117,18 +127,18 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         float top = 6 / 2f + font.getSize() - currentFontTopCoef;
         BufferedImage bufferedImage = CaptchaImageUtils.genSimpleImgCaptcha(tips,
                 font, width, height, left, top, tipImageInterferenceLineNum, tipImageInterferencePointNum);
-        return new ImgWrapper(bufferedImage, tips);
+        return new ImgWrapper(bufferedImage, new Resource(null, tips));
     }
 
     @Override
-    public ImgWrapper getClickImg(String tip) {
+    public ImgWrapper getClickImg(Resource tip) {
         ThreadLocalRandom random = ThreadLocalRandom.current();
         // 随机颜色
         Color randomColor = CaptchaImageUtils.getRandomColor(random);
         // 随机角度
-        int randomDeg = ThreadLocalRandom.current().nextInt(0, 85);
+        int randomDeg = randomInt(0, 85);
         BufferedImage fontImage = CaptchaImageUtils.drawWordImg(randomColor,
-                tip,
+                tip.getData(),
                 font,
                 currentFontTopCoef,
                 clickImgWidth,
@@ -137,19 +147,33 @@ public class StandardRandomWordClickImageCaptchaGenerator extends AbstractClickI
         return new ImgWrapper(fontImage, tip);
     }
 
+    @Override
+    protected List<ClickImageCheckDefinition> filterAndSortClickImageCheckDefinition(List<ClickImageCheckDefinition> allCheckDefinitionList) {
+        // 打乱
+        Collections.shuffle(allCheckDefinitionList);
+        // 拿出参与校验的数据
+        List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = new ArrayList<>(checkClickCount);
+        for (int i = 0; i < checkClickCount; i++) {
+            ClickImageCheckDefinition clickImageCheckDefinition = allCheckDefinitionList.get(i);
+            checkClickImageCheckDefinitionList.add(clickImageCheckDefinition);
+        }
+        return checkClickImageCheckDefinitionList;
+    }
 
     @Override
     public ImageCaptchaInfo wrapClickImageCaptchaInfo(GenerateParam param, BufferedImage bgImage,
-                                                      List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList) {
+                                                      List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList, Resource resourceImage) {
         // 提示图片
         BufferedImage tipImage = genTipImage(checkClickImageCheckDefinitionList).getImage();
+        ImageTransformData transform = getImageTransform().transform(param, bgImage, tipImage, resourceImage, checkClickImageCheckDefinitionList);
         ImageCaptchaInfo clickImageCaptchaInfo = new ImageCaptchaInfo();
-        clickImageCaptchaInfo.setBackgroundImage(getImageTransform().transform(bgImage, param.getBackgroundFormatName()));
-        clickImageCaptchaInfo.setSliderImage(getImageTransform().transform(tipImage, param.getSliderFormatName()));
-        clickImageCaptchaInfo.setBgImageWidth(bgImage.getWidth());
-        clickImageCaptchaInfo.setBgImageHeight(bgImage.getHeight());
-        clickImageCaptchaInfo.setSliderImageWidth(tipImage.getWidth());
-        clickImageCaptchaInfo.setSliderImageHeight(tipImage.getHeight());
+        clickImageCaptchaInfo.setBackgroundImage(transform.getBackgroundImageUrl());
+        clickImageCaptchaInfo.setBackgroundImageTag(resourceImage.getTag());
+        clickImageCaptchaInfo.setTemplateImage(transform.getTemplateImageUrl());
+        clickImageCaptchaInfo.setBackgroundImageWidth(bgImage.getWidth());
+        clickImageCaptchaInfo.setBackgroundImageHeight(bgImage.getHeight());
+        clickImageCaptchaInfo.setTemplateImageWidth(tipImage.getWidth());
+        clickImageCaptchaInfo.setTemplateImageHeight(tipImage.getHeight());
         clickImageCaptchaInfo.setRandomX(null);
         clickImageCaptchaInfo.setTolerant(null);
         clickImageCaptchaInfo.setType(CaptchaTypeConstant.WORD_IMAGE_CLICK);

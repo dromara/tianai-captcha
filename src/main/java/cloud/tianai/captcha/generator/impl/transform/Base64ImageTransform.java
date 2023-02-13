@@ -1,8 +1,11 @@
 package cloud.tianai.captcha.generator.impl.transform;
 
 import cloud.tianai.captcha.generator.ImageTransform;
+import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
+import cloud.tianai.captcha.generator.common.model.dto.ImageTransformData;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.generator.common.util.ImgWriter;
+import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
@@ -18,7 +21,6 @@ import java.util.Base64;
  */
 public class Base64ImageTransform implements ImageTransform {
 
-    @Override
     @SneakyThrows(IOException.class)
     public String transform(BufferedImage bufferedImage, String transformType) {
         // 这里判断处理一下,加一些警告日志
@@ -54,5 +56,17 @@ public class Base64ImageTransform implements ImageTransform {
 //        }
         // 其它的暂时不考虑
         return null;
+    }
+
+    @Override
+    public ImageTransformData transform(GenerateParam param, BufferedImage backgroundImage, BufferedImage templateImage, Object backgroundResource, Object templateResource) {
+        ImageTransformData imageTransformData = new ImageTransformData();
+        if (backgroundImage != null) {
+            imageTransformData.setBackgroundImageUrl(transform(backgroundImage, param.getBackgroundFormatName()));
+        }
+        if (templateImage != null) {
+            imageTransformData.setTemplateImageUrl(transform(templateImage, param.getTemplateFormatName()));
+        }
+        return imageTransformData;
     }
 }

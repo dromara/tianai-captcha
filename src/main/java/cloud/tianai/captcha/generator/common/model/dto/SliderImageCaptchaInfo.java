@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.generator.common.model.dto;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -23,7 +22,9 @@ public class SliderImageCaptchaInfo extends ImageCaptchaInfo {
     public static SliderImageCaptchaInfo of(Integer x,
                                             Integer y,
                                             String backgroundImage,
-                                            String sliderImage,
+                                            String templateImage,
+                                            String backgroundImageTag,
+                                            String templateImageTag,
                                             Integer bgImageWidth,
                                             Integer bgImageHeight,
                                             Integer sliderImageWidth,
@@ -33,11 +34,13 @@ public class SliderImageCaptchaInfo extends ImageCaptchaInfo {
         sliderImageCaptchaInfo.setY(y);
         sliderImageCaptchaInfo.setRandomX(x);
         sliderImageCaptchaInfo.setBackgroundImage(backgroundImage);
-        sliderImageCaptchaInfo.setSliderImage(sliderImage);
-        sliderImageCaptchaInfo.setBgImageWidth(bgImageWidth);
-        sliderImageCaptchaInfo.setBgImageHeight(bgImageHeight);
-        sliderImageCaptchaInfo.setSliderImageWidth(sliderImageWidth);
-        sliderImageCaptchaInfo.setSliderImageHeight(sliderImageHeight);
+        sliderImageCaptchaInfo.setTemplateImage(templateImage);
+        sliderImageCaptchaInfo.setBackgroundImageTag(backgroundImageTag);
+        sliderImageCaptchaInfo.setTemplateImageTag(templateImageTag);
+        sliderImageCaptchaInfo.setBackgroundImageWidth(bgImageWidth);
+        sliderImageCaptchaInfo.setBackgroundImageHeight(bgImageHeight);
+        sliderImageCaptchaInfo.setTemplateImageWidth(sliderImageWidth);
+        sliderImageCaptchaInfo.setTemplateImageHeight(sliderImageHeight);
         sliderImageCaptchaInfo.setType(CaptchaTypeConstant.SLIDER);
         return sliderImageCaptchaInfo;
     }

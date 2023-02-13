@@ -14,7 +14,7 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
     public InputStream getResourceInputStream(Resource data) {
         InputStream resourceInputStream = doGetResourceInputStream(data);
         if (resourceInputStream == null) {
-            throw new IllegalArgumentException("滑块验证码无法读到指定的资源[" + getName() + "]" + data);
+            throw new IllegalArgumentException("无法读到指定的资源[" + getName() + "]" + data);
         }
         return resourceInputStream;
     }

@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.resource.impl;
 
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
+import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import cloud.tianai.captcha.resource.impl.provider.URLResourceProvider;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceProvider;
@@ -49,8 +50,8 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
     }
 
     @Override
-    public Map<String, Resource> randomGetTemplate(String type) {
-        Map<String, Resource> resourceMap = resourceStore.randomGetTemplateByType(type);
+    public ResourceMap randomGetTemplate(String type, String tag) {
+        ResourceMap resourceMap = resourceStore.randomGetTemplateByTypeAndTag(type, tag);
         if (resourceMap == null) {
             throw new IllegalStateException("随机获取模板错误，store中模板为空, type:" + type);
         }
@@ -58,8 +59,8 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
     }
 
     @Override
-    public Resource randomGetResource(String type) {
-        Resource resource = resourceStore.randomGetResource(type);
+    public Resource randomGetResource(String type, String tag) {
+        Resource resource = resourceStore.randomGetResourceByTypeAndTag(type, tag);
         if (resource == null) {
             throw new IllegalStateException("随机获取资源错误，store中资源为空, type:" + type);
         }

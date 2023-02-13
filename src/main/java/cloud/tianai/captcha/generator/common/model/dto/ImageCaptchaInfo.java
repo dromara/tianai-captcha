@@ -14,29 +14,29 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ImageCaptchaInfo {
 
-    /**
-     * 背景图
-     */
+    /** 背景图. */
     private String backgroundImage;
-    /**
-     * 移动图
-     */
-    private String sliderImage;
+    /** 模板图. */
+    private String templateImage;
+    /** 背景图片所属标签. */
+    private String backgroundImageTag;
+    /** 模板图片所属标签. */
+    private String templateImageTag;
     /** 背景图片宽度. */
-    private Integer bgImageWidth;
+    private Integer backgroundImageWidth;
     /** 背景图片高度. */
-    private Integer bgImageHeight;
+    private Integer backgroundImageHeight;
     /** 滑块图片宽度. */
-    private Integer sliderImageWidth;
+    private Integer templateImageWidth;
     /** 滑块图片高度. */
-    private Integer sliderImageHeight;
+    private Integer templateImageHeight;
     /** 随机值. */
     private Integer randomX;
     /** 容错值, 可以为空 默认 0.02容错,校验的时候用. */
     private Float tolerant;
     /** 验证码类型. */
     private String type;
-    /** 透传字段，用于传给前端.*/
+    /** 透传字段，用于传给前端. */
     private Object data;
     /**
      * 扩展字段
@@ -44,32 +44,46 @@ public class ImageCaptchaInfo {
     public Object expand;
 
     public ImageCaptchaInfo(String backgroundImage,
-                            String sliderImage,
-                            Integer bgImageWidth,
-                            Integer bgImageHeight,
-                            Integer sliderImageWidth,
-                            Integer sliderImageHeight,
+                            String templateImage,
+                            String backgroundImageTag,
+                            String templateImageTag,
+                            Integer backgroundImageWidth,
+                            Integer backgroundImageHeight,
+                            Integer templateImageWidth,
+                            Integer templateImageHeight,
                             Integer randomX,
                             String type) {
         this.backgroundImage = backgroundImage;
-        this.sliderImage = sliderImage;
-        this.bgImageWidth = bgImageWidth;
-        this.bgImageHeight = bgImageHeight;
-        this.sliderImageWidth = sliderImageWidth;
-        this.sliderImageHeight = sliderImageHeight;
+        this.templateImage = templateImage;
+        this.backgroundImageTag = backgroundImageTag;
+        this.templateImageTag = templateImageTag;
+        this.backgroundImageWidth = backgroundImageWidth;
+        this.backgroundImageHeight = backgroundImageHeight;
+        this.templateImageWidth = templateImageWidth;
+        this.templateImageHeight = templateImageHeight;
         this.randomX = randomX;
         this.type = type;
     }
 
     public static ImageCaptchaInfo of(String backgroundImage,
-                                      String sliderImage,
-                                      Integer bgImageWidth,
-                                      Integer bgImageHeight,
-                                      Integer sliderImageWidth,
-                                      Integer sliderImageHeight,
-                                      Integer randomKey,
+                                      String templateImage,
+                                      String backgroundImageTag,
+                                      String templateImageTag,
+                                      Integer backgroundImageWidth,
+                                      Integer backgroundImageHeight,
+                                      Integer templateImageWidth,
+                                      Integer templateImageHeight,
+                                      Integer randomX,
                                       String type) {
-        return new ImageCaptchaInfo(backgroundImage, sliderImage, bgImageWidth, bgImageHeight, sliderImageWidth, sliderImageHeight, randomKey, type);
+        return new ImageCaptchaInfo(backgroundImage,
+                templateImage,
+                backgroundImageTag,
+                templateImageTag,
+                backgroundImageWidth,
+                backgroundImageHeight,
+                templateImageWidth,
+                templateImageHeight,
+                randomX, type);
     }
 
 }

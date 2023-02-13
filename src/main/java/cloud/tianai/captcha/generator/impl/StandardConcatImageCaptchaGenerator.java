@@ -5,6 +5,7 @@ import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.ImageTransformData;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -55,7 +56,7 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
         // 拼接验证码不需要模板 只需要背景图
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {
-            Resource resourceImage = requiredRandomGetResource(param.getType());
+            Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
             InputStream resourceInputStream = imageCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage bgImage = wrapFile2BufferedImage(resourceInputStream);
@@ -71,7 +72,7 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
                             + bgImageTopSplit[1].getWidth(), bgImageTopSplit[0].getHeight(), bgImageTopSplit[1], bgImageTopSplit[0]);
             bgImage = concatImage(false, bgImageSplit[1].getWidth(), sliderImage.getHeight() + bgImageSplit[1].getHeight(),
                     sliderImage, bgImageSplit[1]);
-            return wrapConcatCaptchaInfo(randomX, randomY, bgImage, param);
+            return wrapConcatCaptchaInfo(randomX, randomY, bgImage, param, resourceImage);
         } finally {
             // 使用完后关闭流
             for (InputStream inputStream : inputStreams) {
@@ -85,9 +86,13 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
     }
 
     @SneakyThrows
-    private ImageCaptchaInfo wrapConcatCaptchaInfo(int randomX, int randomY, BufferedImage bgImage, GenerateParam param) {
-        String backGroundImageBase64 = getImageTransform().transform(bgImage, param.getBackgroundFormatName());
-        ImageCaptchaInfo imageCaptchaInfo = ImageCaptchaInfo.of(backGroundImageBase64,
+    private ImageCaptchaInfo wrapConcatCaptchaInfo(int randomX, int randomY, BufferedImage bgImage, GenerateParam param, Resource resourceImage) {
+
+        ImageTransformData transform = getImageTransform().transform(param, bgImage, resourceImage);
+
+        ImageCaptchaInfo imageCaptchaInfo = ImageCaptchaInfo.of(transform.getBackgroundImageUrl(),
+                null,
+                resourceImage.getTag(),
                 null,
                 bgImage.getWidth(),
                 bgImage.getHeight(),

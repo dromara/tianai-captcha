@@ -1,10 +1,10 @@
 package cloud.tianai.captcha.resource;
 
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 
 import java.io.InputStream;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: 天爱有情
@@ -17,17 +17,19 @@ public interface ImageCaptchaResourceManager {
      * 随机获取某个模板
      *
      * @param type 验证码类型
+     * @param tag  二级过滤，可以为空
      * @return Map<String, Resource>
      */
-    Map<String, Resource> randomGetTemplate(String type);
+    ResourceMap randomGetTemplate(String type, String tag);
 
     /**
      * 随机获取某个资源对象
      *
      * @param type 验证码类型
+     * @param tag  二级过滤，可以为空
      * @return Resource
      */
-    Resource randomGetResource(String type);
+    Resource randomGetResource(String type, String tag);
 
     /**
      * 获取真正的资源流通过资源对象

@@ -6,11 +6,13 @@ import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.ImageTransformData;
 import cloud.tianai.captcha.generator.common.model.dto.SliderImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +25,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_TAG;
 
 /**
  * @Author: 天爱有情
@@ -61,10 +65,10 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
     @Override
     public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
         Boolean obfuscate = param.getObfuscate();
-        Map<String, Resource> templateImages = requiredRandomGetTemplate(param.getType());
+        ResourceMap templateImages = requiredRandomGetTemplate(param.getType(), param.getTemplateImageTag());
         Collection<InputStream> inputStreams = new LinkedList<>();
         try {
-            Resource resourceImage = requiredRandomGetResource(param.getType());
+            Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
             InputStream resourceInputStream = imageCaptchaResourceManager.getResourceInputStream(resourceImage);
             inputStreams.add(resourceInputStream);
             BufferedImage cutBackground = CaptchaImageUtils.wrapFile2BufferedImage(resourceInputStream);
@@ -99,7 +103,7 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
             BufferedImage cutImage = CaptchaImageUtils.cutImage(cutBackground, fixedTemplate, randomX, randomY);
             CaptchaImageUtils.overlayImage(cutImage, activeTemplate, 0, 0);
             CaptchaImageUtils.overlayImage(matrixTemplate, cutImage, 0, randomY);
-            return wrapSliderCaptchaInfo(randomX, randomY, targetBackground, matrixTemplate, param);
+            return wrapSliderCaptchaInfo(randomX, randomY, targetBackground, matrixTemplate, param, templateImages, resourceImage);
         } finally {
             // 使用完后关闭流
             for (InputStream inputStream : inputStreams) {
@@ -127,14 +131,16 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
                                                         int randomY,
                                                         BufferedImage backgroundImage,
                                                         BufferedImage sliderImage,
-                                                        GenerateParam param) {
-        String backgroundFormatName = param.getBackgroundFormatName();
-        String sliderFormatName = param.getSliderFormatName();
-        String backGroundImageBase64 = getImageTransform().transform(backgroundImage, backgroundFormatName);
-        String sliderImageBase64 = getImageTransform().transform(sliderImage, sliderFormatName);
+                                                        GenerateParam param,
+                                                        ResourceMap templateResource,
+                                                        Resource resourceImage) {
+        ImageTransformData transform = getImageTransform().transform(param, backgroundImage, sliderImage, resourceImage, templateResource);
+
         return SliderImageCaptchaInfo.of(randomX, randomY,
-                backGroundImageBase64,
-                sliderImageBase64,
+                transform.getBackgroundImageUrl(),
+                transform.getTemplateImageUrl(),
+                resourceImage.getTag(),
+                templateResource.getTag(),
                 backgroundImage.getWidth(), backgroundImage.getHeight(),
                 sliderImage.getWidth(), sliderImage.getHeight()
         );
@@ -158,14 +164,14 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
         resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
 
         // 添加一些系统的 模板文件
-        Map<String, Resource> template1 = new HashMap<>(4);
+        ResourceMap template1 = new ResourceMap(DEFAULT_TAG, 4);
         template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
         template1.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
         template1.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/matrix.png")));
         resourceStore.addTemplate(CaptchaTypeConstant.SLIDER, template1);
 
 
-        Map<String, Resource> template2 = new HashMap<>(4);
+        ResourceMap template2 = new ResourceMap(DEFAULT_TAG, 4);
         template2.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/active.png")));
         template2.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/fixed.png")));
         template2.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/matrix.png")));

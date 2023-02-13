@@ -4,16 +4,23 @@ import cloud.tianai.captcha.common.exception.ImageCaptchaException;
 import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author: 天爱有情
@@ -78,11 +85,11 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
 
     @SneakyThrows
     @Override
-    public ImageCaptchaInfo generateCaptchaImage(String type, String backgroundFormatName, String sliderFormatName) {
+    public ImageCaptchaInfo generateCaptchaImage(String type, String backgroundFormatName, String templateFormatName) {
         return generateCaptchaImage(GenerateParam.builder()
                 .type(type)
                 .backgroundFormatName(backgroundFormatName)
-                .sliderFormatName(sliderFormatName)
+                .templateFormatName(templateFormatName)
                 .obfuscate(false)
                 .build());
     }
@@ -94,18 +101,18 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     }
 
 
-    protected Map<String, Resource> requiredRandomGetTemplate(String type) {
-        Map<String, Resource> templateMap = imageCaptchaResourceManager.randomGetTemplate(type);
+    protected ResourceMap requiredRandomGetTemplate(String type, String tag) {
+        ResourceMap templateMap = imageCaptchaResourceManager.randomGetTemplate(type, tag);
         if (CollectionUtils.isEmpty(templateMap)) {
-            throw new ImageCaptchaException("随机获取模板资源失败， 获取到的资源为空, type=" + type);
+            throw new ImageCaptchaException("随机获取模板资源失败， 获取到的资源为空, type=" + type + ",tag=" + tag);
         }
         return templateMap;
     }
 
-    protected Resource requiredRandomGetResource(String type) {
-        Resource resource = imageCaptchaResourceManager.randomGetResource(type);
+    protected Resource requiredRandomGetResource(String type, String tag) {
+        Resource resource = imageCaptchaResourceManager.randomGetResource(type, tag);
         if (resource == null) {
-            throw new ImageCaptchaException("随机获取资源失败， 获取到的资源为空, type=" + type);
+            throw new ImageCaptchaException("随机获取资源失败， 获取到的资源为空, type=" + type + ",tag=" + tag);
         }
         return resource;
     }
@@ -116,9 +123,71 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         if (resource == null) {
             throw new IllegalArgumentException("查找模板异常， 该模板下未找到 ".concat(imageName));
         }
-        return getImageResourceManager().getResourceInputStream(resource);
+        return getResourceInputStream(resource, null);
     }
 
+    protected BufferedImage getTemplateImage(Map<String, Resource> templateImages, String imageName) {
+        InputStream stream = getTemplateFile(templateImages, imageName);
+        BufferedImage bufferedImage = CaptchaImageUtils.wrapFile2BufferedImage(stream);
+        closeStream(stream);
+        return bufferedImage;
+    }
+
+
+    protected BufferedImage getResourceImage(Resource resource) {
+        InputStream stream = getResourceInputStream(resource, null);
+        BufferedImage bufferedImage = CaptchaImageUtils.wrapFile2BufferedImage(stream);
+        closeStream(stream);
+        return bufferedImage;
+    }
+
+    protected int randomInt(int origin, int bound) {
+        return ThreadLocalRandom.current().nextInt(origin, bound);
+    }
+    protected boolean randomBoolean() {
+        return ThreadLocalRandom.current().nextBoolean();
+    }
+
+    protected int randomInt(int bound) {
+        return ThreadLocalRandom.current().nextInt(bound);
+    }
+
+    public void closeStream(InputStream stream) {
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (IOException e) {
+                // ignore
+            }
+        }
+    }
+
+    protected InputStream getResourceInputStream(Resource resource, Collection<InputStream> inputStreams) {
+        InputStream stream = getImageResourceManager().getResourceInputStream(resource);
+        if (stream != null && inputStreams != null) {
+            inputStreams.add(stream);
+        }
+        return stream;
+    }
+
+    protected Optional<BufferedImage> getTemplateImageOfOptional(Map<String, Resource> templateImages, String imageName) {
+        Optional<InputStream> optional = getTemplateFileOfOptional(templateImages, imageName);
+        if (optional.isPresent()) {
+            InputStream inputStream = optional.get();
+            BufferedImage bufferedImage = CaptchaImageUtils.wrapFile2BufferedImage(inputStream);
+            closeStream(inputStream);
+            return Optional.ofNullable(bufferedImage);
+        }
+        return Optional.empty();
+    }
+
+    protected Optional<InputStream> getTemplateFileOfOptional(Map<String, Resource> templateImages, String imageName) {
+        Resource resource = templateImages.get(imageName);
+        if (resource == null) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(getResourceInputStream(resource, null));
+    }
 
     protected void assertInit() {
         if (!init) {

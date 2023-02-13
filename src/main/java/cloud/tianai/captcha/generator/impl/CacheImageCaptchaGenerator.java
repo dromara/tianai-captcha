@@ -171,7 +171,7 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
 
     @Override
     public ImageCaptchaInfo generateCaptchaImage(String type, String targetFormatName, String matrixFormatName) {
-        return generateCaptchaImage(GenerateParam.builder().type(type).backgroundFormatName(targetFormatName).sliderFormatName(matrixFormatName).build(), true);
+        return generateCaptchaImage(GenerateParam.builder().type(type).backgroundFormatName(targetFormatName).templateFormatName(matrixFormatName).build(), true);
     }
 
     @Override

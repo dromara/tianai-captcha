@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.generator.common.model.dto;
 
+import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ClickImageCheckDefinition {
     /** 提示.*/
-    private String tip;
+    private Resource tip;
     /** x.*/
     private Integer x;
     /** y.*/
