@@ -18,6 +18,7 @@ import lombok.Setter;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * @Author: 天爱有情
@@ -26,7 +27,7 @@ import java.util.Map;
  */
 public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
-    protected Map<String, ImageCaptchaGenerator> imageCaptchaGeneratorMap = new HashMap<>(4);
+    protected Map<String, ImageCaptchaGenerator> imageCaptchaGeneratorMap = new ConcurrentHashMap<>(4);
     protected Map<String, ImageCaptchaGeneratorProvider> imageCaptchaGeneratorProviderMap = new HashMap<>(4);
 
     @Setter
@@ -93,16 +94,14 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     }
 
     public ImageCaptchaGenerator requireGetCaptchaGenerator(String type) {
-        ImageCaptchaGenerator imageCaptchaGenerator = imageCaptchaGeneratorMap.get(type);
-        if (imageCaptchaGenerator == null) {
-            ImageCaptchaGeneratorProvider provider = imageCaptchaGeneratorProviderMap.get(type);
+        ImageCaptchaGenerator imageCaptchaGenerator = imageCaptchaGeneratorMap.computeIfAbsent(type, t -> {
+            ImageCaptchaGeneratorProvider provider = imageCaptchaGeneratorProviderMap.get(t);
             if (provider == null) {
-                throw new IllegalArgumentException("生成验证码失败，错误的type类型:" + type);
+                throw new IllegalArgumentException("生成验证码失败，错误的type类型:" + t);
             }
-            imageCaptchaGenerator = imageCaptchaGeneratorMap.computeIfAbsent(type, k ->
-                    // get and init
-                    provider.get(getImageResourceManager(), getImageTransform()).init(initDefaultResource));
-        }
+            return provider.get(getImageResourceManager(), getImageTransform()).init(initDefaultResource);
+        });
+
         return imageCaptchaGenerator;
     }
 
