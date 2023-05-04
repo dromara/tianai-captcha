@@ -6,10 +6,11 @@ import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.generator.ImageTransform;
+import cloud.tianai.captcha.generator.common.model.dto.CaptchaTransferData;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.impl.provider.StandardConcatImageCaptchaGeneratorProvider;
-import cloud.tianai.captcha.generator.impl.provider.StandardRandomWordClickImageCaptchaGeneratorProvider;
+import cloud.tianai.captcha.generator.impl.provider.StandardWordClickImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.generator.impl.provider.StandardRotateImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.generator.impl.provider.StandardSliderImageImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
@@ -55,7 +56,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
         // 拼接验证码
         addImageCaptchaGeneratorProvider(new StandardConcatImageCaptchaGeneratorProvider());
         // 点选文字验证码
-        addImageCaptchaGeneratorProvider(new StandardRandomWordClickImageCaptchaGeneratorProvider());
+        addImageCaptchaGeneratorProvider(new StandardWordClickImageCaptchaGeneratorProvider());
     }
 
     public void addImageCaptchaGeneratorProvider(ImageCaptchaGeneratorProvider provider) {
@@ -83,7 +84,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     }
 
     @Override
-    public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
+    public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
         String type = param.getType();
         if (ObjectUtils.isEmpty(type)) {
             param.setType(defaultCaptcha);
@@ -91,6 +92,17 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
         }
         ImageCaptchaGenerator imageCaptchaGenerator = requireGetCaptchaGenerator(type);
         return imageCaptchaGenerator.generateCaptchaImage(param);
+    }
+
+
+    @Override
+    protected void doGenerateCaptchaImage(CaptchaTransferData transferData) {
+
+    }
+
+    @Override
+    protected ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaTransferData transferData) {
+        return null;
     }
 
     public ImageCaptchaGenerator requireGetCaptchaGenerator(String type) {
@@ -101,7 +113,6 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
             }
             return provider.get(getImageResourceManager(), getImageTransform()).init(initDefaultResource);
         });
-
         return imageCaptchaGenerator;
     }
 

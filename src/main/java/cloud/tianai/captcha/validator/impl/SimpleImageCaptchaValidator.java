@@ -102,12 +102,12 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator {
                                                 ImageCaptchaInfo imageCaptchaInfo) {
         // type
         String type = (String) map.getOrDefault(TYPE_KEY, CaptchaTypeConstant.SLIDER);
+        Object expand = imageCaptchaInfo.getData() == null ? null : imageCaptchaInfo.getData().getExpand();
         if (CaptchaUtils.isSliderCaptcha(type)) {
             // 滑动验证码
             addPercentage(imageCaptchaInfo, map);
         } else if (CaptchaUtils.isClickCaptcha(type)) {
             // 图片点选验证码
-            Object expand = imageCaptchaInfo.getExpand();
             if (expand == null) {
                 throw new IllegalArgumentException("点选验证码扩展数据转换为 List<ClickImageCheckDefinition> 失败， info=" + imageCaptchaInfo);
             }

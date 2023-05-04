@@ -37,11 +37,7 @@ public class ImageCaptchaInfo {
     /** 验证码类型. */
     private String type;
     /** 透传字段，用于传给前端. */
-    private Object data;
-    /**
-     * 扩展字段
-     */
-    public Object expand;
+    private CustomData data;
 
     public ImageCaptchaInfo(String backgroundImage,
                             String templateImage,

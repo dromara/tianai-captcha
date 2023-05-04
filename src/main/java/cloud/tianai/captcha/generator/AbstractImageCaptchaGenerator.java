@@ -2,6 +2,8 @@ package cloud.tianai.captcha.generator;
 
 import cloud.tianai.captcha.common.exception.ImageCaptchaException;
 import cloud.tianai.captcha.common.util.CollectionUtils;
+import cloud.tianai.captcha.generator.common.model.dto.CaptchaTransferData;
+import cloud.tianai.captcha.generator.common.model.dto.CustomData;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
@@ -21,6 +23,8 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
+
+import static cloud.tianai.captcha.generator.impl.StaticCaptchaPostProcessorManager.*;
 
 /**
  * @Author: 天爱有情
@@ -97,9 +101,24 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     @Override
     public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
         assertInit();
-        return doGenerateCaptchaImage(param);
+        CustomData data = new CustomData();
+        CaptchaTransferData transferData = CaptchaTransferData.create(data, param);
+        ImageCaptchaInfo imageCaptchaInfo = applyPostProcessorBeforeGenerate(transferData, this);
+        if (imageCaptchaInfo != null) {
+            return imageCaptchaInfo;
+        }
+        doGenerateCaptchaImage(transferData);
+        applyPostProcessorBeforeWrapImageCaptchaInfo(transferData, this);
+        imageCaptchaInfo = wrapImageCaptchaInfo(transferData);
+        applyPostProcessorAfterGenerateCaptchaImage(transferData, imageCaptchaInfo, this);
+        return imageCaptchaInfo;
     }
 
+    public ImageCaptchaInfo wrapImageCaptchaInfo(CaptchaTransferData transferData) {
+        ImageCaptchaInfo imageCaptchaInfo = doWrapImageCaptchaInfo(transferData);
+        imageCaptchaInfo.setData(transferData.getCustomData());
+        return imageCaptchaInfo;
+    }
 
     protected ResourceMap requiredRandomGetTemplate(String type, String tag) {
         ResourceMap templateMap = imageCaptchaResourceManager.randomGetTemplate(type, tag);
@@ -144,6 +163,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     protected int randomInt(int origin, int bound) {
         return ThreadLocalRandom.current().nextInt(origin, bound);
     }
+
     protected boolean randomBoolean() {
         return ThreadLocalRandom.current().nextBoolean();
     }
@@ -205,10 +225,12 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     /**
      * 生成验证码方法
      *
-     * @param param param
+     * @param transferData transferData
      * @return ImageCaptchaInfo
      */
-    protected abstract ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param);
+    protected abstract void doGenerateCaptchaImage(CaptchaTransferData transferData);
+
+    protected abstract ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaTransferData transferData);
 
     @Override
     public ImageCaptchaResourceManager getImageResourceManager() {

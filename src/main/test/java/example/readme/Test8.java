@@ -24,7 +24,7 @@ public class Test8 {
         // 获取背景图片的base64
         String backgroundImage = slideImageInfo.getBackgroundImage();
         // 获取滑块图片
-        String sliderImage = slideImageInfo.getSliderImage();
+        String sliderImage = slideImageInfo.getTemplateImage();
         System.out.println(slideImageInfo);
     }
 }

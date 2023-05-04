@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.generator.impl.transform;
 
 import cloud.tianai.captcha.generator.ImageTransform;
+import cloud.tianai.captcha.generator.common.model.dto.CustomData;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageTransformData;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
@@ -59,7 +60,12 @@ public class Base64ImageTransform implements ImageTransform {
     }
 
     @Override
-    public ImageTransformData transform(GenerateParam param, BufferedImage backgroundImage, BufferedImage templateImage, Object backgroundResource, Object templateResource) {
+    public ImageTransformData transform(GenerateParam param,
+                                        BufferedImage backgroundImage,
+                                        BufferedImage templateImage,
+                                        Object backgroundResource,
+                                        Object templateResource,
+                                        CustomData data) {
         ImageTransformData imageTransformData = new ImageTransformData();
         if (backgroundImage != null) {
             imageTransformData.setBackgroundImageUrl(transform(backgroundImage, param.getBackgroundFormatName()));

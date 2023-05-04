@@ -44,6 +44,11 @@ public class CaptchaImageUtils {
         return ImageIO.read(resource);
     }
 
+    public static BufferedImage createTransparentImage(int width, int height) {
+        BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+        return bufferedImage;
+    }
+
 
     /**
      * 图片覆盖（覆盖图压缩到width*height大小，覆盖到底图上）
@@ -62,6 +67,7 @@ public class CaptchaImageUtils {
         // 释放图形上下文使用的系统资源
         g2d.dispose();
     }
+
 
     /**
      * 将Image图像中的透明/不透明部分转换为Shape图形
@@ -135,20 +141,44 @@ public class CaptchaImageUtils {
     /**
      * 通过模板图片抠图（不透明部分）
      *
-     * @param origin   源图片
-     * @param template 模板图片
-     * @param x        坐标轴x
-     * @param y        坐标轴y
+     * @param oriImage      源图片
+     * @param templateImage 模板图片
+     * @param xPos          坐标轴x
+     * @param yPos          坐标轴y
      * @return BufferedImage
      */
     @SneakyThrows
-    public static BufferedImage cutImage(BufferedImage origin, BufferedImage template, int x, int y) {
+    public static BufferedImage cutImage(BufferedImage oriImage, BufferedImage templateImage, int xPos, int yPos) {
+        // 模板图像矩阵
+        int bw = templateImage.getWidth(null);
+        int bh = templateImage.getHeight(null);
+        BufferedImage targetImage = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB);
+        // 透明色
+        for (int y = 0; y < bh; y++) {
+            for (int x = 0; x < bw; x++) {
+                int rgb = templateImage.getRGB(x, y);
+                int alpha = (rgb >> 24) & 0xff;
+                // 透明度大于100才处理，过滤一下边缘过于透明的像素点
+                if (alpha > 100) {
+                    int bgRgb = oriImage.getRGB(xPos + x, yPos + y);
+                    targetImage.setRGB(x, y, bgRgb);
+                }
+            }
+
+        }
+        return targetImage;
+    }
+
+
+    @SneakyThrows
+    public static BufferedImage cutImage_bak(BufferedImage origin, BufferedImage template, int x, int y) {
         int bw = template.getWidth(null);
         int bh = template.getHeight(null);
         int lw = origin.getWidth(null);
         int lh = origin.getHeight(null);
         //得到透明的区域(人物轮廓)
         Shape imageShape = getImageShape(template, false);
+        long end = System.currentTimeMillis();
         //合成后的图片
         BufferedImage image = new BufferedImage(bw, bh, BufferedImage.TYPE_INT_ARGB);
         Graphics2D graphics = image.createGraphics();
@@ -305,12 +335,6 @@ public class CaptchaImageUtils {
         return newImage;
     }
 
-
-    public static void main(String[] args) {
-        char randomChar = getRandomChar();
-        System.out.println(randomChar);
-    }
-
     public static char getRandomChar() {
         return (char) (0x4e00 + (int) (Math.random() * (0x9fa5 - 0x4e00 + 1)));
     }
@@ -426,7 +450,7 @@ public class CaptchaImageUtils {
         char[] chars = data.toCharArray();
 
         for (int i = 0; i < chars.length; i++) {
-            g.setColor(getRandomColor(random));
+            g.setColor(Color.gray);
             g.drawString(String.valueOf(chars[i]), startX + i * font.getSize(), startY);
         }
         // 干扰点
@@ -440,6 +464,24 @@ public class CaptchaImageUtils {
         }
         return bufferedImage;
     }
+
+
+    public static void drawInterfere(Graphics2D g, int width,
+                                     int height,
+                                     int interferenceLineNum,
+                                     int interferencePointNum) {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        // 干扰点
+        if (interferencePointNum > 0) {
+            drawOval(interferencePointNum, null, g, width, height, random);
+        }
+        if (interferencePointNum > 0) {
+            g.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+            // 干扰线
+            drawBesselLine(interferenceLineNum, null, g, width, height, random);
+        }
+    }
+
 
     /**
      * 随机获取颜色
@@ -523,6 +565,30 @@ public class CaptchaImageUtils {
     }
 
     /**
+     * 灰度处理,把原图传进去，传出来为修改后的图
+     *
+     * @param b b
+     * @return BufferedImage
+     */
+    public static BufferedImage gray(BufferedImage b) {
+        int width = b.getWidth();
+        int height = b.getHeight();
+        // 下面这个别忘了定义，不然会出错
+        BufferedImage bufferedImageEnd = new BufferedImage(width, height, BufferedImage.TYPE_3BYTE_BGR);
+        // 双层循环更改图片的RGB值，把得到的灰度值存到bufferedImage_end中，然后返回bufferedImage_end
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                // 获取到（x，y）此像素点的Colo，转化为灰度
+                Color color = new Color(b.getRGB(x, y));
+                int gray = (int) (color.getRed() * 0.299 + color.getGreen() * 0.587 + color.getBlue() * 0.114);
+                Color color_end = new Color(gray, gray, gray);
+                bufferedImageEnd.setRGB(x, y, color_end.getRGB());
+            }
+        }
+        return bufferedImageEnd;
+    }
+
+    /**
      * 创建画板
      *
      * @param image image
@@ -538,6 +604,21 @@ public class CaptchaImageUtils {
         }
         return g;
     }
+
+    public static BufferedImage toBufferedImage(Image img) {
+        if (img instanceof BufferedImage) {
+            return (BufferedImage) img;
+        }
+        // Create a buffered image with transparency
+        BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+        // Draw the image on to the buffered image
+        Graphics2D bGr = bimage.createGraphics();
+        bGr.drawImage(img, 0, 0, null);
+        bGr.dispose();
+        // Return the buffered image
+        return bimage;
+    }
+
 
     /**
      * 后缀是否是jpg

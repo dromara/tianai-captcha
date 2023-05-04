@@ -20,7 +20,7 @@ public class Test4 {
         // 参考 https://bitbucket.org/luciad/webp-imageio
         ImageCaptchaInfo slideImageInfo = imageCaptchaGenerator.generateCaptchaImage(GenerateParam.builder()
                 .type(CaptchaTypeConstant.ROTATE)
-                .sliderFormatName("webp")
+                .templateFormatName("webp")
                 .backgroundFormatName("webp")
                 .build());
         System.out.println(slideImageInfo);

@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.generator;
 
+import cloud.tianai.captcha.generator.common.model.dto.CustomData;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageTransformData;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -21,8 +22,8 @@ public interface ImageTransform {
      * @param backgroundResource 背景资源对象
      * @return ImageTransformData
      */
-    default ImageTransformData transform(GenerateParam param, BufferedImage backgroundImage, Resource backgroundResource) {
-        return transform(param, backgroundImage, null, backgroundResource, null);
+    default ImageTransformData transform(GenerateParam param, BufferedImage backgroundImage, Resource backgroundResource,CustomData data) {
+        return transform(param, backgroundImage, null, backgroundResource, null,data);
     }
 
     /**
@@ -39,5 +40,6 @@ public interface ImageTransform {
                                  BufferedImage backgroundImage,
                                  BufferedImage templateImage,
                                  Object backgroundResource,
-                                 Object templateResource);
+                                 Object templateResource,
+                                 CustomData data);
 }

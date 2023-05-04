@@ -4,10 +4,7 @@ import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
-import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
-import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.generator.common.model.dto.ImageTransformData;
-import cloud.tianai.captcha.generator.common.model.dto.SliderImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
@@ -17,16 +14,16 @@ import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_TAG;
+import static cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant.*;
+import static cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME;
 
 /**
  * @Author: 天爱有情
@@ -63,80 +60,91 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     @SneakyThrows
     @Override
-    public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
+    public void doGenerateCaptchaImage(CaptchaTransferData transferData) {
+        GenerateParam param = transferData.getParam();
         Boolean obfuscate = param.getObfuscate();
-        ResourceMap templateImages = requiredRandomGetTemplate(param.getType(), param.getTemplateImageTag());
-        Collection<InputStream> inputStreams = new LinkedList<>();
-        try {
-            Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
-            InputStream resourceInputStream = imageCaptchaResourceManager.getResourceInputStream(resourceImage);
-            inputStreams.add(resourceInputStream);
-            BufferedImage cutBackground = CaptchaImageUtils.wrapFile2BufferedImage(resourceInputStream);
-            // 拷贝一份图片
-            BufferedImage targetBackground = CaptchaImageUtils.copyImage(cutBackground, cutBackground.getType());
-
-            InputStream fixedTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME);
-            inputStreams.add(fixedTemplateInput);
-            BufferedImage fixedTemplate = CaptchaImageUtils.wrapFile2BufferedImage(fixedTemplateInput);
-
-            InputStream activeTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME);
-            inputStreams.add(activeTemplateInput);
-            BufferedImage activeTemplate = CaptchaImageUtils.wrapFile2BufferedImage(activeTemplateInput);
-
-
-            InputStream matrixTemplateInput = getTemplateFile(templateImages, SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME);
-            inputStreams.add(matrixTemplateInput);
-            BufferedImage matrixTemplate = CaptchaImageUtils.wrapFile2BufferedImage(matrixTemplateInput);
-
-//        BufferedImage cutTemplate = warpFile2BufferedImage(getTemplateFile(templateImages, CUT_IMAGE_NAME));
-
-            // 获取随机的 x 和 y 轴
-            int randomX = ThreadLocalRandom.current().nextInt(fixedTemplate.getWidth() + 5, targetBackground.getWidth() - fixedTemplate.getWidth() - 10);
-            int randomY = ThreadLocalRandom.current().nextInt(targetBackground.getHeight() - fixedTemplate.getHeight());
-
-            CaptchaImageUtils.overlayImage(targetBackground, fixedTemplate, randomX, randomY);
-            if (obfuscate) {
-                // 加入混淆滑块
-                int obfuscateX = randomObfuscateX(randomX, fixedTemplate.getWidth(), targetBackground.getWidth());
-                CaptchaImageUtils.overlayImage(targetBackground, fixedTemplate, obfuscateX, randomY);
-            }
-            BufferedImage cutImage = CaptchaImageUtils.cutImage(cutBackground, fixedTemplate, randomX, randomY);
-            CaptchaImageUtils.overlayImage(cutImage, activeTemplate, 0, 0);
-            CaptchaImageUtils.overlayImage(matrixTemplate, cutImage, 0, randomY);
-            return wrapSliderCaptchaInfo(randomX, randomY, targetBackground, matrixTemplate, param, templateImages, resourceImage);
-        } finally {
-            // 使用完后关闭流
-            for (InputStream inputStream : inputStreams) {
-                try {
-                    inputStream.close();
-                } catch (IOException e) {
-                    // ignore
-                }
-            }
+        ResourceMap templateResource = requiredRandomGetTemplate(param.getType(), param.getTemplateImageTag());
+        Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
+        BufferedImage background = getResourceImage(resourceImage);
+        BufferedImage fixedTemplate = getTemplateImage(templateResource, TEMPLATE_FIXED_IMAGE_NAME);
+        BufferedImage activeTemplate = getTemplateImage(templateResource, TEMPLATE_ACTIVE_IMAGE_NAME);
+        BufferedImage maskTemplate = fixedTemplate;
+        Optional<BufferedImage> maskTemplateOptional = getTemplateImageOfOptional(templateResource, TEMPLATE_MASK_IMAGE_NAME);
+        if (maskTemplateOptional.isPresent()) {
+            maskTemplate = maskTemplateOptional.get();
         }
+        // 获取随机的 x 和 y 轴
+        int randomX = randomInt(fixedTemplate.getWidth() + 5, background.getWidth() - fixedTemplate.getWidth() - 10);
+        int randomY = randomInt(background.getHeight() - fixedTemplate.getHeight());
+
+        BufferedImage cutImage = CaptchaImageUtils.cutImage(background, maskTemplate, randomX, randomY);
+        CaptchaImageUtils.overlayImage(background, fixedTemplate, randomX, randomY);
+        if (obfuscate) {
+            Optional<BufferedImage> obfuscateFixedTemplate = getTemplateImageOfOptional(templateResource, OBFUSCATE_TEMPLATE_FIXED_IMAGE_NAME);
+            BufferedImage obfuscateImage = obfuscateFixedTemplate.orElseGet(() -> createObfuscate(fixedTemplate));
+            int obfuscateX = randomObfuscateX(randomX, fixedTemplate.getWidth(), background.getWidth());
+            CaptchaImageUtils.overlayImage(background, obfuscateImage, obfuscateX, randomY);
+        }
+        CaptchaImageUtils.overlayImage(cutImage, activeTemplate, 0, 0);
+        // 这里创建一张png透明图片
+        BufferedImage matrixTemplate = CaptchaImageUtils.createTransparentImage(activeTemplate.getWidth(), background.getHeight());
+        CaptchaImageUtils.overlayImage(matrixTemplate, cutImage, 0, randomY);
+
+        XandY xandY = new XandY();
+        xandY.x = randomX;
+        xandY.y = randomY;
+        transferData.setBackgroundImage(background);
+        transferData.setTemplateImage(matrixTemplate);
+        transferData.setTemplateResource(templateResource);
+        transferData.setResourceImage(resourceImage);
+        transferData.setTransferData(xandY);
+        // 后处理
+//        applyPostProcessorBeforeWrapImageCaptchaInfo(transferData, this);
+//        imageCaptchaInfo = wrapSliderCaptchaInfo(randomX, randomY, transferData);
+//        applyPostProcessorAfterGenerateCaptchaImage(transferData, imageCaptchaInfo, this);
+//        return imageCaptchaInfo;
     }
 
-    /**
-     * 包装成 SliderCaptchaInfo
-     *
-     * @param randomX         随机生成的 x轴
-     * @param randomY         随机生成的 y轴
-     * @param backgroundImage 背景图片
-     * @param sliderImage     滑块图片
-     * @param param           接口传入参数
-     * @return SliderCaptchaInfo
-     */
-    @SneakyThrows
-    public SliderImageCaptchaInfo wrapSliderCaptchaInfo(int randomX,
-                                                        int randomY,
-                                                        BufferedImage backgroundImage,
-                                                        BufferedImage sliderImage,
-                                                        GenerateParam param,
-                                                        ResourceMap templateResource,
-                                                        Resource resourceImage) {
-        ImageTransformData transform = getImageTransform().transform(param, backgroundImage, sliderImage, resourceImage, templateResource);
+    protected BufferedImage createObfuscate(BufferedImage fixedImage) {
+        // 随机拉伸或缩放宽高, 每次只拉伸高或者宽
+        int width = fixedImage.getWidth();
+        int height = fixedImage.getHeight();
+        int window = randomInt(-3, 4);
+        if (randomBoolean()) {
+            height = height + window * 5;
+        } else {
+            width = width + window * 5;
+        }
+        int type = fixedImage.getColorModel().getTransparency();
+        BufferedImage image = new BufferedImage(width, height, type);
+        Graphics2D graphics = image.createGraphics();
+        // 透明度
+        double alpha = ThreadLocalRandom.current().nextDouble(0.5, 0.8);
+        AlphaComposite alphaComposite = AlphaComposite.Src.derive((float) alpha);
+        graphics.setComposite(alphaComposite);
+        graphics.drawImage(fixedImage, 0, 0, width, height, null);
+        return image;
+    }
 
-        return SliderImageCaptchaInfo.of(randomX, randomY,
+
+    public static class XandY {
+        int x;
+        int y;
+    }
+
+    @SneakyThrows
+    @Override
+    public SliderImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaTransferData transferData) {
+        GenerateParam param = transferData.getParam();
+        BufferedImage backgroundImage = transferData.getBackgroundImage();
+        BufferedImage sliderImage = transferData.getTemplateImage();
+        Resource resourceImage = transferData.getResourceImage();
+        ResourceMap templateResource = transferData.getTemplateResource();
+        CustomData customData = transferData.getCustomData();
+        XandY data = (XandY) transferData.getTransferData();
+        ImageTransformData transform = getImageTransform().transform(param, backgroundImage, sliderImage, resourceImage, templateResource, customData);
+
+        SliderImageCaptchaInfo imageCaptchaInfo = SliderImageCaptchaInfo.of(data.x, data.y,
                 transform.getBackgroundImageUrl(),
                 transform.getTemplateImageUrl(),
                 resourceImage.getTag(),
@@ -144,15 +152,17 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
                 backgroundImage.getWidth(), backgroundImage.getHeight(),
                 sliderImage.getWidth(), sliderImage.getHeight()
         );
+        imageCaptchaInfo.setData(customData);
+        return imageCaptchaInfo;
     }
 
     protected int randomObfuscateX(int sliderX, int slWidth, int bgWidth) {
         if (bgWidth / 2 > (sliderX + (slWidth / 2))) {
             // 右边混淆
-            return ThreadLocalRandom.current().nextInt(sliderX + slWidth, bgWidth - slWidth);
+            return randomInt(sliderX + slWidth, bgWidth - slWidth);
         }
         // 左边混淆
-        return ThreadLocalRandom.current().nextInt(slWidth, sliderX - slWidth);
+        return randomInt(slWidth, sliderX - slWidth);
     }
 
     /**
@@ -161,20 +171,17 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
     public void initDefaultResource() {
         ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加一些系统的资源文件
-        resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg")));
+        resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg"), DEFAULT_TAG));
 
         // 添加一些系统的 模板文件
         ResourceMap template1 = new ResourceMap(DEFAULT_TAG, 4);
-        template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
-        template1.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
-        template1.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/matrix.png")));
+        template1.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
+        template1.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
         resourceStore.addTemplate(CaptchaTypeConstant.SLIDER, template1);
 
-
         ResourceMap template2 = new ResourceMap(DEFAULT_TAG, 4);
-        template2.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/active.png")));
-        template2.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/fixed.png")));
-        template2.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/matrix.png")));
+        template2.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/active.png")));
+        template2.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/fixed.png")));
         resourceStore.addTemplate(CaptchaTypeConstant.SLIDER, template2);
     }
 }

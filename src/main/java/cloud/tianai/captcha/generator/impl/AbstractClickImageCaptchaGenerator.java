@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
+import cloud.tianai.captcha.generator.common.model.dto.CaptchaTransferData;
 import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
@@ -34,7 +35,8 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
 
     @SneakyThrows
     @Override
-    public ImageCaptchaInfo doGenerateCaptchaImage(GenerateParam param) {
+    public void doGenerateCaptchaImage(CaptchaTransferData transferData) {
+        GenerateParam param = transferData.getParam();
         // 文字点选验证码不需要模板 只需要背景图
         Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
 
@@ -73,8 +75,15 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
             clickImageCheckDefinitionList.add(clickImageCheckDefinition);
         }
         List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = filterAndSortClickImageCheckDefinition(clickImageCheckDefinitionList);
-        // wrap
-        return wrapClickImageCaptchaInfo(param, bgImage, checkClickImageCheckDefinitionList, resourceImage);
+        transferData.setBackgroundImage(bgImage);
+        transferData.setTransferData(checkClickImageCheckDefinitionList);
+        transferData.setResourceImage(resourceImage);
+
+
+//        // wrap
+//        ImageCaptchaInfo imageCaptchaInfo = wrapClickImageCaptchaInfo(param, bgImage, checkClickImageCheckDefinitionList, resourceImage, data);
+//        imageCaptchaInfo.setData(data);
+//        return imageCaptchaInfo;
 
     }
 
@@ -100,18 +109,6 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
      * @return ImgWrapper
      */
     public abstract ImgWrapper getClickImg(Resource tip);
-
-    /**
-     * 包装 ImageCaptchaInfo
-     *
-     * @param param                              param
-     * @param bgImage                            bgImage
-     * @param checkClickImageCheckDefinitionList checkClickImageCheckDefinitionList
-     * @param resourceImage                      随机读取到的图片资源
-     * @return ImageCaptchaInfo
-     */
-    public abstract ImageCaptchaInfo wrapClickImageCaptchaInfo(GenerateParam param, BufferedImage bgImage,
-                                                               List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList, Resource resourceImage);
 
     /**
      * @Author: 天爱有情

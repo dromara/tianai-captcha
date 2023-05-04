@@ -373,7 +373,7 @@ public class Test8 {
         // 参数四: 检查时间间隔
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         ImageTransform imageTransform = new Base64ImageTransform();
-        ImageCaptchaGenerator imageCaptchaGenerator = new CacheImageCaptchaGenerator(new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform), 10, 1000, 100);
+        ImageCaptchaGenerator imageCaptchaGenerator = new CacheImageCaptchaGenerator(new MultiImageCaptchaGenerator(imageCaptchaResourceManager, imageTransform), 10, 1000, 100);
         imageCaptchaGenerator.init(true);
         // 生成滑块图片
         ImageCaptchaInfo slideImageInfo = imageCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.SLIDER);
