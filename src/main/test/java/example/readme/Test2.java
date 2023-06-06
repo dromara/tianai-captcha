@@ -16,10 +16,10 @@ public class Test2 {
         // 用户传来的行为轨迹和进行校验
         // - imageCaptchaTrack为前端传来的滑动轨迹数据
         // - map 为生成验证码时缓存的map数据
-        boolean check = sliderCaptchaValidator.valid(imageCaptchaTrack, map);
-        // 如果只想校验用户是否滑到指定凹槽即可，也可以使用
-        // - 参数1 用户传来的百分比数据
-        // - 参数2 生成滑块是真实的百分比数据
-        check = sliderCaptchaValidator.checkPercentage(0.2f, percentage);
+//        boolean check = sliderCaptchaValidator.valid(imageCaptchaTrack, map);
+//        // 如果只想校验用户是否滑到指定凹槽即可，也可以使用
+//        // - 参数1 用户传来的百分比数据
+//        // - 参数2 生成滑块是真实的百分比数据
+//        check = sliderCaptchaValidator.checkPercentage(0.2f, percentage);
     }
 }

@@ -32,4 +32,13 @@ public class CaptchaUtils {
         return CaptchaTypeConstant.WORD_IMAGE_CLICK.equals(type) || CaptchaTypeConstant.IMAGE_CLICK.equals(type);
     }
 
+    /**
+     * 是否是拼图类验证码, 校验的值是 数字排列顺序
+     *
+     * @param type 类型
+     * @return boolean
+     */
+    public static boolean isJigsawCaptcha(String type) {
+        return CaptchaTypeConstant.JIGSAW.equals(type);
+    }
 }
