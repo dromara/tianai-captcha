@@ -33,7 +33,7 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha</artifactId>
-    <version>1.3.3</version>
+    <version>1.4.1</version>
 </dependency>
 ```
 
@@ -85,7 +85,6 @@ public class Test {
 ```java
 package example.readme;
 
-import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
 
@@ -93,7 +92,7 @@ import java.util.Map;
 
 public class Test2 {
     public static void main(String[] args) {
-        ImageCaptchaValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
+        BasicCaptchaTrackValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
 
         ImageCaptchaTrack imageCaptchaTrack = null;
         Map<String, Object> map = null;
@@ -101,14 +100,13 @@ public class Test2 {
         // 用户传来的行为轨迹和进行校验
         // - imageCaptchaTrack为前端传来的滑动轨迹数据
         // - map 为生成验证码时缓存的map数据
-        boolean check = sliderCaptchaValidator.valid(imageCaptchaTrack, map);
-        // 如果只想校验用户是否滑到指定凹槽即可，也可以使用
-        // - 参数1 用户传来的百分比数据
-        // - 参数2 生成滑块是真实的百分比数据
+        boolean check = sliderCaptchaValidator.valid(imageCaptchaTrack, map).isSuccess();
+//        // 如果只想校验用户是否滑到指定凹槽即可，也可以使用
+//        // - 参数1 用户传来的百分比数据
+//        // - 参数2 生成滑块是真实的百分比数据
         check = sliderCaptchaValidator.checkPercentage(0.2f, percentage);
     }
 }
-
 ```
 
 ## 整体架构设计
@@ -237,11 +235,9 @@ public class Test5 {
   - 滑块验证码
     - 滑块大小为 110*110 格式为png
     - 凹槽大小为 110*110 格式为png
-    - 模板大小为 110*360 格式为png，该图为固定格式，是一张纯透明图片
   - 旋转验证码
     - 滑块大小为 200*200 格式为png
     - 凹槽大小为 200*200 格式为png
-    - 模板大小为 360*360 格式为png，该图为固定格式，是一张纯透明图片
 ```java
 package example.readme;
 
@@ -250,11 +246,9 @@ import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class Test6 {
     public static void main(String[] args) {
@@ -262,12 +256,11 @@ public class Test6 {
         // 通过资源管理器或者资源存储器
         ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加滑块验证码模板.模板图片由三张图片组成
-        Map<String, Resource> template1 = new HashMap<>(4);
+        ResourceMap template1 = new ResourceMap("default", 4);
         template1.put(SliderCaptchaConstant.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/active.png"));
         template1.put(SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/fixed.png"));
-        template1.put(SliderCaptchaConstant.TEMPLATE_MATRIX_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/matrix.png"));
-        resourceStore.addTemplate(CaptchaTypeConstant.SLIDER,template1);
-        // 模板与三张图片组成 滑块、凹槽、背景图 
+        resourceStore.addTemplate(CaptchaTypeConstant.SLIDER, template1);
+        // 模板与三张图片组成 滑块、凹槽、背景图
         // 同样默认支持 classpath 和 url 两种获取图片资源， 如果想扩展可实现 ResourceProvider 接口，进行自定义扩展
     }
 }
@@ -388,4 +381,5 @@ public class Test8 {
 # qq群: 1021884609
 # 微信群: 
 ![](https://minio.tianai.cloud/public/qun2.jpg?a=123123)
+
 ## 微信群加不上的话 加微信好友 微信号: youseeseeyou-1ttd 拉你入群
