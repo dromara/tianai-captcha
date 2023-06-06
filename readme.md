@@ -3,8 +3,7 @@
 > (作者用爱发电，可能修复bug和更新的速度不会很频繁，检测出bug或者建议欢迎广大同学提交lssues，同时也希望广大网友们加入进来一起维护该项目，打造出开源界最好用的行为验证码工具， 同时也希望广大企业联系作者进行私人定制来请作者喝杯咖啡o(*￣3￣)o)
 ---
 ## pc版在线体验 [在线体验](https://www.tianai.cloud)
----
-## 验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
+
 
 ![](https://minio.tianai.cloud/public/1.png)
 ![](https://minio.tianai.cloud/public/4.png)
@@ -24,7 +23,9 @@
     - 后面会陆续支持市面上更多好玩的验证码玩法... 敬请期待
 ## 快速上手
 
-如果是SpringBoot开发者可直接使用SpringBoot快速启动器[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter)
+>  **如果是SpringBoot开发者可直接使用SpringBoot快速启动器[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter)**
+
+>  **验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)**
 
 ### 1. 导入xml
 
