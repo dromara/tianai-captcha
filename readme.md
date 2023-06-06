@@ -21,11 +21,14 @@
     - 滑动还原验证码
     - 文字点选验证码
     - 后面会陆续支持市面上更多好玩的验证码玩法... 敬请期待
+
 ## 快速上手
+
+**注意:  如果你项目是使用的Springboot， 请使用SpringBoot脚手架工具[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter)； 该工具对tianai-captcha验证码进行了封装，使其使用更加方便快捷**
 
 >  **如果是SpringBoot开发者可直接使用SpringBoot快速启动器[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter)**
 
->  **验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)**
+>  **写好的验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)**
 
 ### 1. 导入xml
 
