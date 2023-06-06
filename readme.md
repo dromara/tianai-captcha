@@ -24,11 +24,11 @@
 
 ## 快速上手
 
->  **注意:  如果你项目是使用的Springboot， **
+>  注意:  如果你项目是使用的**Springboot**， 
 >
-> **请使用SpringBoot脚手架工具[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter)； **
+> 请使用SpringBoot脚手架工具[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter);
 >
-> **该工具对tianai-captcha验证码进行了封装，使其使用更加方便快捷**
+> 该工具对tianai-captcha验证码进行了封装，使其使用更加方便快捷
 
 
 
