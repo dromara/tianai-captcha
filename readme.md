@@ -2,7 +2,7 @@
 
 > (作者用爱发电，可能修复bug和更新的速度不会很频繁，检测出bug或者建议欢迎广大同学提交lssues，同时也希望广大网友们加入进来一起维护该项目，打造出开源界最好用的行为验证码工具， 同时也希望广大企业联系作者进行私人定制来请作者喝杯咖啡o(*￣3￣)o)
 ---
-## pc版在线体验 [在线体验](https://www.tianai.cloud)
+## pc版在线体验 [在线体验](http://captcha.tianai.cloud)
 
 
 ![](https://minio.tianai.cloud/public/1.png)
