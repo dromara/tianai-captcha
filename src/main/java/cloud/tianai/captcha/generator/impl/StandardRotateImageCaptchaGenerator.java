@@ -57,12 +57,6 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
         template1.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/active.png")));
         template1.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/fixed.png")));
         resourceStore.addTemplate(CaptchaTypeConstant.ROTATE, template1);
-
-        ResourceMap template2 = new ResourceMap(CommonConstant.DEFAULT_TAG + "_obfuscate", 4);
-        template2.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/4/active.png")));
-        template2.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/4/fixed.png")));
-        template2.put(TEMPLATE_MASK_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/4/mask.png")));
-        resourceStore.addTemplate(CaptchaTypeConstant.ROTATE, template2);
     }
 
     @Override
