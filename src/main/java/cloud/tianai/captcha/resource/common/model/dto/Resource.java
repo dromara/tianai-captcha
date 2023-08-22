@@ -3,6 +3,7 @@ package cloud.tianai.captcha.resource.common.model.dto;
 import cloud.tianai.captcha.resource.ResourceProvider;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @Author: 天爱有情
@@ -10,6 +11,7 @@ import lombok.Data;
  * @Description 资源对象
  */
 @Data
+@NoArgsConstructor
 public class Resource {
     /** 类型. */
     private String type;
