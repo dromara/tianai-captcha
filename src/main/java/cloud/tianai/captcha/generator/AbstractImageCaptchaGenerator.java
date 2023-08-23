@@ -122,7 +122,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
 
     protected ResourceMap requiredRandomGetTemplate(String type, String tag) {
         ResourceMap templateMap = imageCaptchaResourceManager.randomGetTemplate(type, tag);
-        if (CollectionUtils.isEmpty(templateMap)) {
+        if (templateMap == null || CollectionUtils.isEmpty(templateMap.getResourceMap())) {
             throw new ImageCaptchaException("随机获取模板资源失败， 获取到的资源为空, type=" + type + ",tag=" + tag);
         }
         return templateMap;
@@ -137,7 +137,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     }
 
 
-    protected InputStream getTemplateFile(Map<String, Resource> templateImages, String imageName) {
+    protected InputStream getTemplateFile(ResourceMap templateImages, String imageName) {
         Resource resource = templateImages.get(imageName);
         if (resource == null) {
             throw new IllegalArgumentException("查找模板异常， 该模板下未找到 ".concat(imageName));
@@ -145,7 +145,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         return getResourceInputStream(resource, null);
     }
 
-    protected BufferedImage getTemplateImage(Map<String, Resource> templateImages, String imageName) {
+    protected BufferedImage getTemplateImage(ResourceMap templateImages, String imageName) {
         InputStream stream = getTemplateFile(templateImages, imageName);
         BufferedImage bufferedImage = CaptchaImageUtils.wrapFile2BufferedImage(stream);
         closeStream(stream);
@@ -190,7 +190,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         return stream;
     }
 
-    protected Optional<BufferedImage> getTemplateImageOfOptional(Map<String, Resource> templateImages, String imageName) {
+    protected Optional<BufferedImage> getTemplateImageOfOptional(ResourceMap templateImages, String imageName) {
         Optional<InputStream> optional = getTemplateFileOfOptional(templateImages, imageName);
         if (optional.isPresent()) {
             InputStream inputStream = optional.get();
@@ -201,7 +201,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         return Optional.empty();
     }
 
-    protected Optional<InputStream> getTemplateFileOfOptional(Map<String, Resource> templateImages, String imageName) {
+    protected Optional<InputStream> getTemplateFileOfOptional(ResourceMap templateImages, String imageName) {
         Resource resource = templateImages.get(imageName);
         if (resource == null) {
             return Optional.empty();

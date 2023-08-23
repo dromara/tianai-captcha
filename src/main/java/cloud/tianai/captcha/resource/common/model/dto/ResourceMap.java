@@ -1,10 +1,10 @@
 package cloud.tianai.captcha.resource.common.model.dto;
 
-import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @Author: 天爱有情
@@ -12,24 +12,47 @@ import java.util.HashMap;
  * @Description 存储一组Resource的Map, 增加tag标记
  */
 @Data
-@EqualsAndHashCode(callSuper = true)
-public class ResourceMap extends HashMap<String, Resource> {
+@EqualsAndHashCode
+public class ResourceMap {
 
+    private Map<String, Resource> resourceMap;
     private String tag;
 
     public ResourceMap(String tag) {
         this.tag = tag;
+        this.resourceMap = new HashMap<>();
     }
 
     public ResourceMap(String tag, int initialCapacity) {
-        super(initialCapacity);
         this.tag = tag;
+        this.resourceMap = new HashMap<>(initialCapacity);
     }
 
     public ResourceMap(int initialCapacity) {
-        super(initialCapacity);
+        this.resourceMap = new HashMap<>(initialCapacity);
     }
 
     public ResourceMap() {
     }
+
+    private Map<String, Resource> getResourceMapOfCreate() {
+        if (resourceMap == null) {
+            resourceMap = new HashMap<>(2);
+        }
+        return resourceMap;
+    }
+
+    // ================== Map ==================
+
+    public Resource put(String key, Resource value) {
+        return getResourceMapOfCreate().put(key, value);
+    }
+
+    public Resource get(Object key) {
+        return getResourceMapOfCreate().get(key);
+    }
+    public Resource remove(Object key) {
+        return getResourceMapOfCreate().remove(key);
+    }
+
 }
