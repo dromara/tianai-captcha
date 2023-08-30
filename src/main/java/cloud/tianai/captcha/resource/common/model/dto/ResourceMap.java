@@ -3,8 +3,10 @@ package cloud.tianai.captcha.resource.common.model.dto;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 /**
  * @Author: 天爱有情
@@ -51,8 +53,16 @@ public class ResourceMap {
     public Resource get(Object key) {
         return getResourceMapOfCreate().get(key);
     }
+
     public Resource remove(Object key) {
         return getResourceMapOfCreate().remove(key);
     }
 
+    public Collection<Resource> values() {
+        return getResourceMapOfCreate().values();
+    }
+
+    public void forEach(BiConsumer<String, Resource> action) {
+        getResourceMapOfCreate().forEach(action);
+    }
 }

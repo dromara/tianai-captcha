@@ -1,17 +1,23 @@
 package cloud.tianai.captcha.generator.common.util;
 
 import lombok.SneakyThrows;
+
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.geom.Area;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.QuadCurve2D;
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.PixelGrabber;
+import java.awt.image.RenderedImage;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @Author: 天爱有情
@@ -68,6 +74,25 @@ public class CaptchaImageUtils {
         g2d.dispose();
     }
 
+
+    public static int getMaxPix(BufferedImage image, int x, int y, int width, int height) {
+        int[] rgbArr = new int[width * height];
+        image.getRGB(x, y, width, height, rgbArr, 0, width);
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int rgb : rgbArr) {
+            Integer count = map.getOrDefault(rgb, 0);
+            map.put(rgb, count + 1);
+        }
+        AtomicInteger maxRgb = new AtomicInteger();
+        AtomicInteger maxRgbCount = new AtomicInteger();
+        map.forEach((r, c) -> {
+            if (c > maxRgbCount.get()) {
+                maxRgb.set(r);
+                maxRgbCount.set(c);
+            }
+        });
+        return maxRgb.get();
+    }
 
     /**
      * 将Image图像中的透明/不透明部分转换为Shape图形
@@ -196,6 +221,22 @@ public class CaptchaImageUtils {
         return image;
     }
 
+    public static void replaceColorByOpaque(BufferedImage oriImage, int replaceRgb) {
+        int bh = oriImage.getHeight();
+        int bw = oriImage.getWidth();
+        // 透明色
+        for (int y = 0; y < bh; y++) {
+            for (int x = 0; x < bw; x++) {
+                int rgb = oriImage.getRGB(x, y);
+                int alpha = (rgb >> 24) & 0xff;
+                // 透明度大于100才处理，过滤一下边缘过于透明的像素点
+                if (alpha > 100) {
+                    oriImage.setRGB(x, y, replaceRgb);
+                }
+            }
+        }
+    }
+
     /**
      * 旋转图片
      *
@@ -288,24 +329,14 @@ public class CaptchaImageUtils {
             endScanY = 0;
         }
 
-        // start
-        int[] rgbArr = new int[startImageWidth * startImageHeight];
-        img.getRGB(0, 0, startImageWidth, startImageHeight, rgbArr, 0, startImageWidth);
-        int type = img.getColorModel().getTransparency();
-        BufferedImage startImg = new BufferedImage(startImageWidth, startImageHeight, type);
-        startImg.setRGB(0, 0, startImageWidth, startImageHeight, rgbArr, 0, startImageWidth);
-        // end
-        rgbArr = new int[endImageWidth * endImageHeight];
-        img.getRGB(endScanX, endScanY, endImageWidth, endImageHeight, rgbArr, 0, endImageWidth);
-        BufferedImage endImg = new BufferedImage(endImageWidth, endImageHeight, type);
-        endImg.setRGB(0, 0, endImageWidth, endImageHeight, rgbArr, 0, endImageWidth);
+        BufferedImage startImg = img.getSubimage(0, 0, startImageWidth, startImageHeight);
+        BufferedImage endImg = img.getSubimage(endScanX, endScanY, endImageWidth, endImageHeight);
 
         BufferedImage[] splitImageArr = new BufferedImage[2];
         splitImageArr[0] = startImg;
         splitImageArr[1] = endImg;
         return splitImageArr;
     }
-
 
     /**
      * 拼接图片
@@ -319,19 +350,19 @@ public class CaptchaImageUtils {
     public static BufferedImage concatImage(boolean direction, int width, int height, BufferedImage... imgArr) {
         int pos = 0;
         BufferedImage newImage = new BufferedImage(width, height, imgArr[0].getColorModel().getTransparency());
+        Graphics2D graphics = newImage.createGraphics();
         for (BufferedImage img : imgArr) {
-            int[] rgbArr = new int[width * height];
-            img.getRGB(0, 0, img.getWidth(), img.getHeight(), rgbArr, 0, img.getWidth());
             if (direction) {
-                newImage.setRGB(pos, 0, img.getWidth(), img.getHeight(), rgbArr, 0, img.getWidth());
-                pos += img.getWidth();
                 // 水平方向
+                graphics.drawImage(img, pos, 0, img.getWidth(), img.getHeight(),null);
+                pos += img.getWidth();
             } else {
                 // 垂直方向
-                newImage.setRGB(0, pos, img.getWidth(), img.getHeight(), rgbArr, 0, img.getWidth());
+                graphics.drawImage(img, 0, pos, img.getWidth(), img.getHeight(),null);
                 pos += img.getHeight();
             }
         }
+        graphics.dispose();
         return newImage;
     }
 
