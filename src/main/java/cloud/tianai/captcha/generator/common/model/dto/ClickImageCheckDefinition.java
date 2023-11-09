@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.awt.*;
+
 /**
  * @Author: 天爱有情
  * @date 2022/4/28 16:51
@@ -24,5 +26,7 @@ public class ClickImageCheckDefinition {
     private Integer width;
     /** 高.*/
     private Integer height;
+    /** 颜色.*/
+    private Color imageColor;
 
 }

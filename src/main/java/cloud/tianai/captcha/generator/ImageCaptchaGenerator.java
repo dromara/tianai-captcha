@@ -41,7 +41,7 @@ public interface ImageCaptchaGenerator {
     ImageCaptchaInfo generateCaptchaImage(String type, String targetFormatName, String matrixFormatName);
 
     /**
-     * 生成滑块验证码
+     * 生成验证码
      *
      * @param param 生成参数
      * @return SliderCaptchaInfo

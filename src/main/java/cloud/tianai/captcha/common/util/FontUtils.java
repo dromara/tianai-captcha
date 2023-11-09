@@ -2,9 +2,7 @@ package cloud.tianai.captcha.common.util;
 
 import lombok.SneakyThrows;
 
-import java.awt.*;
 import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author: 天爱有情

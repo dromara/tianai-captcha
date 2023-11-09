@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.resource.common.model.dto;
 
 import cloud.tianai.captcha.resource.ResourceProvider;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +18,10 @@ public class Resource {
     public String data;
     /** 标签.*/
     private String tag;
-
+    /** 提示.*/
+    private String tip;
+    /** 扩展.*/
+    private Object extra;
     public Resource(String type, String data) {
         this.type = type;
         this.data = data;
@@ -29,5 +31,12 @@ public class Resource {
         this.type = type;
         this.data = data;
         this.tag = tag;
+    }
+
+    public Resource(String type, String data, String tag, String tip) {
+        this.type = type;
+        this.data = data;
+        this.tag = tag;
+        this.tip = tip;
     }
 }

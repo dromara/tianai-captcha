@@ -4,13 +4,16 @@ import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.common.util.FontUtils;
 import cloud.tianai.captcha.generator.ImageTransform;
+import cloud.tianai.captcha.generator.common.FontWrapper;
 import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.SneakyThrows;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
+import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
 import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_TAG;
 
 /**
@@ -114,7 +118,7 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
     public void initDefaultResource() {
         ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
         // 添加一些系统的资源文件
-        resourceStore.addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource(ClassPathResourceProvider.NAME, StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg"), DEFAULT_TAG));
+        resourceStore.addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg"), DEFAULT_TAG));
     }
 
     public ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions) {
@@ -130,7 +134,7 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
         float top = 6 / 2f + font.getSize() - currentFontTopCoef;
         BufferedImage bufferedImage = CaptchaImageUtils.genSimpleImgCaptcha(tips,
                 font, width, height, left, top, tipImageInterferenceLineNum, tipImageInterferencePointNum);
-        return new ImgWrapper(bufferedImage, new Resource(null, tips));
+        return new ImgWrapper(bufferedImage, new Resource(null, tips), null);
     }
 
     @Override
@@ -150,7 +154,7 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
                 clickImgWidth,
                 clickImgHeight,
                 randomDeg);
-        return new ImgWrapper(fontImage, tip);
+        return new ImgWrapper(fontImage, tip, randomColor);
     }
 
     @Override
@@ -167,12 +171,12 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
     }
 
     @Override
-    public ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaTransferData transferData) {
-        List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = (List<ClickImageCheckDefinition>) transferData.getTransferData();
-        BufferedImage bgImage = transferData.getBackgroundImage();
-        GenerateParam param = transferData.getParam();
-        Resource resourceImage = transferData.getResourceImage();
-        CustomData data = transferData.getCustomData();
+    public ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
+        List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = (List<ClickImageCheckDefinition>) captchaExchange.getTransferData();
+        BufferedImage bgImage = captchaExchange.getBackgroundImage();
+        GenerateParam param = captchaExchange.getParam();
+        Resource resourceImage = captchaExchange.getResourceImage();
+        CustomData data = captchaExchange.getCustomData();
         // 提示图片
         BufferedImage tipImage = genTipImage(checkClickImageCheckDefinitionList).getImage();
         ImageTransformData transform = getImageTransform().transform(param, bgImage, tipImage, resourceImage, checkClickImageCheckDefinitionList, data);
@@ -191,12 +195,5 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
         return clickImageCaptchaInfo;
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class FontWrapper {
-        private Font font;
-        private float currentFontTopCoef;
-    }
-}
 
+}

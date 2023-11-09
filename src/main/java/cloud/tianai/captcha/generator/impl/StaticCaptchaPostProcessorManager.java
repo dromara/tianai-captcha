@@ -3,7 +3,7 @@ package cloud.tianai.captcha.generator.impl;
 import cloud.tianai.captcha.common.exception.ImageCaptchaException;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaPostProcessor;
-import cloud.tianai.captcha.generator.common.model.dto.CaptchaTransferData;
+import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import lombok.Getter;
 
@@ -19,10 +19,6 @@ public class StaticCaptchaPostProcessorManager {
 
     @Getter
     private static LinkedList<ImageCaptchaPostProcessor> processors = new LinkedList<>();
-
-    static {
-
-    }
 
     public static void add(ImageCaptchaPostProcessor processor) {
         processors.add(processor);
@@ -49,10 +45,10 @@ public class StaticCaptchaPostProcessorManager {
     }
 
 
-    public static ImageCaptchaInfo applyPostProcessorBeforeGenerate(CaptchaTransferData transferData, ImageCaptchaGenerator context) {
+    public static ImageCaptchaInfo applyPostProcessorBeforeGenerate(CaptchaExchange captchaExchange, ImageCaptchaGenerator context) {
         for (ImageCaptchaPostProcessor processor : processors) {
             try {
-                ImageCaptchaInfo imageCaptchaInfo = processor.beforeGenerateCaptchaImage(transferData, context);
+                ImageCaptchaInfo imageCaptchaInfo = processor.beforeGenerateCaptchaImage(captchaExchange, context);
                 if (imageCaptchaInfo != null) {
                     return imageCaptchaInfo;
                 }
@@ -63,10 +59,10 @@ public class StaticCaptchaPostProcessorManager {
         return null;
     }
 
-    public static void applyPostProcessorBeforeWrapImageCaptchaInfo(CaptchaTransferData transferData, ImageCaptchaGenerator context) {
+    public static void applyPostProcessorBeforeWrapImageCaptchaInfo(CaptchaExchange captchaExchange, ImageCaptchaGenerator context) {
         for (ImageCaptchaPostProcessor processor : processors) {
             try {
-                processor.beforeWrapImageCaptchaInfo(transferData, context);
+                processor.beforeWrapImageCaptchaInfo(captchaExchange, context);
             } catch (Exception e) {
                 throw new ImageCaptchaException("apply ImageCaptchaPostProcessor.beforeWrapImageCaptchaInfo error, [" + processor.getClass() + "]", e);
             }
@@ -74,10 +70,10 @@ public class StaticCaptchaPostProcessorManager {
     }
 
 
-    public static void applyPostProcessorAfterGenerateCaptchaImage(CaptchaTransferData transferData, ImageCaptchaInfo imageCaptchaInfo, ImageCaptchaGenerator context) {
+    public static void applyPostProcessorAfterGenerateCaptchaImage(CaptchaExchange captchaExchange, ImageCaptchaInfo imageCaptchaInfo, ImageCaptchaGenerator context) {
         for (ImageCaptchaPostProcessor processor : processors) {
             try {
-                processor.afterGenerateCaptchaImage(transferData, imageCaptchaInfo, context);
+                processor.afterGenerateCaptchaImage(captchaExchange, imageCaptchaInfo, context);
             } catch (Exception e) {
                 throw new ImageCaptchaException("apply ImageCaptchaPostProcessor.afterGenerateCaptchaImage error, [" + processor.getClass() + "]", e);
             }

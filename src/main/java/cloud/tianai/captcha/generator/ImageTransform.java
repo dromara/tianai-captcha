@@ -20,10 +20,11 @@ public interface ImageTransform {
      * @param backgroundImage    背景图片
      * @param param              参数
      * @param backgroundResource 背景资源对象
+     * @param data               自定义透传数据
      * @return ImageTransformData
      */
-    default ImageTransformData transform(GenerateParam param, BufferedImage backgroundImage, Resource backgroundResource,CustomData data) {
-        return transform(param, backgroundImage, null, backgroundResource, null,data);
+    default ImageTransformData transform(GenerateParam param, BufferedImage backgroundImage, Resource backgroundResource, CustomData data) {
+        return transform(param, backgroundImage, null, backgroundResource, null, data);
     }
 
     /**
@@ -34,6 +35,7 @@ public interface ImageTransform {
      * @param param              参数
      * @param backgroundResource 背景资源对象
      * @param templateResource   模板资源对象(可能为空)
+     * @param data               自定义透传数据
      * @return String
      */
     ImageTransformData transform(GenerateParam param,

@@ -11,19 +11,8 @@ public interface CaptchaTypeConstant {
     String SLIDER = "SLIDER";
     /** 旋转. */
     String ROTATE = "ROTATE";
-    /** 旋转角度.*/
-    String ROTATE_DEGREE = "ROTATE_DEGREE";
-    /** 拼接.*/
+    /** 拼接. */
     String CONCAT = "CONCAT";
-    /** 拼图.*/
-    String JIGSAW = "JIGSAW";
-    /** 图片点选.*/
-    String IMAGE_CLICK = "IMAGE_CLICK";
-    /** 文字图片点选.*/
+    /** 文字图片点选. */
     String WORD_IMAGE_CLICK = "WORD_IMAGE_CLICK";
-    /** 语序点选.*/
-    String WORD_ORDER_IMAGE_CLICK = "WORD_ORDER_IMAGE_CLICK";
-
-
-
 }

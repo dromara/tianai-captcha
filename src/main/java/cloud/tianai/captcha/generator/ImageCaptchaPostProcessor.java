@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.generator;
 
-import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
-import cloud.tianai.captcha.generator.common.model.dto.CaptchaTransferData;
+import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 
 /**
@@ -11,15 +10,35 @@ import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
  */
 public interface ImageCaptchaPostProcessor {
 
-    default ImageCaptchaInfo beforeGenerateCaptchaImage(CaptchaTransferData transferData, ImageCaptchaGenerator context) {
+    /**
+     * 在生成验证码核心逻辑之前调用， 用于拦截验证码生成、限流、自定义返回数据等处理
+     *
+     * @param captchaExchange 传输数据
+     * @param generator    generator
+     * @return ImageCaptchaInfo
+     */
+    default ImageCaptchaInfo beforeGenerateCaptchaImage(CaptchaExchange captchaExchange, ImageCaptchaGenerator generator) {
         return null;
     }
 
-    default void beforeWrapImageCaptchaInfo(CaptchaTransferData transferData, ImageCaptchaGenerator context) {
+    /**
+     * 在执行包装 ImageCaptchaInfo 核心逻辑之前处理
+     *
+     * @param captchaExchange 传输数据
+     * @param generator    generator
+     */
+    default void beforeWrapImageCaptchaInfo(CaptchaExchange captchaExchange, ImageCaptchaGenerator generator) {
 
     }
 
-    default void afterGenerateCaptchaImage(CaptchaTransferData transferData, ImageCaptchaInfo imageCaptchaInfo, ImageCaptchaGenerator context) {
+    /**
+     * 在执行包装 ImageCaptchaInfo 核心逻辑之后处理
+     *
+     * @param captchaExchange     captchaExchange
+     * @param imageCaptchaInfo imageCaptchaInfo
+     * @param generator        generator
+     */
+    default void afterGenerateCaptchaImage(CaptchaExchange captchaExchange, ImageCaptchaInfo imageCaptchaInfo, ImageCaptchaGenerator generator) {
 
     }
 }

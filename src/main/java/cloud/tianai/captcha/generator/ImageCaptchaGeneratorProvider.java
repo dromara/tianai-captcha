@@ -24,5 +24,7 @@ public interface ImageCaptchaGeneratorProvider {
      *
      * @return String
      */
-    String getType();
+    default String getType() {
+        return "unknown";
+    }
 }

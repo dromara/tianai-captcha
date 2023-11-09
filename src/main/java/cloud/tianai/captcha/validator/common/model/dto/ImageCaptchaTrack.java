@@ -20,10 +20,10 @@ public class ImageCaptchaTrack {
     private Integer bgImageWidth;
     /** 背景图片高度. */
     private Integer bgImageHeight;
-    /** 滑块图片宽度. */
-    private Integer sliderImageWidth;
-    /** 滑块图片高度. */
-    private Integer sliderImageHeight;
+    /** 模板图片宽度. */
+    private Integer templateImageWidth;
+    /** 模板图片高度. */
+    private Integer templateImageHeight;
     /** 滑动开始时间. */
     private Date startSlidingTime;
     /** 滑动结束时间. */
@@ -32,28 +32,16 @@ public class ImageCaptchaTrack {
     private List<Track> trackList;
     /** 扩展数据，用户传输加密数据等.*/
     private Object data;
-    /**
-     * 兼容一下旧版本
-     *
-     * @return Date
-     */
-    public Date getEntSlidingTime() {
-        return endSlidingTime;
-    }
-    public void setEntSlidingTime(Date entSlidingTime) {
-        this.endSlidingTime = entSlidingTime;
-    }
-
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
     public static class Track {
         /** x. */
-        private Integer x;
+        private Float x;
         /** y. */
-        private Integer y;
+        private Float y;
         /** 时间. */
-        private Integer t;
+        private Float t;
         /** 类型. */
         private String type = TrackTypeConstant.MOVE;
     }

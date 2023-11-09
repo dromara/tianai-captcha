@@ -2,13 +2,9 @@ package cloud.tianai.captcha.validator.impl;
 
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.common.response.CodeDefinition;
-import cloud.tianai.captcha.common.util.CaptchaUtils;
+import cloud.tianai.captcha.common.util.CaptchaTypeClassifier;
 import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.common.util.ObjectUtils;
-import cloud.tianai.captcha.common.util.CaptchaUtils;
-import cloud.tianai.captcha.common.util.CollectionUtils;
-import cloud.tianai.captcha.common.util.ObjectUtils;
-import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 
 import java.util.List;
@@ -21,6 +17,7 @@ import java.util.Map;
  */
 public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
     public static final CodeDefinition DEFINITION = new CodeDefinition(50001, "basic check fail");
+
     public BasicCaptchaTrackValidator() {
     }
 
@@ -29,15 +26,15 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
     }
 
     @Override
-    public ApiResponse<?> beforeValid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
+    public ApiResponse<?> beforeValid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> captchaValidData, Float tolerant, String type) {
         // 校验参数
         checkParam(imageCaptchaTrack);
-        return ApiResponse.SUCCESS;
+        return ApiResponse.ofSuccess();
     }
 
     @Override
-    public ApiResponse<?> afterValid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> sliderCaptchaValidData, Float tolerant, String type) {
-        if (!CaptchaUtils.isSliderCaptcha(type)) {
+    public ApiResponse<?> afterValid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> captchaValidData, Float tolerant, String type) {
+        if (!CaptchaTypeClassifier.isSliderCaptcha(type)) {
             // 不是滑动验证码的话暂时跳过，点选验证码行为轨迹还没做
             return ApiResponse.ofSuccess();
         }
@@ -125,9 +122,9 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
             throw new IllegalArgumentException("trackList must not be null");
         }
         for (ImageCaptchaTrack.Track track : imageCaptchaTrack.getTrackList()) {
-            Integer x = track.getX();
-            Integer y = track.getY();
-            Integer t = track.getT();
+            Float x = track.getX();
+            Float y = track.getY();
+            Float t = track.getT();
             String type = track.getType();
             if (x == null || y == null || t == null || ObjectUtils.isEmpty(type)) {
                 throw new IllegalArgumentException("track[x,y,t,type] must not be null");

@@ -1,18 +1,14 @@
 package cloud.tianai.captcha.generator.impl;
 
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.util.ObjectUtils;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.generator.ImageTransform;
-import cloud.tianai.captcha.generator.common.model.dto.CaptchaTransferData;
+import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.generator.impl.provider.StandardConcatImageCaptchaGeneratorProvider;
-import cloud.tianai.captcha.generator.impl.provider.StandardWordClickImageCaptchaGeneratorProvider;
-import cloud.tianai.captcha.generator.impl.provider.StandardRotateImageCaptchaGeneratorProvider;
-import cloud.tianai.captcha.generator.impl.provider.StandardSliderImageImageCaptchaGeneratorProvider;
+import cloud.tianai.captcha.generator.impl.provider.CommonImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,6 +16,8 @@ import lombok.Setter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static cloud.tianai.captcha.common.constant.CaptchaTypeConstant.*;
 
 /**
  * @Author: 天爱有情
@@ -33,7 +31,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
     @Setter
     @Getter
-    private String defaultCaptcha = CaptchaTypeConstant.SLIDER;
+    private String defaultCaptcha = SLIDER;
 
     protected boolean initDefaultResource = false;
 
@@ -49,14 +47,15 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     @Override
     protected void doInit(boolean initDefaultResource) {
         this.initDefaultResource = initDefaultResource;
+
         // 滑块验证码
-        addImageCaptchaGeneratorProvider(new StandardSliderImageImageCaptchaGeneratorProvider());
+        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(SLIDER, StandardSliderImageCaptchaGenerator::new));
         // 旋转验证码
-        addImageCaptchaGeneratorProvider(new StandardRotateImageCaptchaGeneratorProvider());
+        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(ROTATE, StandardRotateImageCaptchaGenerator::new));
         // 拼接验证码
-        addImageCaptchaGeneratorProvider(new StandardConcatImageCaptchaGeneratorProvider());
+        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(CONCAT, StandardConcatImageCaptchaGenerator::new));
         // 点选文字验证码
-        addImageCaptchaGeneratorProvider(new StandardWordClickImageCaptchaGeneratorProvider());
+        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(WORD_IMAGE_CLICK, StandardWordClickImageCaptchaGenerator::new));
     }
 
     public void addImageCaptchaGeneratorProvider(ImageCaptchaGeneratorProvider provider) {
@@ -96,12 +95,12 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
 
     @Override
-    protected void doGenerateCaptchaImage(CaptchaTransferData transferData) {
+    protected void doGenerateCaptchaImage(CaptchaExchange captchaExchange) {
 
     }
 
     @Override
-    protected ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaTransferData transferData) {
+    protected ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
         return null;
     }
 

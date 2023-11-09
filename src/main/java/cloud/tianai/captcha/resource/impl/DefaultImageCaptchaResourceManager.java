@@ -1,12 +1,10 @@
 package cloud.tianai.captcha.resource.impl;
 
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
-import cloud.tianai.captcha.resource.impl.provider.URLResourceProvider;
-import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceProvider;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
+import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import cloud.tianai.captcha.resource.impl.provider.FileResourceProvider;
 import cloud.tianai.captcha.resource.impl.provider.URLResourceProvider;
@@ -15,7 +13,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @Author: 天爱有情
@@ -41,7 +38,7 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
 
     private void init() {
         if (this.resourceStore == null) {
-            this.resourceStore = new DefaultResourceStore();
+            this.resourceStore = new LocalMemoryResourceStore();
         }
         // 注入一些默认的提供者
         registerResourceProvider(new URLResourceProvider());

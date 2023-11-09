@@ -2,7 +2,7 @@ package cloud.tianai.captcha.generator;
 
 import cloud.tianai.captcha.common.exception.ImageCaptchaException;
 import cloud.tianai.captcha.common.util.CollectionUtils;
-import cloud.tianai.captcha.generator.common.model.dto.CaptchaTransferData;
+import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
 import cloud.tianai.captcha.generator.common.model.dto.CustomData;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
@@ -20,7 +20,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -102,21 +101,21 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     public ImageCaptchaInfo generateCaptchaImage(GenerateParam param) {
         assertInit();
         CustomData data = new CustomData();
-        CaptchaTransferData transferData = CaptchaTransferData.create(data, param);
-        ImageCaptchaInfo imageCaptchaInfo = applyPostProcessorBeforeGenerate(transferData, this);
+        CaptchaExchange captchaExchange = CaptchaExchange.create(data, param);
+        ImageCaptchaInfo imageCaptchaInfo = applyPostProcessorBeforeGenerate(captchaExchange, this);
         if (imageCaptchaInfo != null) {
             return imageCaptchaInfo;
         }
-        doGenerateCaptchaImage(transferData);
-        applyPostProcessorBeforeWrapImageCaptchaInfo(transferData, this);
-        imageCaptchaInfo = wrapImageCaptchaInfo(transferData);
-        applyPostProcessorAfterGenerateCaptchaImage(transferData, imageCaptchaInfo, this);
+        doGenerateCaptchaImage(captchaExchange);
+        applyPostProcessorBeforeWrapImageCaptchaInfo(captchaExchange, this);
+        imageCaptchaInfo = wrapImageCaptchaInfo(captchaExchange);
+        applyPostProcessorAfterGenerateCaptchaImage(captchaExchange, imageCaptchaInfo, this);
         return imageCaptchaInfo;
     }
 
-    public ImageCaptchaInfo wrapImageCaptchaInfo(CaptchaTransferData transferData) {
-        ImageCaptchaInfo imageCaptchaInfo = doWrapImageCaptchaInfo(transferData);
-        imageCaptchaInfo.setData(transferData.getCustomData());
+    public ImageCaptchaInfo wrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
+        ImageCaptchaInfo imageCaptchaInfo = doWrapImageCaptchaInfo(captchaExchange);
+        imageCaptchaInfo.setData(captchaExchange.getCustomData());
         return imageCaptchaInfo;
     }
 
@@ -225,12 +224,12 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     /**
      * 生成验证码方法
      *
-     * @param transferData transferData
+     * @param captchaExchange captchaExchange
      * @return ImageCaptchaInfo
      */
-    protected abstract void doGenerateCaptchaImage(CaptchaTransferData transferData);
+    protected abstract void doGenerateCaptchaImage(CaptchaExchange captchaExchange);
 
-    protected abstract ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaTransferData transferData);
+    protected abstract ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaExchange captchaExchange);
 
     @Override
     public ImageCaptchaResourceManager getImageResourceManager() {

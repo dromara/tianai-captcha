@@ -11,15 +11,11 @@ import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.concurrent.ThreadLocalRandom;
 
+import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
 import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_TAG;
-import static cloud.tianai.captcha.generator.common.util.CaptchaImageUtils.*;
-import static cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
+import static cloud.tianai.captcha.generator.common.util.CaptchaImageUtils.concatImage;
+import static cloud.tianai.captcha.generator.common.util.CaptchaImageUtils.splitImage;
 
 /**
  * @Author: 天爱有情
@@ -51,8 +47,8 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
     }
 
     @Override
-    public void doGenerateCaptchaImage(CaptchaTransferData transferData) {
-        GenerateParam param = transferData.getParam();
+    public void doGenerateCaptchaImage(CaptchaExchange captchaExchange) {
+        GenerateParam param = captchaExchange.getParam();
         // 拼接验证码不需要模板 只需要背景图
         Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
         BufferedImage bgImage = getResourceImage(resourceImage);
@@ -72,9 +68,9 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
         data.x = randomX;
         data.y = randomY;
 
-        transferData.setTransferData(data);
-        transferData.setBackgroundImage(bgImage);
-        transferData.setResourceImage(resourceImage);
+        captchaExchange.setTransferData(data);
+        captchaExchange.setBackgroundImage(bgImage);
+        captchaExchange.setResourceImage(resourceImage);
     }
 
     public static class Data {
@@ -84,13 +80,13 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     @SneakyThrows
     @Override
-    public ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaTransferData transferData) {
-        GenerateParam param = transferData.getParam();
-        BufferedImage bgImage = transferData.getBackgroundImage();
-        Resource resourceImage = transferData.getResourceImage();
-        CustomData customData = transferData.getCustomData();
+    public ImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
+        GenerateParam param = captchaExchange.getParam();
+        BufferedImage bgImage = captchaExchange.getBackgroundImage();
+        Resource resourceImage = captchaExchange.getResourceImage();
+        CustomData customData = captchaExchange.getCustomData();
         ImageTransformData transform = getImageTransform().transform(param, bgImage, resourceImage, customData);
-        Data data = (Data) transferData.getTransferData();
+        Data data = (Data) captchaExchange.getTransferData();
         ImageCaptchaInfo imageCaptchaInfo = ImageCaptchaInfo.of(transform.getBackgroundImageUrl(),
                 null,
                 resourceImage.getTag(),

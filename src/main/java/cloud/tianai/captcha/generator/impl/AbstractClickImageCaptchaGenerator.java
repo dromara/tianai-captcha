@@ -1,10 +1,9 @@
 package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
-import cloud.tianai.captcha.generator.common.model.dto.CaptchaTransferData;
+import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
 import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
-import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -13,10 +12,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * @Author: 天爱有情
@@ -25,6 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
+    public static final String CLICK_IMAGE_DISTORT_KEY = "clickImageDistort";
 
     public AbstractClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
@@ -35,8 +35,8 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
 
     @SneakyThrows
     @Override
-    public void doGenerateCaptchaImage(CaptchaTransferData transferData) {
-        GenerateParam param = transferData.getParam();
+    public void doGenerateCaptchaImage(CaptchaExchange captchaExchange) {
+        GenerateParam param = captchaExchange.getParam();
         // 文字点选验证码不需要模板 只需要背景图
         Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
 
@@ -65,19 +65,20 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
             // 随机y
             int randomY = randomInt(10, bgImage.getHeight() - clickImgHeight);
             // 通过随机x和y 进行覆盖图片
-            CaptchaImageUtils.overlayImage(bgImage, imgWrapper.getImage(), randomX, randomY);
+            CaptchaImageUtils.overlayImage(bgImage, image, randomX, randomY);
             ClickImageCheckDefinition clickImageCheckDefinition = new ClickImageCheckDefinition();
             clickImageCheckDefinition.setTip(imgWrapper.getTip());
             clickImageCheckDefinition.setX(randomX + clickImgWidth / 2);
             clickImageCheckDefinition.setY(randomY + clickImgHeight / 2);
             clickImageCheckDefinition.setWidth(clickImgWidth);
             clickImageCheckDefinition.setHeight(clickImgHeight);
+            clickImageCheckDefinition.setImageColor(imgWrapper.getImageColor());
             clickImageCheckDefinitionList.add(clickImageCheckDefinition);
         }
         List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = filterAndSortClickImageCheckDefinition(clickImageCheckDefinitionList);
-        transferData.setBackgroundImage(bgImage);
-        transferData.setTransferData(checkClickImageCheckDefinitionList);
-        transferData.setResourceImage(resourceImage);
+        captchaExchange.setBackgroundImage(bgImage);
+        captchaExchange.setTransferData(checkClickImageCheckDefinitionList);
+        captchaExchange.setResourceImage(resourceImage);
 
 
 //        // wrap
@@ -123,5 +124,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
         private BufferedImage image;
         /** 提示. */
         private Resource tip;
+        /** 图片颜色. */
+        private Color imageColor;
     }
 }

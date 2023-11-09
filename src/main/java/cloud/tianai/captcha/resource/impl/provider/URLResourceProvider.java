@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.resource.impl.provider;
 
 import cloud.tianai.captcha.resource.AbstractResourceProvider;
-import cloud.tianai.captcha.resource.AbstractResourceProvider;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.SneakyThrows;
 

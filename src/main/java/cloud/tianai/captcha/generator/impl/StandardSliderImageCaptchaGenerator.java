@@ -3,7 +3,6 @@ package cloud.tianai.captcha.generator.impl;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
-import cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant;
 import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
@@ -16,14 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_TAG;
-import static cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant.*;
-import static cloud.tianai.captcha.generator.common.constant.SliderCaptchaConstant.TEMPLATE_FIXED_IMAGE_NAME;
+import static cloud.tianai.captcha.common.constant.CommonConstant.*;
 
 /**
  * @Author: 天爱有情
@@ -33,14 +28,16 @@ import static cloud.tianai.captcha.generator.common.constant.SliderCaptchaConsta
 @Slf4j
 public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
-    /**
-     * 默认的resource资源文件路径.
-     */
-    public static final String DEFAULT_SLIDER_IMAGE_RESOURCE_PATH = "META-INF/cut-image/resource";
-    /**
-     * 默认的template资源文件路径.
-     */
-    public static final String DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH = "META-INF/cut-image/template";
+
+    /** 模板滑块固定名称. */
+    public static String TEMPLATE_ACTIVE_IMAGE_NAME = "active.png";
+    /** 模板凹槽固定名称. */
+    public static String TEMPLATE_FIXED_IMAGE_NAME = "fixed.png";
+    /** 模板蒙版. */
+    public static String TEMPLATE_MASK_IMAGE_NAME = "mask.png";
+    /** 混淆的凹槽. */
+    public static String OBFUSCATE_TEMPLATE_FIXED_IMAGE_NAME = "obfuscate_" + TEMPLATE_FIXED_IMAGE_NAME;
+
 
     public StandardSliderImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
@@ -60,8 +57,8 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     @SneakyThrows
     @Override
-    public void doGenerateCaptchaImage(CaptchaTransferData transferData) {
-        GenerateParam param = transferData.getParam();
+    public void doGenerateCaptchaImage(CaptchaExchange captchaExchange) {
+        GenerateParam param = captchaExchange.getParam();
         Boolean obfuscate = param.getObfuscate();
         ResourceMap templateResource = requiredRandomGetTemplate(param.getType(), param.getTemplateImageTag());
         Resource resourceImage = requiredRandomGetResource(param.getType(), param.getBackgroundImageTag());
@@ -93,15 +90,15 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
         XandY xandY = new XandY();
         xandY.x = randomX;
         xandY.y = randomY;
-        transferData.setBackgroundImage(background);
-        transferData.setTemplateImage(matrixTemplate);
-        transferData.setTemplateResource(templateResource);
-        transferData.setResourceImage(resourceImage);
-        transferData.setTransferData(xandY);
+        captchaExchange.setBackgroundImage(background);
+        captchaExchange.setTemplateImage(matrixTemplate);
+        captchaExchange.setTemplateResource(templateResource);
+        captchaExchange.setResourceImage(resourceImage);
+        captchaExchange.setTransferData(xandY);
         // 后处理
-//        applyPostProcessorBeforeWrapImageCaptchaInfo(transferData, this);
-//        imageCaptchaInfo = wrapSliderCaptchaInfo(randomX, randomY, transferData);
-//        applyPostProcessorAfterGenerateCaptchaImage(transferData, imageCaptchaInfo, this);
+//        applyPostProcessorBeforeWrapImageCaptchaInfo(captchaExchange, this);
+//        imageCaptchaInfo = wrapSliderCaptchaInfo(randomX, randomY, captchaExchange);
+//        applyPostProcessorAfterGenerateCaptchaImage(captchaExchange, imageCaptchaInfo, this);
 //        return imageCaptchaInfo;
     }
 
@@ -134,14 +131,14 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
 
     @SneakyThrows
     @Override
-    public SliderImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaTransferData transferData) {
-        GenerateParam param = transferData.getParam();
-        BufferedImage backgroundImage = transferData.getBackgroundImage();
-        BufferedImage sliderImage = transferData.getTemplateImage();
-        Resource resourceImage = transferData.getResourceImage();
-        ResourceMap templateResource = transferData.getTemplateResource();
-        CustomData customData = transferData.getCustomData();
-        XandY data = (XandY) transferData.getTransferData();
+    public SliderImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
+        GenerateParam param = captchaExchange.getParam();
+        BufferedImage backgroundImage = captchaExchange.getBackgroundImage();
+        BufferedImage sliderImage = captchaExchange.getTemplateImage();
+        Resource resourceImage = captchaExchange.getResourceImage();
+        ResourceMap templateResource = captchaExchange.getTemplateResource();
+        CustomData customData = captchaExchange.getCustomData();
+        XandY data = (XandY) captchaExchange.getTransferData();
         ImageTransformData transform = getImageTransform().transform(param, backgroundImage, sliderImage, resourceImage, templateResource, customData);
 
         SliderImageCaptchaInfo imageCaptchaInfo = SliderImageCaptchaInfo.of(data.x, data.y,

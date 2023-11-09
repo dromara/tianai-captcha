@@ -268,7 +268,7 @@ public abstract class CollectionUtils {
 	 * @since 5.2.3
 	 * @see SortedSet
 	 * @see LinkedHashMap#keySet()
-	 * @see java.util.LinkedHashSet
+	 * @see LinkedHashSet
 	 */
 	public static <T> T firstElement(Set<T> set) {
 		if (isEmpty(set)) {
@@ -307,7 +307,7 @@ public abstract class CollectionUtils {
 	 * @since 5.0.3
 	 * @see SortedSet
 	 * @see LinkedHashMap#keySet()
-	 * @see java.util.LinkedHashSet
+	 * @see LinkedHashSet
 	 */
 	public static <T> T lastElement(Set<T> set) {
 		if (isEmpty(set)) {

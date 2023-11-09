@@ -3,8 +3,6 @@ package cloud.tianai.captcha.resource;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 
-import java.util.Map;
-
 /**
  * @Author: 天爱有情
  * @date 2022/5/7 9:04
