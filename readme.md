@@ -387,7 +387,7 @@ public class Test8 {
     }
 }
 ```
-# qq群: 1021884609
+# qq群: 305532064
 # 微信群: 
 ![](https://minio.tianai.cloud/public/qun2.jpg?t=20230825)
 
