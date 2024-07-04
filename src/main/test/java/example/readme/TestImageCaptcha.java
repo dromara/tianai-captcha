@@ -8,7 +8,10 @@ import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import cloud.tianai.captcha.resource.impl.provider.URLResourceProvider;
 
-public class Test5 {
+/**
+* 图片验证码测试
+*/
+public class TestImageCaptcha {
     public static void main(String[] args) {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 通过资源管理器或者资源存储器
