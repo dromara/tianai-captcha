@@ -10,6 +10,7 @@ import java.io.InputStream;
  * @Description 抽象的ResourceProvider
  */
 public abstract class AbstractResourceProvider implements ResourceProvider {
+
     @Override
     public InputStream getResourceInputStream(Resource data) {
         InputStream resourceInputStream = doGetResourceInputStream(data);
@@ -26,4 +27,5 @@ public abstract class AbstractResourceProvider implements ResourceProvider {
      * @return InputStream
      */
     public abstract InputStream doGetResourceInputStream(Resource data);
+    
 }
