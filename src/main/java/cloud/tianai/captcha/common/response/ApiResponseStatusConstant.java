@@ -15,12 +15,24 @@ public interface ApiResponseStatusConstant {
      */
     CodeDefinition SUCCESS = new CodeDefinition(200, "OK");
 
+    /**
+     * 无效参数
+     */
     CodeDefinition NOT_VALID_PARAM = new CodeDefinition(403, "无效参数");
 
+    /**
+     * 未知的内部错误
+     */
     CodeDefinition INTERNAL_SERVER_ERROR = new CodeDefinition(500, "未知的内部错误");
 
+    /**
+     * 已失效
+     */
     CodeDefinition EXPIRED = new CodeDefinition(4000, "已失效");
 
+    /**
+     * 基础校验失败
+     */
     CodeDefinition BASIC_CHECK_FAIL = new CodeDefinition(4001, "基础校验失败");
 
 
