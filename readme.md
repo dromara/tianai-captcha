@@ -49,6 +49,7 @@
 ### 2. 使用 `ImageCaptchaGenerator`生成器生成验证码
 
 ```java
+
 package example.readme;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
