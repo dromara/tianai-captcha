@@ -20,6 +20,7 @@ public class Test3 {
         ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(GenerateParam.builder()
                 .type(CaptchaTypeConstant.SLIDER)
                 .templateFormatName("jpeg")
+                // 设置背景图片格式
                 .backgroundFormatName("png")
                 // 是否添加混淆滑块
                 .obfuscate(true)
