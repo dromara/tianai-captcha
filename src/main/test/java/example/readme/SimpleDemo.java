@@ -14,6 +14,9 @@ import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
 
 import java.util.Map;
 
+/**
+* 基础 SimpleDemo
+*/
 public class SimpleDemo {
 
     public static void main(String[] args) throws InterruptedException {

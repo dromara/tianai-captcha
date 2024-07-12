@@ -49,6 +49,7 @@
 ### 2. 使用 `ImageCaptchaGenerator`生成器生成验证码
 
 ```java
+
 package example.readme;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
@@ -387,8 +388,8 @@ public class Test8 {
     }
 }
 ```
-# qq群: 1021884609
+# qq群: 305532064
 # 微信群: 
-![](https://minio.tianai.cloud/public/qun2.jpg?t=20230825)
+<img src="https://minio.tianai.cloud/public/qun2.jpg?t=20230825" width="270px" title="微信群" />
 
 ## 微信群加不上的话 加微信好友 微信号: youseeseeyou-1ttd 拉你入群

@@ -16,6 +16,7 @@ import java.util.concurrent.ThreadLocalRandom;
  * @Description 默认的资源存储
  */
 public class LocalMemoryResourceStore implements ResourceStore {
+    
     private static final String TYPE_TAG_SPLIT_FLAG = "|";
 
     /** 用于检索 type和tag. */

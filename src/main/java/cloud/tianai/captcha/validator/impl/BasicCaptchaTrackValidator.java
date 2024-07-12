@@ -16,6 +16,7 @@ import java.util.List;
  * @Description 基本的行为轨迹校验
  */
 public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
+    
     public static final CodeDefinition DEFINITION = new CodeDefinition(50001, "basic check fail");
 
     public BasicCaptchaTrackValidator() {
