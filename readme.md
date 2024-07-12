@@ -78,8 +78,33 @@ import java.util.concurrent.TimeUnit;
 
 public class ApplicationTest {
 
+
     public static void main(String[] args) {
-        // 验证码资源管理器
+        ImageCaptchaApplication application = createImageCaptchaApplication();
+        // 生成验证码数据， 可以将该数据直接返回给前端 ， 可配合 tianai-captcha-web-sdk 使用
+        CaptchaResponse<ImageCaptchaVO> res = application.generateCaptcha("SLIDER");
+        System.out.println(res);
+
+        // 校验验证码， ImageCaptchaTrack 和 id 均为前端传开的参数， 可将 valid数据直接返回给 前端
+        // 注意: 该项目只负责生成和校验验证码数据， 至于二次验证等需要自行扩展
+        String id =res.getId();
+        ImageCaptchaTrack imageCaptchaTrack = null;
+        ApiResponse<?> valid = application.matching(id, imageCaptchaTrack);
+        System.out.println(valid.isSuccess());
+
+
+        // 扩展: 一个简单的二次验证
+        CacheStore cacheStore = new LocalCacheStore();
+        if (valid.isSuccess()) {
+            // 如果验证成功，生成一个token并存储, 将该token返回给客户端，客户端下次请求数据时携带该token， 后台判断是否有效
+            String token = UUID.randomUUID().toString();
+            cacheStore.setCache(token, new AnyMap(), 5L, TimeUnit.MINUTES);
+        }
+
+    }
+
+    public static ImageCaptchaApplication createImageCaptchaApplication() {
+        // 验证码资源管理器 该类负责管理验证码背景图和模板图等数据
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 验证码生成器； 注意: 生成器必须调用init(...)初始化方法 true为加载默认资源，false为不加载，
         ImageCaptchaGenerator generator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
@@ -93,28 +118,9 @@ public class ApplicationTest {
         group.addInterceptor(new BasicTrackCaptchaInterceptor());
 
         ImageCaptchaProperties prop = new ImageCaptchaProperties();
-        // application 验证码封装， prop为所需的一些扩展参数, 注意: ImageCaptchaApplication是单例的，请勿重复创建
+        // application 验证码封装， prop为所需的一些扩展参数
         ImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, imageCaptchaValidator, cacheStore, prop, group);
-
-        // 生成验证码数据， 可以将该数据直接返回给前端 ， 可配合 tianai-captcha-web-sdk 使用
-        // 可生成 滑块验证(SLIDER) 旋转验证(ROTATE) 滑动还原(CONCAT) 文字点选(WORD_IMAGE_CLICK)
-        CaptchaResponse<ImageCaptchaVO> res = application.generateCaptcha("SLIDER");
-        System.out.println(res);
-
-        // 校验验证码， ImageCaptchaTrack 和 id 均为前端传开的参数， 可将 valid数据直接返回给 前端
-        // 注意: 该项目只负责生成和校验验证码数据， 至于二次验证等需要自行扩展
-        String id = res.getId();
-        ImageCaptchaTrack imageCaptchaTrack = null;
-        ApiResponse<?> valid = application.matching(id, imageCaptchaTrack);
-        System.out.println(valid.isSuccess());
-
-        // 扩展: 一个简单的二次验证
-        if (valid.isSuccess()) {
-            // 如果验证成功，生成一个token并存储, 将该token返回给客户端，客户端下次请求数据时携带该token， 后台判断是否有效
-            String token = UUID.randomUUID().toString();
-            cacheStore.setCache(token, new AnyMap(), 5L, TimeUnit.MINUTES);
-        }
-
+        return application;
     }
 }
 
@@ -139,6 +145,7 @@ import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 
 public class Test3 {
     public static void main(String[] args) {
+        // application 为 ImageCaptchaApplication对象
         // 生成 具有混淆的 滑块验证码 (目前只有滑块验证码支持混淆滑块， 旋转验证，滑动还原，点选验证 均不支持混淆功能)
         ImageCaptchaInfo imageCaptchaInfo = application.generateCaptcha(GenerateParam.builder()
                 .type(CaptchaTypeConstant.SLIDER)
@@ -152,7 +159,7 @@ public class Test3 {
 
 ### 添加自定义图片资源
 
-- 自定义图片资源大小为 590*360 格式为jpg
+- 自定义图片资源大小为 600*360 格式为jpg
 
 ```java
 package example.readme;
@@ -293,6 +300,10 @@ public class Test8 {
     }
 }
 ```
+### 验证码拦截器
+
+> 如有需要对验证码进行增强或拦截之类的功能，可以通过实现`ImageCaptchaInterceptor`接口，然后注册到`ImageCaptchaApplication`中
+> 拦截器内具体执行顺序和功能请查看代码注释
 
 # qq群: 305532064
 
