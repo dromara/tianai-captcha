@@ -1,10 +1,8 @@
 package cloud.tianai.captcha.generator.common.model.dto;
 
+import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import lombok.*;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author: 天爱有情
@@ -32,7 +30,7 @@ public class GenerateParam {
     /** 滑动图片标签,用户二级过滤模板图片，或指定某模板图片.. */
     private String templateImageTag;
     /** 扩展参数. */
-    private Map<String, Object> param = new HashMap<>(4);
+    private AnyMap param = new AnyMap();
 
     public void addParam(String key, Object value) {
         doGetOrCreateParam().put(key, value);
@@ -42,9 +40,9 @@ public class GenerateParam {
         return param == null ? null : param.get(key);
     }
 
-    private Map<String, Object> doGetOrCreateParam() {
+    private AnyMap doGetOrCreateParam() {
         if (param == null) {
-            param = new HashMap<>(4);
+            param = new AnyMap();
         }
         return param;
     }

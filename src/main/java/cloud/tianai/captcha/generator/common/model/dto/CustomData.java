@@ -1,9 +1,7 @@
 package cloud.tianai.captcha.generator.common.model.dto;
 
+import cloud.tianai.captcha.common.AnyMap;
 import lombok.Data;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @Author: 天爱有情
@@ -14,9 +12,9 @@ import java.util.Map;
 public class CustomData {
 
     /** 透传字段，用于传给前端. */
-    private Map<String, Object> viewData;
+    private AnyMap viewData;
     /** 内部使用的字段数据. */
-    private Map<String, Object> data;
+    private AnyMap data;
     /**
      * 扩展字段
      */
@@ -24,14 +22,14 @@ public class CustomData {
 
     public void putViewData(String key, Object data) {
         if (this.viewData == null) {
-            this.viewData = new HashMap<>();
+            this.viewData = new AnyMap();
         }
         this.viewData.put(key, data);
     }
 
     public void putData(String key, Object data) {
         if (this.data == null) {
-            this.data = new HashMap<>();
+            this.data = new AnyMap();
         }
         this.data.put(key, data);
     }

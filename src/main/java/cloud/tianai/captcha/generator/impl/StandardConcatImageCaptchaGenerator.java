@@ -4,6 +4,7 @@ import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.*;
+import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -31,6 +32,12 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
     public StandardConcatImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform) {
         super(imageCaptchaResourceManager);
         setImageTransform(imageTransform);
+    }
+
+    public StandardConcatImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform, CaptchaInterceptor interceptor) {
+        super(imageCaptchaResourceManager);
+        setImageTransform(imageTransform);
+        setInterceptor(interceptor);
     }
 
     @Override

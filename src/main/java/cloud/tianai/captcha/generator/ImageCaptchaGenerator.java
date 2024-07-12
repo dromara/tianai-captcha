@@ -3,6 +3,7 @@ package cloud.tianai.captcha.generator;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 
 /**
@@ -77,5 +78,10 @@ public interface ImageCaptchaGenerator {
      * @return ImageTransform
      */
     void setImageTransform(ImageTransform imageTransform);
+
+
+    CaptchaInterceptor getInterceptor();
+
+    void setInterceptor(CaptchaInterceptor interceptor);
 
 }

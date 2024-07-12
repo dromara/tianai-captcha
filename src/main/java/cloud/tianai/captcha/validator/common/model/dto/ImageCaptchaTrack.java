@@ -25,9 +25,11 @@ public class ImageCaptchaTrack {
     /** 模板图片高度. */
     private Integer templateImageHeight;
     /** 滑动开始时间. */
-    private Date startSlidingTime;
+    private Date startTime;
     /** 滑动结束时间. */
-    private Date endSlidingTime;
+    private Date stopTime;
+    private Integer left;
+    private Integer top;
     /** 滑动的轨迹. */
     private List<Track> trackList;
     /** 扩展数据，用户传输加密数据等.*/

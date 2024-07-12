@@ -5,6 +5,7 @@ import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
+import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -47,6 +48,13 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
         super(imageCaptchaResourceManager);
         setImageTransform(imageTransform);
     }
+
+    public StandardSliderImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform, CaptchaInterceptor interceptor) {
+        super(imageCaptchaResourceManager);
+        setImageTransform(imageTransform);
+        setInterceptor(interceptor);
+    }
+
 
     @Override
     protected void doInit(boolean initDefaultResource) {

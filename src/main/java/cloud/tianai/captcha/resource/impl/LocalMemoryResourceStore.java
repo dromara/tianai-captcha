@@ -76,6 +76,7 @@ public class LocalMemoryResourceStore implements ResourceStore {
         resourceTagMap.remove(mergeTypeAndTag(type, tag));
     }
 
+    @Override
     public void clearAllResources() {
         resourceTagMap.clear();
     }
@@ -101,6 +102,7 @@ public class LocalMemoryResourceStore implements ResourceStore {
     }
 
 
+    @Override
     public void clearAllTemplates() {
         templateResourceTagMap.clear();
     }

@@ -43,4 +43,14 @@ public interface ResourceStore {
      */
     ResourceMap randomGetTemplateByTypeAndTag(String type, String tag);
 
+    /**
+     * 清除所有内置模板
+     */
+    void clearAllTemplates();
+
+    /**
+     * 清除所有内置资源
+     */
+    void clearAllResources();
+
 }

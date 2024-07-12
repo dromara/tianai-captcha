@@ -1,5 +1,6 @@
 package example.readme;
 
+import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
@@ -26,7 +27,7 @@ public class SimpleDemo {
         ImageCaptchaInfo imageCaptchaInfo = imageCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.SLIDER);
 
         // 这个数据是根据当前生成的这条验证码数据生成对应的验证数据， 该数据要存到缓存中
-        Map<String, Object> map = imageCaptchaValidator.generateImageCaptchaValidData(imageCaptchaInfo);
+        AnyMap map = imageCaptchaValidator.generateImageCaptchaValidData(imageCaptchaInfo);
 
 
 

@@ -3,6 +3,7 @@ package cloud.tianai.captcha.generator.impl.provider;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.generator.ImageTransform;
+import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 
 public class CommonImageCaptchaGeneratorProvider implements ImageCaptchaGeneratorProvider {
@@ -17,8 +18,8 @@ public class CommonImageCaptchaGeneratorProvider implements ImageCaptchaGenerato
     }
 
     @Override
-    public ImageCaptchaGenerator get(ImageCaptchaResourceManager resourceManager, ImageTransform imageTransform) {
-        return provider.get(resourceManager, imageTransform);
+    public ImageCaptchaGenerator get(ImageCaptchaResourceManager resourceManager, ImageTransform imageTransform, CaptchaInterceptor interceptor) {
+        return provider.get(resourceManager, imageTransform,interceptor);
     }
 
     @Override

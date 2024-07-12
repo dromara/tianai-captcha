@@ -1,41 +1,32 @@
-package cloud.tianai.captcha.validator.impl;
+package cloud.tianai.captcha.interceptor.impl;
 
 import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.common.response.CodeDefinition;
 import cloud.tianai.captcha.common.util.CaptchaTypeClassifier;
-import cloud.tianai.captcha.common.util.CollectionUtils;
-import cloud.tianai.captcha.common.util.ObjectUtils;
+import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
+import cloud.tianai.captcha.interceptor.Context;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 
 import java.util.List;
 
 /**
  * @Author: 天爱有情
- * @date 2022/2/17 11:01
- * @Description 基本的行为轨迹校验
+ * @date 2023/1/4 10:00
+ * @Description BasicCaptchaTrackValidator
  */
-public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
+public class BasicTrackCaptchaInterceptor implements CaptchaInterceptor {
     public static final CodeDefinition DEFINITION = new CodeDefinition(50001, "basic check fail");
 
-    public BasicCaptchaTrackValidator() {
-    }
-
-    public BasicCaptchaTrackValidator(float defaultTolerant) {
-        super(defaultTolerant);
+    @Override
+    public String getName() {
+        return "basic_track_check";
     }
 
     @Override
-    public ApiResponse<?> beforeValid(ImageCaptchaTrack imageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
-        // 校验参数
-        checkParam(imageCaptchaTrack);
-        return ApiResponse.ofSuccess();
-    }
-
-    @Override
-    public ApiResponse<?> afterValid(Boolean basicValid, ImageCaptchaTrack imageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
-        if (!basicValid){
-            return ApiResponse.ofSuccess();
+    public ApiResponse<?> afterValid(Context context, String type, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData, ApiResponse<?> basicValid) {
+        if (!basicValid.isSuccess()) {
+            return context.getGroup().afterValid(context, type, imageCaptchaTrack, validData, basicValid);
         }
         if (!CaptchaTypeClassifier.isSliderCaptcha(type)) {
             // 不是滑动验证码的话暂时跳过，点选验证码行为轨迹还没做
@@ -57,15 +48,18 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
 
         // 检测1
         if (startSlidingTime + 300 > endSlidingTime) {
+            context.end();
             return ApiResponse.ofMessage(DEFINITION);
         }
         // 检测2
         if (trackList.size() < 10 || trackList.size() > bgImageWidth * 5) {
+            context.end();
             return ApiResponse.ofMessage(DEFINITION);
         }
         // 检测3
         ImageCaptchaTrack.Track firstTrack = trackList.get(0);
         if (firstTrack.getX() > 10 || firstTrack.getX() < -10 || firstTrack.getY() > 10 || firstTrack.getY() < -10) {
+            context.end();
             return ApiResponse.ofMessage(DEFINITION);
         }
         int check4 = 0;
@@ -85,53 +79,31 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
             // check5
             ImageCaptchaTrack.Track preTrack = trackList.get(i - 1);
             if ((track.getX() - preTrack.getX()) > 50 || (track.getY() - preTrack.getY()) > 50) {
+                context.end();
                 return ApiResponse.ofMessage(DEFINITION);
             }
         }
         if (check4 == trackList.size() || check7 > 200) {
+            context.end();
             return ApiResponse.ofMessage(DEFINITION);
         }
 
         // check6
         int splitPos = (int) (trackList.size() * 0.7);
         ImageCaptchaTrack.Track splitPostTrack = trackList.get(splitPos - 1);
-        float posTime = splitPostTrack.getT();
-        float startAvgPosTime = posTime / (float) splitPos;
-
         ImageCaptchaTrack.Track lastTrack = trackList.get(trackList.size() - 1);
-        double endAvgPosTime = lastTrack.getT() / (float) (trackList.size() - splitPos);
-
+        // bugfix: wuhaochao
+        ImageCaptchaTrack.Track stepOneFirstTrack = trackList.get(0);
+        ImageCaptchaTrack.Track stepOneTwoTrack = trackList.get(splitPos);
+        float posTime = splitPostTrack.getT() - stepOneFirstTrack.getT();
+        double startAvgPosTime = posTime / (float) splitPos;
+        double endAvgPosTime = (lastTrack.getT() - stepOneTwoTrack.getT()) / (float) (trackList.size() - splitPos);
         boolean check = endAvgPosTime > startAvgPosTime;
         if (check) {
             return ApiResponse.ofSuccess();
         }
+        context.end();
         return ApiResponse.ofMessage(DEFINITION);
     }
 
-    public void checkParam(ImageCaptchaTrack imageCaptchaTrack) {
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getBgImageWidth())) {
-            throw new IllegalArgumentException("bgImageWidth must not be null");
-        }
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getBgImageHeight())) {
-            throw new IllegalArgumentException("bgImageHeight must not be null");
-        }
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getStartTime())) {
-            throw new IllegalArgumentException("startSlidingTime must not be null");
-        }
-        if (ObjectUtils.isEmpty(imageCaptchaTrack.getStopTime())) {
-            throw new IllegalArgumentException("endSlidingTime must not be null");
-        }
-        if (CollectionUtils.isEmpty(imageCaptchaTrack.getTrackList())) {
-            throw new IllegalArgumentException("trackList must not be null");
-        }
-        for (ImageCaptchaTrack.Track track : imageCaptchaTrack.getTrackList()) {
-            Float x = track.getX();
-            Float y = track.getY();
-            Float t = track.getT();
-            String type = track.getType();
-            if (x == null || y == null || t == null || ObjectUtils.isEmpty(type)) {
-                throw new IllegalArgumentException("track[x,y,t,type] must not be null");
-            }
-        }
-    }
 }

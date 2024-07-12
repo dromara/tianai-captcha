@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.generator;
 
 
+import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 
 /**
@@ -17,7 +18,7 @@ public interface ImageCaptchaGeneratorProvider {
      * @param imageTransform imageTransform
      * @return ImageCaptchaGenerator
      */
-    ImageCaptchaGenerator get(ImageCaptchaResourceManager resourceManager, ImageTransform imageTransform);
+    ImageCaptchaGenerator get(ImageCaptchaResourceManager resourceManager, ImageTransform imageTransform, CaptchaInterceptor interceptor);
 
     /**
      * 验证码类型

@@ -1,5 +1,6 @@
 package example.readme;
 
+import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
 import cloud.tianai.captcha.validator.impl.BasicCaptchaTrackValidator;
 
@@ -10,7 +11,7 @@ public class Test2 {
         BasicCaptchaTrackValidator sliderCaptchaValidator = new BasicCaptchaTrackValidator();
 
         ImageCaptchaTrack imageCaptchaTrack = null;
-        Map<String, Object> map = null;
+        AnyMap map = null;
         Float percentage = null;
         // 用户传来的行为轨迹和进行校验
         // - imageCaptchaTrack为前端传来的滑动轨迹数据

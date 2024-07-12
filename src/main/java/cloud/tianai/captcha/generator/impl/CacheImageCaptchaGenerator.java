@@ -5,6 +5,7 @@ import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import lombok.Getter;
 import lombok.Setter;
@@ -197,5 +198,15 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     @Override
     public void setImageTransform(ImageTransform imageTransform) {
         target.setImageTransform(imageTransform);
+    }
+
+    @Override
+    public CaptchaInterceptor getInterceptor() {
+        return target.getInterceptor();
+    }
+
+    @Override
+    public void setInterceptor(CaptchaInterceptor interceptor) {
+        target.setInterceptor(interceptor);
     }
 }

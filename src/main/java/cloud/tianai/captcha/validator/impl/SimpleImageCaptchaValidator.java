@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.validator.impl;
 
+import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.common.response.ApiResponseStatusConstant;
@@ -19,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -81,8 +81,8 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     }
 
     @Override
-    public Map<String, Object> generateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo) {
-        Map<String, Object> map = new HashMap<>(8);
+    public AnyMap generateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo) {
+        AnyMap map = AnyMap.of(new HashMap<>(8));
         if (beforeGenerateImageCaptchaValidData(imageCaptchaInfo, map)) {
             doGenerateImageCaptchaValidData(map, imageCaptchaInfo);
         }
@@ -90,7 +90,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         return map;
     }
 
-    public boolean beforeGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo, Map<String, Object> map) {
+    public boolean beforeGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo, AnyMap map) {
         // 容错值
         Float tolerant = imageCaptchaInfo.getTolerant();
         if (tolerant != null && tolerant > 0) {
@@ -105,11 +105,11 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         return true;
     }
 
-    public void afterGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo, Map<String, Object> map) {
+    public void afterGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo, AnyMap map) {
 
     }
 
-    public void doGenerateImageCaptchaValidData(Map<String, Object> map,
+    public void doGenerateImageCaptchaValidData(AnyMap map,
                                                 ImageCaptchaInfo imageCaptchaInfo) {
         // type
         String type = (String) map.getOrDefault(TYPE_KEY, CaptchaTypeConstant.SLIDER);
@@ -154,11 +154,11 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     }
 
     @Override
-    public ApiResponse<?> valid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> imageCaptchaValidData) {
+    public ApiResponse<?> valid(ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData) {
         // 读容错值
-        Float tolerant = getFloatParam(TOLERANT_KEY, imageCaptchaValidData, defaultTolerant);
+        Float tolerant = imageCaptchaValidData.getFloat(TOLERANT_KEY, defaultTolerant);
         // 读验证码类型
-        String type = getStringParam(TYPE_KEY, imageCaptchaValidData, CaptchaTypeConstant.SLIDER);
+        String type = imageCaptchaValidData.getString(TYPE_KEY, CaptchaTypeConstant.SLIDER);
         // 验证前
         // 在验证前必须读取 容错值 和验证码类型
         ApiResponse<?> beforeValid = beforeValid(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
@@ -178,14 +178,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         // 验证
         ApiResponse<?> response;
         boolean valid = doValid(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
-        if (valid) {
-            // 验证后
-            response = afterValid(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
-        } else {
-            // 缺口位置校验失败
-            response = ApiResponse.ofMessage(ApiResponseStatusConstant.BASIC_CHECK_FAIL);
-        }
-        return response;
+        return afterValid(valid, imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
     }
 
     /**
@@ -197,7 +190,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
      * @param type              type
      * @return boolean
      */
-    public ApiResponse<?> beforeValid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> captchaValidData, Float tolerant, String type) {
+    public ApiResponse<?> beforeValid(ImageCaptchaTrack imageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
         return ApiResponse.ofSuccess();
     }
 
@@ -210,12 +203,15 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
      * @param type              type
      * @return boolean
      */
-    public ApiResponse<?> afterValid(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> captchaValidData, Float tolerant, String type) {
+    public ApiResponse<?> afterValid(Boolean basicValid, ImageCaptchaTrack imageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
+        if (!basicValid) {
+            return ApiResponse.ofMessage(ApiResponseStatusConstant.BASIC_CHECK_FAIL);
+        }
         return ApiResponse.ofSuccess();
     }
 
     public boolean doValid(ImageCaptchaTrack imageCaptchaTrack,
-                           Map<String, Object> imageCaptchaValidData,
+                           AnyMap imageCaptchaValidData,
                            Float tolerant,
                            String type) {
         if (CaptchaTypeClassifier.isSliderCaptcha(type)) {
@@ -233,12 +229,12 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         return false;
     }
 
-    public boolean doValidJigsawCaptcha(ImageCaptchaTrack imageCaptchaTrack, Map<String, Object> imageCaptchaValidData, Float tolerant, String type) {
+    public boolean doValidJigsawCaptcha(ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData, Float tolerant, String type) {
         if (imageCaptchaTrack.getData() == null || !(imageCaptchaTrack.getData() instanceof String)) {
             throw new IllegalArgumentException("拼图验证码必须传data数据，且必须是字符串类型逗号分隔数据");
         }
         String posArr = (String) imageCaptchaTrack.getData();
-        String successPosStr = getStringParam(PERCENTAGE_KEY, imageCaptchaValidData, null);
+        String successPosStr = imageCaptchaValidData.getString(PERCENTAGE_KEY, null);
         return successPosStr.equals(posArr);
     }
 
@@ -252,10 +248,10 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
      * @return boolean
      */
     public boolean doValidClickCaptcha(ImageCaptchaTrack imageCaptchaTrack,
-                                       Map<String, Object> imageCaptchaValidData,
+                                       AnyMap imageCaptchaValidData,
                                        Float tolerant,
                                        String type) {
-        String validStr = getStringParam(PERCENTAGE_KEY, imageCaptchaValidData, null);
+        String validStr = imageCaptchaValidData.getString(PERCENTAGE_KEY, null);
         if (ObjectUtils.isEmpty(validStr)) {
             return false;
         }
@@ -307,19 +303,20 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
      * @return boolean
      */
     public boolean doValidSliderCaptcha(ImageCaptchaTrack imageCaptchaTrack,
-                                        Map<String, Object> imageCaptchaValidData,
+                                        AnyMap imageCaptchaValidData,
                                         Float tolerant,
                                         String type) {
-        Float oriPercentage = getFloatParam(PERCENTAGE_KEY, imageCaptchaValidData);
+        Float oriPercentage = imageCaptchaValidData.getFloat(PERCENTAGE_KEY);
         if (oriPercentage == null) {
             // 没读取到百分比
             return false;
         }
         List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
+        ImageCaptchaTrack.Track firstTrack = trackList.get(0);
         // 取最后一个滑动轨迹
         ImageCaptchaTrack.Track lastTrack = trackList.get(trackList.size() - 1);
         // 计算百分比
-        float calcPercentage = calcPercentage(lastTrack.getX(), imageCaptchaTrack.getBgImageWidth());
+        float calcPercentage = calcPercentage(lastTrack.getX() - firstTrack.getX(), imageCaptchaTrack.getBgImageWidth());
         // 校验百分比
         boolean percentage = checkPercentage(calcPercentage, oriPercentage, tolerant);
         if (percentage) {
@@ -331,48 +328,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         return percentage;
     }
 
-    public Float getFloatParam(String key, Map<String, Object> imageCaptchaValidData) {
-        return getFloatParam(key, imageCaptchaValidData, null);
-    }
-
-    public Float getFloatParam(String key, Map<String, Object> imageCaptchaValidData, Float defaultData) {
-        Object data = imageCaptchaValidData.get(key);
-        if (data != null) {
-            if (data instanceof Number) {
-                return ((Number) data).floatValue();
-            }
-            try {
-                if (data instanceof String) {
-                    return Float.parseFloat((String) data);
-                }
-            } catch (NumberFormatException e) {
-                log.error("从 imageCaptchaValidData 读取到的 " + key + "无法转换成float类型, [{}]", data);
-                throw e;
-            }
-        }
-        return defaultData;
-    }
-
-    public String getStringParam(String key, Map<String, Object> imageCaptchaValidData, String defaultData) {
-        if (CollectionUtils.isEmpty(imageCaptchaValidData)) {
-            return defaultData;
-        }
-        Object data = imageCaptchaValidData.get(key);
-        if (data != null) {
-            if (data instanceof String) {
-                return (String) data;
-            }
-            try {
-                return String.valueOf(data);
-            } catch (NumberFormatException e) {
-                log.error("从 imageCaptchaValidData 读取到的 " + key + "无法转换成String类型, [{}]", data);
-                throw e;
-            }
-        }
-        return defaultData;
-    }
-
-    protected void addPercentage(ImageCaptchaInfo imageCaptchaInfo, Map<String, Object> imageCaptchaValidData) {
+    protected void addPercentage(ImageCaptchaInfo imageCaptchaInfo, AnyMap imageCaptchaValidData) {
         float percentage = calcPercentage(imageCaptchaInfo.getRandomX(), imageCaptchaInfo.getBackgroundImageWidth());
         imageCaptchaValidData.put(PERCENTAGE_KEY, percentage);
     }

@@ -110,7 +110,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
             if (provider == null) {
                 throw new IllegalArgumentException("生成验证码失败，错误的type类型:" + t);
             }
-            return provider.get(getImageResourceManager(), getImageTransform()).init(initDefaultResource);
+            return provider.get(getImageResourceManager(), getImageTransform(), getInterceptor()).init(initDefaultResource);
         });
         return imageCaptchaGenerator;
     }

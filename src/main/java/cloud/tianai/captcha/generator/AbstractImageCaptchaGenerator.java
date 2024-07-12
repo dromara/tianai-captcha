@@ -8,6 +8,7 @@ import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
+import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
@@ -22,8 +23,6 @@ import java.io.InputStream;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cloud.tianai.captcha.generator.impl.StaticCaptchaPostProcessorManager.*;
 
 /**
  * @Author: 天爱有情
@@ -49,6 +48,8 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
 
     /** 图片转换器. */
     protected ImageTransform imageTransform;
+
+    protected CaptchaInterceptor interceptor;
 
     @Getter
     private boolean init = false;
@@ -102,15 +103,34 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
         assertInit();
         CustomData data = new CustomData();
         CaptchaExchange captchaExchange = CaptchaExchange.create(data, param);
-        ImageCaptchaInfo imageCaptchaInfo = applyPostProcessorBeforeGenerate(captchaExchange, this);
+        ImageCaptchaInfo imageCaptchaInfo = beforeGenerate(captchaExchange);
         if (imageCaptchaInfo != null) {
             return imageCaptchaInfo;
         }
         doGenerateCaptchaImage(captchaExchange);
-        applyPostProcessorBeforeWrapImageCaptchaInfo(captchaExchange, this);
+        beforeWrapImageCaptchaInfo(captchaExchange);
         imageCaptchaInfo = wrapImageCaptchaInfo(captchaExchange);
-        applyPostProcessorAfterGenerateCaptchaImage(captchaExchange, imageCaptchaInfo, this);
+        afterGenerateCaptchaImage(captchaExchange, imageCaptchaInfo);
         return imageCaptchaInfo;
+    }
+
+    protected void afterGenerateCaptchaImage(CaptchaExchange captchaExchange, ImageCaptchaInfo imageCaptchaInfo) {
+        if (interceptor != null) {
+            interceptor.afterGenerateCaptchaImage(interceptor.createContext(), captchaExchange, imageCaptchaInfo, this);
+        }
+    }
+
+    protected void beforeWrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
+        if (interceptor != null) {
+            interceptor.beforeWrapImageCaptchaInfo(interceptor.createContext(), captchaExchange, this);
+        }
+    }
+
+    protected ImageCaptchaInfo beforeGenerate(CaptchaExchange captchaExchange) {
+        if (interceptor != null) {
+            return interceptor.beforeGenerateCaptchaImage(interceptor.createContext(), captchaExchange, this);
+        }
+        return null;
     }
 
     public ImageCaptchaInfo wrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
@@ -249,5 +269,15 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     @Override
     public void setImageTransform(ImageTransform imageTransform) {
         this.imageTransform = imageTransform;
+    }
+
+    @Override
+    public CaptchaInterceptor getInterceptor() {
+        return interceptor;
+    }
+
+    @Override
+    public void setInterceptor(CaptchaInterceptor interceptor) {
+        this.interceptor = interceptor;
     }
 }
