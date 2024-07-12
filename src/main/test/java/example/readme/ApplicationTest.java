@@ -15,6 +15,7 @@ import cloud.tianai.captcha.interceptor.CaptchaInterceptorGroup;
 import cloud.tianai.captcha.interceptor.impl.BasicTrackCaptchaInterceptor;
 import cloud.tianai.captcha.interceptor.impl.ParamCheckCaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
+import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
