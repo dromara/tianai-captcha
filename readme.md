@@ -82,6 +82,7 @@ public class ApplicationTest {
     public static void main(String[] args) {
         ImageCaptchaApplication application = createImageCaptchaApplication();
         // 生成验证码数据， 可以将该数据直接返回给前端 ， 可配合 tianai-captcha-web-sdk 使用
+        // 支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
         CaptchaResponse<ImageCaptchaVO> res = application.generateCaptcha("SLIDER");
         System.out.println(res);
 
