@@ -5,6 +5,7 @@ import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageCaptchaGeneratorProvider;
 import cloud.tianai.captcha.generator.ImageTransform;
+import cloud.tianai.captcha.generator.common.FontWrapper;
 import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
@@ -14,6 +15,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,12 +30,13 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
     protected Map<String, ImageCaptchaGenerator> imageCaptchaGeneratorMap = new ConcurrentHashMap<>(4);
     protected Map<String, ImageCaptchaGeneratorProvider> imageCaptchaGeneratorProviderMap = new HashMap<>(4);
-
+    // 点选类验证码字体
+    @Setter
+    @Getter
+    protected List<FontWrapper> fontWrappers;
     @Setter
     @Getter
     private String defaultCaptcha = SLIDER;
-
-    protected boolean initDefaultResource = false;
 
     public MultiImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
         super(imageCaptchaResourceManager);
@@ -45,9 +48,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
     }
 
     @Override
-    protected void doInit(boolean initDefaultResource) {
-        this.initDefaultResource = initDefaultResource;
-
+    protected void doInit() {
         // 滑块验证码
         addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(SLIDER, StandardSliderImageCaptchaGenerator::new));
         // 旋转验证码
@@ -55,7 +56,8 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
         // 拼接验证码
         addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(CONCAT, StandardConcatImageCaptchaGenerator::new));
         // 点选文字验证码
-        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(WORD_IMAGE_CLICK, StandardWordClickImageCaptchaGenerator::new));
+        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(WORD_IMAGE_CLICK, (r, t, i) ->
+                new StandardWordClickImageCaptchaGenerator(r, t, i, fontWrappers)));
     }
 
     public void addImageCaptchaGeneratorProvider(ImageCaptchaGeneratorProvider provider) {
@@ -110,7 +112,7 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
             if (provider == null) {
                 throw new IllegalArgumentException("生成验证码失败，错误的type类型:" + t);
             }
-            return provider.get(getImageResourceManager(), getImageTransform(), getInterceptor()).init(initDefaultResource);
+            return provider.get(getImageResourceManager(), getImageTransform(), getInterceptor()).init();
         });
         return imageCaptchaGenerator;
     }

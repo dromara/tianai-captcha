@@ -58,7 +58,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     }
 
     @Override
-    public ImageCaptchaGenerator init(boolean initDefaultResource) {
+    public ImageCaptchaGenerator init() {
         if (init) {
             return this;
         }
@@ -69,7 +69,7 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
             if (getImageTransform() == null) {
                 setImageTransform(new Base64ImageTransform());
             }
-            doInit(initDefaultResource);
+            doInit();
         } catch (Exception e) {
             init = false;
             log.error("[{}]初始化失败,ex", this.getClass().getSimpleName(), e);
@@ -237,9 +237,8 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     /**
      * 初始化
      *
-     * @param initDefaultResource 是否初始化默认资源
      */
-    protected abstract void doInit(boolean initDefaultResource);
+    protected abstract void doInit();
 
     /**
      * 生成验证码方法

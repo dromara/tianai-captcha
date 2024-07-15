@@ -1,22 +1,17 @@
 package cloud.tianai.captcha.generator.impl;
 
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
-import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 
 import java.awt.image.BufferedImage;
 import java.util.Optional;
-
-import static cloud.tianai.captcha.common.constant.CommonConstant.*;
 
 /**
  * @Author: 天爱有情
@@ -46,25 +41,10 @@ public class StandardRotateImageCaptchaGenerator extends AbstractImageCaptchaGen
         setImageTransform(imageTransform);
         setInterceptor(interceptor);
     }
-
     @Override
-    protected void doInit(boolean initDefaultResource) {
-        if (initDefaultResource) {
-            initDefaultResource();
-        }
+    protected void doInit() {
     }
 
-    public void initDefaultResource() {
-        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
-        // 添加一些系统的资源文件
-        resourceStore.addResource(CaptchaTypeConstant.ROTATE, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg"), DEFAULT_TAG));
-
-        // 添加一些系统的 模板文件
-        ResourceMap template1 = new ResourceMap(DEFAULT_TAG, 4);
-        template1.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/active.png")));
-        template1.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/3/fixed.png")));
-        resourceStore.addTemplate(CaptchaTypeConstant.ROTATE, template1);
-    }
 
     @Override
     public void doGenerateCaptchaImage(CaptchaExchange captchaExchange) {

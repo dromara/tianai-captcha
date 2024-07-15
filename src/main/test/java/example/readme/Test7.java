@@ -30,7 +30,7 @@ public class Test7 {
             }
         };
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,new Base64ImageTransform()).init(false);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,new Base64ImageTransform()).init();
         // 注册
         imageCaptchaResourceManager.registerResourceProvider(resourceProvider);
     }

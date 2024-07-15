@@ -18,7 +18,7 @@ public class Test8 {
         // 参数四: 检查时间间隔
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         ImageCaptchaGenerator imageCaptchaGenerator = new CacheImageCaptchaGenerator(new MultiImageCaptchaGenerator(imageCaptchaResourceManager,new Base64ImageTransform()), 10, 1000, 100);
-        imageCaptchaGenerator.init(true);
+        imageCaptchaGenerator.init();
         // 生成滑块图片
         ImageCaptchaInfo slideImageInfo = imageCaptchaGenerator.generateCaptchaImage(CaptchaTypeConstant.SLIDER);
         // 获取背景图片的base64

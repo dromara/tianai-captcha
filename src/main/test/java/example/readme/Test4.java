@@ -14,7 +14,7 @@ public class Test4 {
         // 资源管理器
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 标准验证码生成器
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,new Base64ImageTransform()).init(true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,new Base64ImageTransform()).init();
         // 生成旋转验证码 图片类型为 webp
         // 注意 tianai-captcha 后面默认删除了生成webp格式图片需要用户自定义添加webp转换的工具，需要用户自定义添加和扩展
         // 参考 https://bitbucket.org/luciad/webp-imageio

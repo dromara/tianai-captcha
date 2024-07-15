@@ -126,8 +126,8 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     }
 
     @Override
-    public ImageCaptchaGenerator init(boolean initDefaultResource) {
-        ImageCaptchaGenerator captchaGenerator = target.init(initDefaultResource);
+    public ImageCaptchaGenerator init() {
+        ImageCaptchaGenerator captchaGenerator = target.init();
         // 初始化缓存
         init(size);;
         return captchaGenerator;

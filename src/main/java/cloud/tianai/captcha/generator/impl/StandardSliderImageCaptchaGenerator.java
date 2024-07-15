@@ -1,16 +1,13 @@
 package cloud.tianai.captcha.generator.impl;
 
-import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
-import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,8 +15,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
-
-import static cloud.tianai.captcha.common.constant.CommonConstant.*;
 
 /**
  * @Author: 天爱有情
@@ -57,10 +52,8 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
 
 
     @Override
-    protected void doInit(boolean initDefaultResource) {
-        if (initDefaultResource) {
-            initDefaultResource();
-        }
+    protected void doInit() {
+
     }
 
     @SneakyThrows
@@ -168,25 +161,5 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
         }
         // 左边混淆
         return randomInt(slWidth, sliderX - slWidth);
-    }
-
-    /**
-     * 初始化默认资源
-     */
-    public void initDefaultResource() {
-        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
-        // 添加一些系统的资源文件
-        resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg"), DEFAULT_TAG));
-
-        // 添加一些系统的 模板文件
-        ResourceMap template1 = new ResourceMap(DEFAULT_TAG, 4);
-        template1.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/active.png")));
-        template1.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/1/fixed.png")));
-        resourceStore.addTemplate(CaptchaTypeConstant.SLIDER, template1);
-
-        ResourceMap template2 = new ResourceMap(DEFAULT_TAG, 4);
-        template2.put(TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/active.png")));
-        template2.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_TEMPLATE_PATH.concat("/2/fixed.png")));
-        resourceStore.addTemplate(CaptchaTypeConstant.SLIDER, template2);
     }
 }

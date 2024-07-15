@@ -12,6 +12,7 @@ import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.impl.CacheImageCaptchaGenerator;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.interceptor.EmptyCaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
@@ -51,7 +52,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
                                           ImageCaptchaProperties prop,
                                           CaptchaInterceptor captchaInterceptor) {
         this.prop = prop;
-        setImageCaptchaGenerator(captchaGenerator);
+
         setImageCaptchaValidator(imageCaptchaValidator);
         setCacheStore(cacheStore);
         // 默认过期时间
@@ -65,6 +66,14 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
             this.captchaInterceptor = captchaInterceptor;
         }
         captchaGenerator.setInterceptor(this.captchaInterceptor);
+        if (prop.isLocalCacheEnabled()) {
+            captchaGenerator = new CacheImageCaptchaGenerator(captchaGenerator,
+                    prop.getLocalCacheSize(), prop.getLocalCacheWaitTime(),
+                    prop.getLocalCachePeriod(), prop.getLocalCacheExpireTime());
+        }
+        // 初始化生成器
+        captchaGenerator.init();
+        setImageCaptchaGenerator(captchaGenerator);
     }
 
     @Override

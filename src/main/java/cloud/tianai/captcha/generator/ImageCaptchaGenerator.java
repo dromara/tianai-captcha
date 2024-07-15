@@ -17,10 +17,9 @@ public interface ImageCaptchaGenerator {
     /**
      * 初始化
      *
-     * @param initDefaultResource 是否初始化默认资源
      * @return ImageCaptchaGenerator
      */
-    ImageCaptchaGenerator init(boolean initDefaultResource);
+    ImageCaptchaGenerator init();
 
     /**
      * 生成验证码图片

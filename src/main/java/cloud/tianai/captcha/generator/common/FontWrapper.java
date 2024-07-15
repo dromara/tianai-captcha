@@ -11,5 +11,22 @@ import java.awt.*;
 @AllArgsConstructor
 public class FontWrapper {
     private Font font;
-    private float currentFontTopCoef;
+    private Float currentFontTopCoef;
+
+    public FontWrapper(Font font) {
+        this(font, 70);
+    }
+
+    public FontWrapper(Font font, int fontSize) {
+        this.font = font;
+        this.font = font.deriveFont(Font.BOLD, fontSize);
+    }
+
+    public float getCurrentFontTopCoef() {
+        if (currentFontTopCoef != null) {
+            return currentFontTopCoef;
+        }
+        currentFontTopCoef = 0.14645833f * font.getSize() + 0.39583333f;
+        return currentFontTopCoef;
+    }
 }

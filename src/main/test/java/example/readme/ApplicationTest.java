@@ -54,7 +54,7 @@ public class ApplicationTest {
         // 验证码资源管理器 该类负责管理验证码背景图和模板图等数据
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 验证码生成器； 注意: 生成器必须调用init(...)初始化方法 true为加载默认资源，false为不加载，
-        ImageCaptchaGenerator generator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init(true);
+        ImageCaptchaGenerator generator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager).init();
         // 验证码校验器
         ImageCaptchaValidator imageCaptchaValidator = new SimpleImageCaptchaValidator();
         // 缓存, 用于存放校验数据

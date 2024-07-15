@@ -22,7 +22,7 @@ public class SimpleDemo {
     public static void main(String[] args) throws InterruptedException {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         ImageTransform imageTransform = new Base64ImageTransform();
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform).init(true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform).init();
         BasicCaptchaTrackValidator imageCaptchaValidator = new BasicCaptchaTrackValidator();
         // 注意:  上面这个四个对象都是单例的， 整个项目创建一次即可
 

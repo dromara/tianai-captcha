@@ -2,7 +2,7 @@ package cloud.tianai.captcha.application;
 
 import lombok.Data;
 
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,5 +15,12 @@ public class ImageCaptchaProperties {
     /** 过期key prefix. */
     private String prefix = "captcha";
     /** 过期时间. */
-    private Map<String, Long> expire = Collections.emptyMap();
+    private Map<String, Long> expire = new HashMap<>();
+
+    // 本地提前缓存
+    private boolean localCacheEnabled = false;
+    private int localCacheSize = 10;
+    private int localCacheWaitTime = 1000;
+    private int localCachePeriod = 5000;
+    private Long localCacheExpireTime;
 }

@@ -16,7 +16,7 @@ public class Test {
     public static void main(String[] args) throws InterruptedException {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         Base64ImageTransform imageTransform = new Base64ImageTransform();
-        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform).init(true);
+        ImageCaptchaGenerator imageCaptchaGenerator = new MultiImageCaptchaGenerator(imageCaptchaResourceManager,imageTransform).init();
         /*
                 生成滑块验证码图片, 可选项
                 SLIDER (滑块验证码)

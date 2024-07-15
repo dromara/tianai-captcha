@@ -6,15 +6,11 @@ import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
-import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.SneakyThrows;
 
 import java.awt.image.BufferedImage;
 
-import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
-import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_TAG;
 import static cloud.tianai.captcha.generator.common.util.CaptchaImageUtils.concatImage;
 import static cloud.tianai.captcha.generator.common.util.CaptchaImageUtils.splitImage;
 
@@ -41,17 +37,9 @@ public class StandardConcatImageCaptchaGenerator extends AbstractImageCaptchaGen
     }
 
     @Override
-    protected void doInit(boolean initDefaultResource) {
-        if (initDefaultResource) {
-            initDefaultResource();
-        }
+    protected void doInit() {
     }
 
-    public void initDefaultResource() {
-        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
-        // 添加一些系统的资源文件
-        resourceStore.addResource(CaptchaTypeConstant.CONCAT, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg"), DEFAULT_TAG));
-    }
 
     @Override
     public void doGenerateCaptchaImage(CaptchaExchange captchaExchange) {

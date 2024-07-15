@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.common.exception.ImageCaptchaException;
 import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.common.util.FontUtils;
 import cloud.tianai.captcha.generator.ImageTransform;
@@ -9,25 +10,17 @@ import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
-import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
-
-import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_SLIDER_IMAGE_RESOURCE_PATH;
-import static cloud.tianai.captcha.common.constant.CommonConstant.DEFAULT_TAG;
 
 /**
  * @Author: 天爱有情
@@ -108,27 +101,11 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
     }
 
     @Override
-    @SneakyThrows({IOException.class, FontFormatException.class})
-    protected void doInit(boolean initDefaultResource) {
+    protected void doInit() {
         if (CollectionUtils.isEmpty(fonts)) {
-            // 使用默认字体
-            Resource fontResource = new Resource(null, "META-INF/fonts/SIMSUN.TTC");
-            InputStream inputStream = new ClassPathResourceProvider().doGetResourceInputStream(fontResource);
-            Font font = Font.createFont(Font.TRUETYPE_FONT, inputStream);
-            font = font.deriveFont(Font.BOLD, 70);
-            float currentFontTopCoef = 0.14645833f * font.getSize() + 0.39583333f;
-            fonts.add(new FontWrapper(font, currentFontTopCoef));
+            throw new ImageCaptchaException("初始化文字点选验证码失败，请设置字体包后再调用init()");
         }
-        if (initDefaultResource) {
-            initDefaultResource();
-        }
-    }
 
-
-    public void initDefaultResource() {
-        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
-        // 添加一些系统的资源文件
-        resourceStore.addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg"), DEFAULT_TAG));
     }
 
     public ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions) {
