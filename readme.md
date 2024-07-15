@@ -6,14 +6,8 @@
 
 ## 在线文档 [在线文档](http://doc.captcha.tianai.cloud)
 
-![](https://minio.tianai.cloud/public/1.png)
-![](https://minio.tianai.cloud/public/4.png)
-![](https://minio.tianai.cloud/public/6.png)
-![](https://minio.tianai.cloud/public/7.png)
-![](https://minio.tianai.cloud/public/9.png)
-![](https://minio.tianai.cloud/public/10.png)
-![](https://minio.tianai.cloud/public/11.png)
-![](https://minio.tianai.cloud/public/12.png)
+![](https://minio.tianai.cloud/public/%E6%A0%87%E9%A2%98%E5%9B%BE%E7%89%87.jpg)
+
 
 ## 简单介绍
 
