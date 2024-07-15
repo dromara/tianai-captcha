@@ -12,8 +12,10 @@ public class TACBuilderTest {
         ImageCaptchaApplication application = TACBuilder.builder()
                 .addDefaultTemplate()
                 .addResource("SLIDER", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("WORD_IMAGE_CLICK", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("ROTATE", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .build();
-        CaptchaResponse<ImageCaptchaVO> response = application.generateCaptcha("SLIDER");
+        CaptchaResponse<ImageCaptchaVO> response = application.generateCaptcha("ROTATE");
         System.out.println(response);
 
     }

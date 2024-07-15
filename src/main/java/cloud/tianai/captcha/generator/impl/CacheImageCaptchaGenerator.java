@@ -59,7 +59,9 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
         this.size = size;
         this.waitTime = waitTime;
         this.period = period;
-        this.expireTime = expireTime;
+        if (expireTime != null){
+            this.expireTime = expireTime;
+        }
     }
 
     /**

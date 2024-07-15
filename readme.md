@@ -54,9 +54,11 @@ public class ApplicationTest {
 
     public static void main(String[] args) {
         ImageCaptchaApplication application = TACBuilder.builder()
-                .addDefaultTemplate()
+                .addDefaultTemplate() // 添加默认模板
                 // 给滑块验证码 添加背景图片，宽高为600*360, Resource 参数1为 classpath/file/url , 参数2 为具体url 
-                .addResource("SLIDER", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+                .addResource("SLIDER", new Resource("classpath", "META-INF/cut-image/resource/1.jpg")) // 滑块验证的背景图
+                .addResource("WORD_IMAGE_CLICK", new Resource("classpath", "META-INF/cut-image/resource/1.jpg")) // 文字点选的背景图
+                .addResource("ROTATE", new Resource("classpath", "META-INF/cut-image/resource/1.jpg")) // 旋转验证的背景图
                 .build();
         // 生成验证码数据， 可以将该数据直接返回给前端 ， 可配合 tianai-captcha-web-sdk 使用
         // 支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
