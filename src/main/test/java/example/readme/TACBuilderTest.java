@@ -9,8 +9,7 @@ import cloud.tianai.captcha.resource.common.model.dto.Resource;
 public class TACBuilderTest {
 
     public static void main(String[] args) {
-        TACBuilder builder = TACBuilder.builder();
-        ImageCaptchaApplication application = builder
+        ImageCaptchaApplication application = TACBuilder.builder()
                 .addDefaultTemplate()
                 .addResource("SLIDER", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .build();
