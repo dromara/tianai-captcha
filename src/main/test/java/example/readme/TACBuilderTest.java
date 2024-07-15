@@ -11,6 +11,8 @@ public class TACBuilderTest {
     public static void main(String[] args) {
         ImageCaptchaApplication application = TACBuilder.builder()
                 .addDefaultTemplate()
+                .expire("default", 10000L)
+                .expire("WORD_IMAGE_CLICK", 60000L)
                 .addResource("SLIDER", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource("WORD_IMAGE_CLICK", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource("ROTATE", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
