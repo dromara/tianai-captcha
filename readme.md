@@ -82,7 +82,7 @@ public class ApplicationTest {
 
 ```
 ### 3.详细文档请点击 [在线文档](http://doc.captcha.tianai.cloud)
-# qq群: 305532064
+# qq群: 197340494
 
 # 微信群:
 
