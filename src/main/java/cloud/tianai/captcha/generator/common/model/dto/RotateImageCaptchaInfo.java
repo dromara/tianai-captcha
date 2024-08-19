@@ -36,7 +36,7 @@ public class RotateImageCaptchaInfo extends ImageCaptchaInfo {
         rotateImageCaptchaInfo.setRandomX(randomX);
         rotateImageCaptchaInfo.setBackgroundImage(backgroundImage);
         rotateImageCaptchaInfo.setBackgroundImageTag(backgroundImageTag);
-        rotateImageCaptchaInfo.setTemplateImage(templateImageTag);
+        rotateImageCaptchaInfo.setTemplateImageTag(templateImageTag);
         rotateImageCaptchaInfo.setTolerant(DEFAULT_TOLERANT);
         rotateImageCaptchaInfo.setTemplateImage(templateImage);
         rotateImageCaptchaInfo.setBackgroundImageWidth(bgImageWidth);

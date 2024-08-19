@@ -7,6 +7,7 @@ import cloud.tianai.captcha.common.util.CaptchaTypeClassifier;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.interceptor.Context;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
 
 import java.util.List;
 
@@ -24,14 +25,15 @@ public class BasicTrackCaptchaInterceptor implements CaptchaInterceptor {
     }
 
     @Override
-    public ApiResponse<?> afterValid(Context context, String type, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData, ApiResponse<?> basicValid) {
+    public ApiResponse<?> afterValid(Context context, String type, MatchParam matchData, AnyMap validData, ApiResponse<?> basicValid) {
         if (!basicValid.isSuccess()) {
-            return context.getGroup().afterValid(context, type, imageCaptchaTrack, validData, basicValid);
+            return context.getGroup().afterValid(context, type, matchData, validData, basicValid);
         }
         if (!CaptchaTypeClassifier.isSliderCaptcha(type)) {
             // 不是滑动验证码的话暂时跳过，点选验证码行为轨迹还没做
             return ApiResponse.ofSuccess();
         }
+        ImageCaptchaTrack imageCaptchaTrack = matchData.getTrack();
         // 进行行为轨迹检测
         long startSlidingTime = imageCaptchaTrack.getStartTime().getTime();
         long endSlidingTime = imageCaptchaTrack.getStopTime().getTime();

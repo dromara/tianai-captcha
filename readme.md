@@ -37,13 +37,15 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha</artifactId>
-    <version>1.5.0</version>
+    <version>1.5.1</version>
 </dependency>
 ```
 
 ### 2. 构建 `ImageCaptchaApplication`负责生成和校验验证码
 
 ```java
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
+
 public class ApplicationTest {
 
     public static void main(String[] args) {
@@ -63,7 +65,7 @@ public class ApplicationTest {
         // 注意: 该项目只负责生成和校验验证码数据， 至于二次验证等需要自行扩展
         String id = res.getId();
         ImageCaptchaTrack imageCaptchaTrack = null;
-        ApiResponse<?> valid = application.matching(id, imageCaptchaTrack);
+        ApiResponse<?> valid = application.matching(id, new MatchParam(imageCaptchaTrack));
         System.out.println(valid.isSuccess());
 
 

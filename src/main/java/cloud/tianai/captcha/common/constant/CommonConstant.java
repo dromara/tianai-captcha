@@ -14,7 +14,7 @@ public interface CommonConstant {
     /**
      * 默认的resource资源文件路径.
      */
-    String DEFAULT_SLIDER_IMAGE_RESOURCE_PATH = "META-INF/cut-image/resource";
+   String DEFAULT_SLIDER_IMAGE_RESOURCE_PATH = "META-INF/cut-image/resource";
     /**
      * 默认的template资源文件路径.
      */

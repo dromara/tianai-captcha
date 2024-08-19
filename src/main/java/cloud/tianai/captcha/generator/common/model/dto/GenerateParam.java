@@ -13,7 +13,8 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
+// param作为扩展字段暂时将param从equals和toString中移除掉 以适应 CacheImageCaptchaGenerator
+@EqualsAndHashCode(exclude = "param")
 public class GenerateParam {
 
 
@@ -60,4 +61,5 @@ public class GenerateParam {
         }
         return param.getOrDefault(key, defaultValue);
     }
+
 }

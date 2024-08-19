@@ -1,5 +1,7 @@
 package cloud.tianai.captcha.common;
 
+import lombok.EqualsAndHashCode;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -8,6 +10,7 @@ import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+@EqualsAndHashCode
 public class AnyMap implements Map<String, Object> {
 
     private Map<String, Object> target;
@@ -19,6 +22,7 @@ public class AnyMap implements Map<String, Object> {
     public AnyMap(Map<String, Object> map) {
         this.target = map;
     }
+
     public Float getFloat(String key) {
         return getFloat(key, null);
     }
@@ -69,7 +73,7 @@ public class AnyMap implements Map<String, Object> {
     }
 
 
-    public static AnyMap of(Map<String,Object> map) {
+    public static AnyMap of(Map<String, Object> map) {
         return new AnyMap(map);
     }
 

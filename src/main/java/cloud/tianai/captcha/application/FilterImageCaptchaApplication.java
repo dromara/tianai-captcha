@@ -10,6 +10,7 @@ import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
 
 /**
  * @Author: 天爱有情
@@ -51,8 +52,13 @@ public class FilterImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
-    public ApiResponse<?> matching(String id, ImageCaptchaTrack ImageCaptchaTrack) {
-        return target.matching(id, ImageCaptchaTrack);
+    public ApiResponse<?> matching(String id, MatchParam matchParam) {
+        return target.matching(id, matchParam);
+    }
+
+    @Override
+    public ApiResponse<?> matching(String id, ImageCaptchaTrack track) {
+        return target.matching(id, track);
     }
 
     @Override

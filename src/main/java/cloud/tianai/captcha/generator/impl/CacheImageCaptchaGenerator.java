@@ -211,4 +211,5 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     public void setInterceptor(CaptchaInterceptor interceptor) {
         target.setInterceptor(interceptor);
     }
+
 }

@@ -8,7 +8,7 @@ import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -87,24 +87,24 @@ public class CaptchaInterceptorGroup implements CaptchaInterceptor {
     }
 
     @Override
-    public ApiResponse<?> beforeValid(Context context, String type, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData) {
+    public ApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
         context = createContextIfNecessary(context);
         ApiResponse<?> beforeValid = null;
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
-            beforeValid = interceptor.beforeValid(context, type, imageCaptchaTrack, validData);
+            beforeValid = interceptor.beforeValid(context, type, matchParam, validData);
             context.setPreReturnData(beforeValid);
         }
         return beforeValid == null ? ApiResponse.ofSuccess() : beforeValid;
     }
 
     @Override
-    public ApiResponse<?> afterValid(Context context, String type, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData, ApiResponse<?> basicValid) {
+    public ApiResponse<?> afterValid(Context context, String type, MatchParam matchParam, AnyMap validData, ApiResponse<?> basicValid) {
         context = createContextIfNecessary(context);
         ApiResponse<?> valid = null;
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
-            valid = interceptor.afterValid(context, type, imageCaptchaTrack, validData, basicValid);
+            valid = interceptor.afterValid(context, type, matchParam, validData, basicValid);
             context.setPreReturnData(valid);
         }
         return valid == null ? ApiResponse.ofSuccess() : valid;

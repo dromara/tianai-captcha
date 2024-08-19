@@ -16,7 +16,6 @@ public class ApiResponse<T> implements Serializable {
     public static final ApiResponse<?> SUCCESS;
 
     static {
-        //默认
         CodeDefinition definition = ApiResponseStatusConstant.SUCCESS;
         SUCCESS = new ApiResponse(definition.getCode(), definition.getMessage(), null);
     }

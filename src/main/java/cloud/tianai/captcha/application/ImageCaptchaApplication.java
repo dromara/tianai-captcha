@@ -11,6 +11,7 @@ import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
 
 /**
  * @Author: 天爱有情
@@ -63,14 +64,23 @@ public interface ImageCaptchaApplication {
     /**
      * 匹配
      *
-     * @param id                验证码的ID
-     * @param imageCaptchaTrack 滑动轨迹
+     * @param id         验证码的ID
+     * @param matchParam 匹配数据，包含鼠标轨迹，设备信息等
      * @return 匹配成功返回true， 否则返回false
      */
-    ApiResponse<?> matching(String id, ImageCaptchaTrack imageCaptchaTrack);
+    ApiResponse<?> matching(String id, MatchParam matchParam);
 
     /**
-     * 兼容一下旧版本，新版本建议使用 {@link ImageCaptchaApplication#matching(String, ImageCaptchaTrack)}
+     * 兼容一下旧版本，新版本建议使用 {@link ImageCaptchaApplication#matching(String, MatchParam)}
+     *
+     * @param id    验证码的ID
+     * @param track 轨迹数据
+     * @return 匹配成功返回true， 否则返回false
+     */
+    ApiResponse<?> matching(String id, ImageCaptchaTrack track);
+
+    /**
+     * 兼容一下旧版本，新版本建议使用 {@link ImageCaptchaApplication#matching(String, MatchParam)}
      *
      * @param id         id
      * @param percentage 百分比数据
@@ -114,6 +124,7 @@ public interface ImageCaptchaApplication {
      * @return CaptchaInterceptor
      */
     CaptchaInterceptor getCaptchaInterceptor();
+
     /**
      * 设置 拦截器
      *

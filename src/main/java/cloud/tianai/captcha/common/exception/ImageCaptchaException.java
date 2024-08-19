@@ -5,8 +5,7 @@ package cloud.tianai.captcha.common.exception;
  * @date 2022/5/7 9:04
  * @Description  图片验证码异常
  */
-public class ImageCaptchaException extends RuntimeException {
-
+public class ImageCaptchaException extends RuntimeException{
     public ImageCaptchaException() {
     }
 
@@ -25,5 +24,4 @@ public class ImageCaptchaException extends RuntimeException {
     public ImageCaptchaException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
         super(message, cause, enableSuppression, writableStackTrace);
     }
-    
 }

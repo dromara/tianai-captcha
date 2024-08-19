@@ -8,7 +8,7 @@ import cloud.tianai.captcha.generator.AbstractImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
-import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
 
 // ============================ 拦截器执行顺序 ============================
 
@@ -55,7 +55,7 @@ public interface CaptchaInterceptor {
     default void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, CaptchaResponse<ImageCaptchaVO> captchaResponse) {
     }
 
-    default ApiResponse<?> beforeValid(Context context, String type, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData) {
+    default ApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
         Object preReturn = context.getPreReturnData();
         if (preReturn != null) {
             return (ApiResponse<?>) preReturn;
@@ -63,7 +63,7 @@ public interface CaptchaInterceptor {
         return ApiResponse.ofSuccess();
     }
 
-    default ApiResponse<?> afterValid(Context context, String type, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData, ApiResponse<?> basicValid) {
+    default ApiResponse<?> afterValid(Context context, String type, MatchParam matchParam, AnyMap validData, ApiResponse<?> basicValid) {
         Object preReturn = context.getPreReturnData();
         if (preReturn != null) {
             return (ApiResponse<?>) preReturn;

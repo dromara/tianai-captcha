@@ -18,6 +18,7 @@ import cloud.tianai.captcha.interceptor.EmptyCaptchaInterceptor;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
 import cloud.tianai.captcha.validator.impl.SimpleImageCaptchaValidator;
 import lombok.extern.slf4j.Slf4j;
 
@@ -155,21 +156,26 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
 
 
     @Override
-    public ApiResponse<?> matching(String id, ImageCaptchaTrack imageCaptchaTrack) {
+    public ApiResponse<?> matching(String id, MatchParam matchParam) {
         AnyMap validData = getVerification(id);
         if (validData == null) {
             return ApiResponse.ofMessage(ApiResponseStatusConstant.EXPIRED);
         }
-        ApiResponse<?> response = beforeValid(id, imageCaptchaTrack, validData);
+        ApiResponse<?> response = beforeValid(id, matchParam, validData);
         if (!response.isSuccess()) {
             return response;
         }
-        ApiResponse<?> basicValid = getImageCaptchaValidator().valid(imageCaptchaTrack, validData);
-        response = afterValid(id, imageCaptchaTrack, validData, basicValid);
+        ApiResponse<?> basicValid = getImageCaptchaValidator().valid(matchParam.getTrack(), validData);
+        response = afterValid(id, matchParam, validData, basicValid);
         if (!response.isSuccess()) {
             return response;
         }
         return basicValid;
+    }
+
+    @Override
+    public ApiResponse<?> matching(String id, ImageCaptchaTrack track) {
+        return matching(id, new MatchParam(track, null));
     }
 
 
@@ -295,12 +301,12 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         captchaInterceptor.afterGenerateImageCaptchaValidData(captchaInterceptor.createContext(), imageCaptchaInfo.getType(), imageCaptchaInfo, validData);
     }
 
-    private ApiResponse<?> beforeValid(String id, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData) {
-        return captchaInterceptor.beforeValid(captchaInterceptor.createContext(), getCaptchaTypeById(id), imageCaptchaTrack, validData);
+    private ApiResponse<?> beforeValid(String id, MatchParam matchParam, AnyMap validData) {
+        return captchaInterceptor.beforeValid(captchaInterceptor.createContext(), getCaptchaTypeById(id), matchParam, validData);
     }
 
-    private ApiResponse<?> afterValid(String id, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData, ApiResponse<?> basicValid) {
-        return captchaInterceptor.afterValid(captchaInterceptor.createContext(), getCaptchaTypeById(id), imageCaptchaTrack, validData, basicValid);
+    private ApiResponse<?> afterValid(String id, MatchParam matchParam, AnyMap validData, ApiResponse<?> basicValid) {
+        return captchaInterceptor.afterValid(captchaInterceptor.createContext(), getCaptchaTypeById(id), matchParam, validData, basicValid);
     }
 
 }

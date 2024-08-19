@@ -7,6 +7,7 @@ import cloud.tianai.captcha.common.util.ObjectUtils;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.interceptor.Context;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
 
 /**
  * @Author: 天爱有情
@@ -15,8 +16,8 @@ import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
  */
 public class ParamCheckCaptchaInterceptor implements CaptchaInterceptor {
     @Override
-    public ApiResponse<?> beforeValid(Context context, String type, ImageCaptchaTrack imageCaptchaTrack, AnyMap validData) {
-        checkParam(imageCaptchaTrack);
+    public ApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {
+        checkParam(matchParam.getTrack());
         return ApiResponse.ofSuccess();
     }
 
