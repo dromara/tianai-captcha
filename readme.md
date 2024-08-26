@@ -6,11 +6,8 @@
 #### 基于 JAVA实现的行为验证码
 ### **[在线体验 🚀][online-demo-link]**
 ### **[在线文档 🚀][doc-link]**
-
-[![][github-release-shield]][github-release-link] [![][github-license-shield]][github-license-link]<br>
-
 </div>
------
+
 
 ![](https://minio.tianai.cloud/public/%E6%A0%87%E9%A2%98%E5%9B%BE%E7%89%87.jpg)
 
