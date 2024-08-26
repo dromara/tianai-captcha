@@ -1,13 +1,18 @@
-## 可能是开源界最好用的行为验证码工具
+<div align="center">
 
+![][image-logo]
+
+### tianaiCAPTCHA - 天爱验证码(TAC)
+#### 基于 JAVA实现的行为验证码
+### **[在线体验 🚀][online-demo-link]**
+### **[在线文档 🚀][doc-link]**
+
+[![][github-release-shield]][github-release-link] [![][github-license-shield]][github-license-link]<br>
+
+</div>
 -----
 
-## pc版在线体验 [在线体验](http://captcha.tianai.cloud)
-
-## 在线文档 [在线文档](http://doc.captcha.tianai.cloud)
-
 ![](https://minio.tianai.cloud/public/%E6%A0%87%E9%A2%98%E5%9B%BE%E7%89%87.jpg)
-
 
 ## 简单介绍
 
@@ -89,3 +94,17 @@ public class ApplicationTest {
 <img src="https://minio.tianai.cloud/public/qun2.jpg?t=20230825" width="270px" title="微信群" />
 
 ## 微信群加不上的话 加微信好友 微信号: youseeseeyou-1ttd 拉你入群
+
+
+
+[image-logo]: https://minio.tianai.cloud/public/captcha/logo/logo-519x100.png
+[github-release-shield]: https://img.shields.io/github/v/release/tianaiyouqing/tianai-captcha-go?color=369eff&labelColor=black&logo=github&style=flat-square
+[github-release-link]: https://github.com/tianaiyouqing/tianai-captcha-go/releases
+[github-license-link]: https://github.com/tianaiyouqing/tianai-captcha-go/blob/master/LICENSE
+[github-license-shield]: https://img.shields.io/badge/MulanPSL-2.0-white?labelColor=black&style=flat-square
+[tianai-captcha-java-link]: https://github.com/dromara/tianai-captcha
+[captcha-go-demo-link]: https://gitee.com/tianai/captcha-go-demo
+[tianai-captcha-web-sdk-link]: https://github.com/tianaiyouqing/captcha-web-sdk
+[online-demo-link]: http://captcha.tianai.cloud
+[doc-link]: http://doc.captcha.tianai.cloud
+[qrcode-link]: https://minio.tianai.cloud/public/qun4.png
