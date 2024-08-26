@@ -87,8 +87,8 @@ public class ApplicationTest {
 # qq群: 197340494
 
 # 微信群:
+![](https://minio.tianai.cloud/public/qun2.jpg)
 
-<img src="https://minio.tianai.cloud/public/qun2.jpg?t=20230825" width="270px" title="微信群" />
 
 ## 微信群加不上的话 加微信好友 微信号: youseeseeyou-1ttd 拉你入群
 
