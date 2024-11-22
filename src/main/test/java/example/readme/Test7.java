@@ -20,7 +20,7 @@ public class Test7 {
             }
 
             @Override
-            public boolean supported(String type) {
+            public boolean supported(Resource type) {
                 return false;
             }
 

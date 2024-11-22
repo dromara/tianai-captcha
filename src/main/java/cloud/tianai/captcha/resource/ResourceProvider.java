@@ -22,10 +22,10 @@ public interface ResourceProvider {
     /**
      * 是否支持
      *
-     * @param type type
+     * @param resource resource
      * @return boolean
      */
-    boolean supported(String type);
+    boolean supported(Resource resource);
 
     /**
      * 放弃资源提供者名称

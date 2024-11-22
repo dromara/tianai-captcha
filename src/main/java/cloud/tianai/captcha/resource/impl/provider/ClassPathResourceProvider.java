@@ -20,8 +20,8 @@ public class ClassPathResourceProvider extends AbstractResourceProvider {
     }
 
     @Override
-    public boolean supported(String type) {
-        return NAME.equalsIgnoreCase(type);
+    public boolean supported(Resource resource) {
+        return NAME.equalsIgnoreCase(resource.getType());
     }
 
     @Override

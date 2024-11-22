@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.resource.common.model.dto;
 
+import cloud.tianai.captcha.common.util.UUIDUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -16,25 +17,31 @@ import java.util.function.BiConsumer;
 @Data
 @EqualsAndHashCode
 public class ResourceMap {
-
+    /** 唯一ID. */
+    private String id;
     private Map<String, Resource> resourceMap;
     private String tag;
 
     public ResourceMap(String tag) {
-        this.tag = tag;
-        this.resourceMap = new HashMap<>();
+        this(tag, 10);
     }
 
     public ResourceMap(String tag, int initialCapacity) {
+        this(UUIDUtils.getUUID(), tag, initialCapacity);
+    }
+
+    public ResourceMap(String id, String tag, int initialCapacity) {
         this.tag = tag;
         this.resourceMap = new HashMap<>(initialCapacity);
+        this.id = id;
     }
 
     public ResourceMap(int initialCapacity) {
-        this.resourceMap = new HashMap<>(initialCapacity);
+        this(null, initialCapacity);
     }
 
     public ResourceMap() {
+        this(null);
     }
 
     private Map<String, Resource> getResourceMapOfCreate() {

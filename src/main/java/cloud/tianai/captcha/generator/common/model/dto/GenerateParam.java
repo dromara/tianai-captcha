@@ -62,4 +62,23 @@ public class GenerateParam {
         return param.getOrDefault(key, defaultValue);
     }
 
+
+    public Object putIfAbsent(String key, Object value) {
+        return doGetOrCreateParam().putIfAbsent(key, value);
+    }
+
+
+    public <T> void  addParam(ParamKey<T> paramKey, T value) {
+        addParam(paramKey.getKey(), value);
+    }
+
+    public <T> T getParam(ParamKey<T> paramKey) {
+        return (T) getParam(paramKey.getKey());
+    }
+
+    public <T> T getOrDefault(ParamKey<T> paramKey, T defaultValue) {
+        return (T) getOrDefault(paramKey.getKey(), defaultValue);
+    }
+
+
 }

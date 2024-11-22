@@ -34,7 +34,7 @@ public class TACBuilderTest2 {
                         return CaptchaInterceptor.super.beforeGenerateCaptcha(context, type, param);
                     }
                 })
-                .addFont(font)
+                .addFont(new Resource("file", "C:\\Users\\Thinkpad\\Desktop\\captcha\\手写字体\\ttf\\千图小兔体.ttf"))
                 .build();
         CaptchaResponse<ImageCaptchaVO> response = application.generateCaptcha("WORD_IMAGE_CLICK");
         System.out.println(response);

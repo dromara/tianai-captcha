@@ -1,17 +1,11 @@
 package cloud.tianai.captcha.resource.impl;
 
-import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
-import cloud.tianai.captcha.resource.ResourceProvider;
-import cloud.tianai.captcha.resource.ResourceStore;
+import cloud.tianai.captcha.resource.*;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
-import cloud.tianai.captcha.resource.impl.provider.ClassPathResourceProvider;
-import cloud.tianai.captcha.resource.impl.provider.FileResourceProvider;
-import cloud.tianai.captcha.resource.impl.provider.URLResourceProvider;
+import lombok.Getter;
 
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -24,15 +18,16 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
     /** 资源存储. */
     private ResourceStore resourceStore;
     /** 资源转换 转换为stream流. */
-    private final List<ResourceProvider> resourceProviderList = new ArrayList<>(8);
-
+    @Getter
+    private ResourceProviders resourceProviders;
 
     public DefaultImageCaptchaResourceManager() {
         init();
     }
 
-    public DefaultImageCaptchaResourceManager(ResourceStore resourceStore) {
+    public DefaultImageCaptchaResourceManager(ResourceStore resourceStore, ResourceProviders resourceProviders) {
         this.resourceStore = resourceStore;
+        this.resourceProviders = resourceProviders;
         init();
     }
 
@@ -40,10 +35,9 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
         if (this.resourceStore == null) {
             this.resourceStore = new LocalMemoryResourceStore();
         }
-        // 注入一些默认的提供者
-        registerResourceProvider(new URLResourceProvider());
-        registerResourceProvider(new ClassPathResourceProvider());
-        registerResourceProvider(new FileResourceProvider());
+        // 在这里临时加上字体缓存器
+        resourceStore.addListener(FontCache.getInstance());
+        resourceStore.init(this);
     }
 
     @Override
@@ -66,33 +60,22 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
 
     @Override
     public InputStream getResourceInputStream(Resource resource) {
-        for (ResourceProvider resourceProvider : resourceProviderList) {
-            if (resourceProvider.supported(resource.getType())) {
-                InputStream resourceInputStream = resourceProvider.getResourceInputStream(resource);
-                if (resourceInputStream == null) {
-                    throw new IllegalArgumentException("滑块验证码 ResourceProvider 读到的图片资源为空,providerName=["
-                            + resourceProvider.getName() + "], resource=[" + resource + "]");
-                }
-                return resourceInputStream;
-            }
-        }
-        throw new IllegalStateException("没有找到Resource [" + resource.getType() + "]对应的资源提供者");
+        return resourceProviders.getResourceInputStream(resource);
     }
 
     @Override
     public List<ResourceProvider> listResourceProviders() {
-        return Collections.unmodifiableList(resourceProviderList);
+        return resourceProviders.listResourceProviders();
     }
 
     @Override
     public void registerResourceProvider(ResourceProvider resourceProvider) {
-        deleteResourceProviderByName(resourceProvider.getName());
-        resourceProviderList.add(resourceProvider);
+        resourceProviders.registerResourceProvider(resourceProvider);
     }
 
     @Override
     public boolean deleteResourceProviderByName(String name) {
-        return resourceProviderList.removeIf(r -> r.getName().equals(name));
+        return resourceProviders.deleteResourceProviderByName(name);
     }
 
     @Override
