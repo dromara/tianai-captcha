@@ -20,11 +20,11 @@ import java.awt.*;
 
 public class TACBuilderTest {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         Font font= null;
-        ResourceMap template1 = new ResourceMap("default", 4);
-        template1.put(StandardSliderImageCaptchaGenerator.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/active.png"));
-        template1.put(StandardSliderImageCaptchaGenerator.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/fixed.png"));
+//        ResourceMap template1 = new ResourceMap("default", 4);
+//        template1.put(StandardSliderImageCaptchaGenerator.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/active.png"));
+//        template1.put(StandardSliderImageCaptchaGenerator.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/fixed.png"));
 
         ImageCaptchaApplication application = TACBuilder.builder(new LocalMemoryResourceStore())
                 // 加载系统自带的默认资源
@@ -39,7 +39,7 @@ public class TACBuilderTest {
                 .addResource("WORD_IMAGE_CLICK", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource("ROTATE", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 // 添加验证码模板图片
-                .addTemplate("SLIDER",template1)
+//                .addTemplate("SLIDER",template1)
                 // 设置缓冲器,可提前生成验证码，用于增加并发性
                 .cached(10, 1000, 5000, 10000L)
                 // 添加字体包，用于给文字点选验证码提供字体
@@ -51,8 +51,15 @@ public class TACBuilderTest {
                 // 图片转换器，默认是将图片转换成base64格式， 背景图为jpg， 模板图为png， 如果想要扩展，可替换成自己实现的
                 .setTransform(new Base64ImageTransform())
                 .build();
-        CaptchaResponse<ImageCaptchaVO> response = application.generateCaptcha("ROTATE");
-        System.out.println(response);
+
+        while (true){
+            long start = System.currentTimeMillis();
+            CaptchaResponse<ImageCaptchaVO> response = application.generateCaptcha("SLIDER");
+            System.out.println("耗时:" + (System.currentTimeMillis() - start));
+//            System.out.println(response);
+            Thread.sleep(1000);
+        }
+//        System.out.println(response);
 
     }
 }

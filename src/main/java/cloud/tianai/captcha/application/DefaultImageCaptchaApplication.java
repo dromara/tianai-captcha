@@ -260,7 +260,8 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
 
     @Override
     public void setCaptchaInterceptor(CaptchaInterceptor captchaInterceptor) {
-        this.captchaGenerator = captchaGenerator;
+        this.captchaInterceptor = captchaInterceptor;
+        this.captchaGenerator.setInterceptor(captchaInterceptor);
     }
 
     @Override
