@@ -1,14 +1,15 @@
 package cloud.tianai.captcha.generator.impl;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.common.constant.CommonConstant;
 import cloud.tianai.captcha.common.exception.ImageCaptchaException;
-import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.common.util.FontUtils;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.common.FontWrapper;
 import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
+import cloud.tianai.captcha.resource.FontCache;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import lombok.Getter;
@@ -30,9 +31,9 @@ import java.util.stream.Collectors;
 public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCaptchaGenerator {
 
     /** 字体包. */
-    @Getter
-    @Setter
-    protected List<FontWrapper> fonts = new ArrayList<>();
+//    @Getter
+//    @Setter
+//    protected List<FontWrapper> fonts = new ArrayList<>();
     @Getter
     @Setter
     protected Integer clickImgWidth = 100;
@@ -64,12 +65,7 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
 //
 //    protected float currentFontTopCoef = 0.0f;
     public StandardWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager) {
-        super(imageCaptchaResourceManager);
-    }
-
-    public StandardWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform) {
-        super(imageCaptchaResourceManager);
-        setImageTransform(imageTransform);
+        this(imageCaptchaResourceManager, null, null);
     }
 
 
@@ -79,16 +75,11 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
         setInterceptor(interceptor);
     }
 
-    public StandardWordClickImageCaptchaGenerator(ImageCaptchaResourceManager imageCaptchaResourceManager, ImageTransform imageTransform, CaptchaInterceptor interceptor, List<FontWrapper> fonts) {
-        super(imageCaptchaResourceManager);
-        setImageTransform(imageTransform);
-        setInterceptor(interceptor);
-        this.fonts = fonts;
-    }
-
 
     @Override
     protected List<Resource> randomGetClickImgTips(GenerateParam param) {
+        Integer checkClickCount = param.getOrDefault(ParamKeyEnum.CLICK_CHECK_CLICK_COUNT, getCheckClickCount());
+        Integer interferenceCount = param.getOrDefault(ParamKeyEnum.CLICK_INTERFERENCE_COUNT, getInterferenceCount());
         int tipSize = interferenceCount + checkClickCount;
         ThreadLocalRandom random = ThreadLocalRandom.current();
         List<Resource> tipList = new ArrayList<>(tipSize);
@@ -102,14 +93,25 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
 
     @Override
     protected void doInit() {
-        if (CollectionUtils.isEmpty(fonts)) {
-            throw new ImageCaptchaException("初始化文字点选验证码失败，请设置字体包后再调用init()");
-        }
+//        if (CollectionUtils.isEmpty(fonts)) {
+//            throw new ImageCaptchaException("初始化文字点选验证码失败，请设置字体包后再调用init()");
+//        }
+//        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
+//        // 添加一些系统的资源文件
+//        resourceStore.addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource(ClassPathResourceProvider.NAME, DEFAULT_SLIDER_IMAGE_RESOURCE_PATH.concat("/1.jpg"), DEFAULT_TAG));
+    }
 
+    public FontWrapper randomFont() {
+        Resource resource = requiredRandomGetResource(FontCache.FONT_TYPE, CommonConstant.DEFAULT_TAG);
+        Object extra = resource.getExtra();
+        if (extra instanceof FontWrapper) {
+            return (FontWrapper) extra;
+        }
+        throw new ImageCaptchaException("随机获取字体失败， resource中没有读到字体包, resource=" + resource);
     }
 
     public ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions) {
-        FontWrapper fontWrapper = fonts.get(randomInt(fonts.size()));
+        FontWrapper fontWrapper = randomFont();
         Font font = fontWrapper.getFont();
         float currentFontTopCoef = fontWrapper.getCurrentFontTopCoef();
         String tips = imageCheckDefinitions.stream().map(c -> c.getTip().getData()).collect(Collectors.joining());
@@ -124,14 +126,24 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
         return new ImgWrapper(bufferedImage, new Resource(null, tips), null);
     }
 
+//    @Override
+//    public ImgWrapper getClickImg(Resource tip) {
+//        ThreadLocalRandom random = ThreadLocalRandom.current();
+//        // 随机颜色
+//        Color randomColor = CaptchaImageUtils.getRandomColor(random);
+//        return getClickImg(tip, randomColor);
+//    }
+
+
     @Override
-    public ImgWrapper getClickImg(Resource tip) {
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        // 随机颜色
-        Color randomColor = CaptchaImageUtils.getRandomColor(random);
+    public ImgWrapper getClickImg(Resource tip, Color randomColor) {
+        if (randomColor == null) {
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            randomColor = CaptchaImageUtils.getRandomColor(random);
+        }
         // 随机角度
         int randomDeg = randomInt(0, 85);
-        FontWrapper fontWrapper = fonts.get(randomInt(fonts.size()));
+        FontWrapper fontWrapper = randomFont();
         Font font = fontWrapper.getFont();
         float currentFontTopCoef = fontWrapper.getCurrentFontTopCoef();
         BufferedImage fontImage = CaptchaImageUtils.drawWordImg(randomColor,
@@ -145,7 +157,9 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
     }
 
     @Override
-    protected List<ClickImageCheckDefinition> filterAndSortClickImageCheckDefinition(List<ClickImageCheckDefinition> allCheckDefinitionList) {
+    protected List<ClickImageCheckDefinition> filterAndSortClickImageCheckDefinition(CaptchaExchange captchaExchange,List<ClickImageCheckDefinition> allCheckDefinitionList) {
+        GenerateParam param = captchaExchange.getParam();
+        Integer checkClickCount = param.getOrDefault(ParamKeyEnum.CLICK_CHECK_CLICK_COUNT, getCheckClickCount());
         // 打乱
         Collections.shuffle(allCheckDefinitionList);
         // 拿出参与校验的数据

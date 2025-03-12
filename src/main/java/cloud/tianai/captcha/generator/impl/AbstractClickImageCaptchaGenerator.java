@@ -51,7 +51,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
         }
         for (int i = 0; i < allImages; i++) {
             // 随机获取点击图片
-            ImgWrapper imgWrapper = getClickImg(imgTips.get(i));
+            ImgWrapper imgWrapper = getClickImg(imgTips.get(i),null);
             BufferedImage image = imgWrapper.getImage();
             int clickImgWidth = image.getWidth();
             int clickImgHeight = image.getHeight();
@@ -75,7 +75,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
             clickImageCheckDefinition.setImageColor(imgWrapper.getImageColor());
             clickImageCheckDefinitionList.add(clickImageCheckDefinition);
         }
-        List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = filterAndSortClickImageCheckDefinition(clickImageCheckDefinitionList);
+        List<ClickImageCheckDefinition> checkClickImageCheckDefinitionList = filterAndSortClickImageCheckDefinition(captchaExchange,clickImageCheckDefinitionList);
         captchaExchange.setBackgroundImage(bgImage);
         captchaExchange.setTransferData(checkClickImageCheckDefinitionList);
         captchaExchange.setResourceImage(resourceImage);
@@ -94,7 +94,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
      * @param allCheckDefinitionList 总的点选图片
      * @return List<ClickImageCheckDefinition>
      */
-    protected abstract List<ClickImageCheckDefinition> filterAndSortClickImageCheckDefinition(List<ClickImageCheckDefinition> allCheckDefinitionList);
+    protected abstract List<ClickImageCheckDefinition> filterAndSortClickImageCheckDefinition(CaptchaExchange captchaExchange,List<ClickImageCheckDefinition> allCheckDefinitionList);
 
     /**
      * 随机获取一组数据用于生成随机图
@@ -109,7 +109,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
      * @param tip 提示数据,根据改数据生成图片
      * @return ImgWrapper
      */
-    public abstract ImgWrapper getClickImg(Resource tip);
+    public abstract ImgWrapper getClickImg(Resource tip, Color randomColor);
 
     /**
      * @Author: 天爱有情
