@@ -10,28 +10,48 @@ import lombok.*;
  * @Description 生成参数
  */
 @Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 // param作为扩展字段暂时将param从equals和toString中移除掉 以适应 CacheImageCaptchaGenerator
 @EqualsAndHashCode(exclude = "param")
 public class GenerateParam {
 
-
-    /** 背景格式化类型. */
+    /**
+     * 背景格式化类型.
+     */
     private String backgroundFormatName = "jpeg";
-    /** 模板图片格式化类型. */
+    /**
+     * 模板图片格式化类型.
+     */
     private String templateFormatName = "png";
-    /** 是否混淆. */
+    /**
+     * 是否混淆.
+     */
     private Boolean obfuscate = false;
-    /** 类型. */
+    /**
+     * 类型.
+     */
     private String type = CaptchaTypeConstant.SLIDER;
-    /** 背景图片标签, 用户二级过滤背景图片，或指定某背景图片. */
+    /**
+     * 背景图片标签, 用户二级过滤背景图片，或指定某背景图片.
+     */
     private String backgroundImageTag;
-    /** 滑动图片标签,用户二级过滤模板图片，或指定某模板图片.. */
+    /**
+     * 滑动图片标签,用户二级过滤模板图片，或指定某模板图片..
+     */
     private String templateImageTag;
-    /** 扩展参数. */
+    /**
+     * 扩展参数.
+     */
     private AnyMap param = new AnyMap();
+
+    public static GenerateParam of() {
+        return new GenerateParam();
+    }
+
+    public static GenerateParam of(String type) {
+        GenerateParam generateParam = new GenerateParam();
+        generateParam.type = type;
+        return generateParam;
+    }
 
     public void addParam(String key, Object value) {
         doGetOrCreateParam().put(key, value);
@@ -68,7 +88,7 @@ public class GenerateParam {
     }
 
 
-    public <T> void  addParam(ParamKey<T> paramKey, T value) {
+    public <T> void addParam(ParamKey<T> paramKey, T value) {
         addParam(paramKey.getKey(), value);
     }
 
@@ -80,5 +100,34 @@ public class GenerateParam {
         return (T) getOrDefault(paramKey.getKey(), defaultValue);
     }
 
+    public GenerateParam backgroundFormatName(String backgroundFormatName) {
+        this.backgroundFormatName = backgroundFormatName;
+        return this;
+    }
+
+    public GenerateParam templateFormatName(String templateFormatName) {
+        this.templateFormatName = templateFormatName;
+        return this;
+    }
+
+    public GenerateParam obfuscate(Boolean obfuscate) {
+        this.obfuscate = obfuscate;
+        return this;
+    }
+
+    public GenerateParam backgroundImageTag(String backgroundImageTag) {
+        this.backgroundImageTag = backgroundImageTag;
+        return this;
+    }
+
+    public GenerateParam templateImageTag(String templateImageTag) {
+        this.templateImageTag = templateImageTag;
+        return this;
+    }
+
+    public GenerateParam param(AnyMap param) {
+        this.param = param;
+        return this;
+    }
 
 }
