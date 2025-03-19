@@ -43,16 +43,6 @@ public class GenerateParam {
      */
     private AnyMap param = new AnyMap();
 
-    public static GenerateParam of() {
-        return new GenerateParam();
-    }
-
-    public static GenerateParam of(String type) {
-        GenerateParam generateParam = new GenerateParam();
-        generateParam.type = type;
-        return generateParam;
-    }
-
     public void addParam(String key, Object value) {
         doGetOrCreateParam().put(key, value);
     }
@@ -100,34 +90,69 @@ public class GenerateParam {
         return (T) getOrDefault(paramKey.getKey(), defaultValue);
     }
 
-    public GenerateParam backgroundFormatName(String backgroundFormatName) {
-        this.backgroundFormatName = backgroundFormatName;
-        return this;
+    public static Builder builder() {
+        return new Builder();
     }
 
-    public GenerateParam templateFormatName(String templateFormatName) {
-        this.templateFormatName = templateFormatName;
-        return this;
+    public static class Builder {
+        private String backgroundFormatName = "jpeg";
+        private String templateFormatName = "png";
+        private Boolean obfuscate = false;
+        private String type = CaptchaTypeConstant.SLIDER;
+        private String backgroundImageTag;
+        private String templateImageTag;
+        private AnyMap param = new AnyMap();
+
+        private Builder() {
+        }
+
+        public Builder backgroundFormatName(String backgroundFormatName) {
+            this.backgroundFormatName = backgroundFormatName;
+            return this;
+        }
+
+        public Builder templateFormatName(String templateFormatName) {
+            this.templateFormatName = templateFormatName;
+            return this;
+        }
+
+        public Builder obfuscate(Boolean obfuscate) {
+            this.obfuscate = obfuscate;
+            return this;
+        }
+
+        public Builder type(String type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder backgroundImageTag(String backgroundImageTag) {
+            this.backgroundImageTag = backgroundImageTag;
+            return this;
+        }
+
+        public Builder templateImageTag(String templateImageTag) {
+            this.templateImageTag = templateImageTag;
+            return this;
+        }
+
+        public Builder param(AnyMap param) {
+            this.param = param;
+            return this;
+        }
+
+        public GenerateParam build() {
+            GenerateParam generateParam = new GenerateParam();
+            generateParam.backgroundFormatName = backgroundFormatName;
+            generateParam.templateFormatName = templateFormatName;
+            generateParam.obfuscate = obfuscate;
+            generateParam.type = type;
+            generateParam.backgroundImageTag = backgroundImageTag;
+            generateParam.templateImageTag = templateImageTag;
+            generateParam.param = param;
+            return generateParam;
+        }
     }
 
-    public GenerateParam obfuscate(Boolean obfuscate) {
-        this.obfuscate = obfuscate;
-        return this;
-    }
-
-    public GenerateParam backgroundImageTag(String backgroundImageTag) {
-        this.backgroundImageTag = backgroundImageTag;
-        return this;
-    }
-
-    public GenerateParam templateImageTag(String templateImageTag) {
-        this.templateImageTag = templateImageTag;
-        return this;
-    }
-
-    public GenerateParam param(AnyMap param) {
-        this.param = param;
-        return this;
-    }
 
 }
