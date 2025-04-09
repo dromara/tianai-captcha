@@ -66,6 +66,11 @@ public class DefaultBuiltInResources {
             template1.put(TEMPLATE_FIXED_IMAGE_NAME, new Resource(type, finalPathPrefix.concat("/rotate_1/fixed.png")));
             resourceStore.addTemplate(CaptchaTypeConstant.ROTATE, template1);
         });
+
+        // 字体包
+        defaultTemplateResource.put(FontCache.FONT_TYPE, resourceStore -> {
+            resourceStore.addResource(FontCache.FONT_TYPE,new Resource(type,  finalPathPrefix.concat("/fontS/SIMSUN.TTC")));
+        });
     }
 
 
