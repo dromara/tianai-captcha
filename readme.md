@@ -1,6 +1,8 @@
 <div align="center">
 
 ![][image-logo]
+  
+![star](https://gitcode.com/dromara/tianai-captcha/star/badge.svg)
 
 ### tianaiCAPTCHA - 天爱验证码(TAC)
 #### 基于 JAVA实现的行为验证码
@@ -25,12 +27,12 @@
 > 注意:  如果你项目是使用的**Springboot**，
 >
 >
-请使用SpringBoot脚手架工具[tianai-captcha-springboot-starter](https://gitee.com/tianai/tianai-captcha-springboot-starter);
+请使用SpringBoot脚手架工具[tianai-captcha-springboot-starter](https://gitcode.com/tiana/tianai-captcha-springboot-starter);
 >
 > 该工具对tianai-captcha验证码进行了封装，使其使用更加方便快捷
 
 
-> **写好的验证码demo移步 [tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)**
+> **写好的验证码demo移步 [tianai-captcha-demo](https://gitcode.com/tiana/tianai-captcha-demo)**
 
 ### 1. 导入xml
 
