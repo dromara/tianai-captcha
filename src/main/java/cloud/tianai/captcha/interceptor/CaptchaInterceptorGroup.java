@@ -1,6 +1,5 @@
 package cloud.tianai.captcha.interceptor;
 
-import cloud.tianai.captcha.application.vo.CaptchaResponse;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.response.ApiResponse;
@@ -66,9 +65,9 @@ public class CaptchaInterceptorGroup implements CaptchaInterceptor {
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> beforeGenerateCaptcha(Context context, String type, GenerateParam param) {
+    public ApiResponse<ImageCaptchaVO> beforeGenerateCaptcha(Context context, String type, GenerateParam param) {
         context = createContextIfNecessary(context);
-        CaptchaResponse<ImageCaptchaVO> captchaResponse = null;
+        ApiResponse<ImageCaptchaVO> captchaResponse = null;
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
             captchaResponse = interceptor.beforeGenerateCaptcha(context, type, param);
@@ -78,7 +77,7 @@ public class CaptchaInterceptorGroup implements CaptchaInterceptor {
     }
 
     @Override
-    public void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, CaptchaResponse<ImageCaptchaVO> captchaResponse) {
+    public void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, ApiResponse<ImageCaptchaVO> captchaResponse) {
         context = createContextIfNecessary(context);
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
@@ -111,9 +110,9 @@ public class CaptchaInterceptorGroup implements CaptchaInterceptor {
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo) {
+    public ApiResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo) {
         context = createContextIfNecessary(context);
-        CaptchaResponse<ImageCaptchaVO> captchaResponse = null;
+        ApiResponse<ImageCaptchaVO> captchaResponse = null;
         while (context.next() < context.getCount()) {
             CaptchaInterceptor interceptor = validators.get(context.getCurrent());
             captchaResponse = interceptor.beforeGenerateImageCaptchaValidData(context, type, imageCaptchaInfo);

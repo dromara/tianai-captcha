@@ -1,7 +1,6 @@
 package cloud.tianai.captcha.application;
 
 
-import cloud.tianai.captcha.application.vo.CaptchaResponse;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.cache.CacheStore;
 import cloud.tianai.captcha.common.response.ApiResponse;
@@ -25,7 +24,7 @@ public interface ImageCaptchaApplication {
      *
      * @return
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha();
+    ApiResponse<ImageCaptchaVO> generateCaptcha();
 
     /**
      * 生成滑块验证码
@@ -33,7 +32,7 @@ public interface ImageCaptchaApplication {
      * @param type type类型
      * @return CaptchaResponse<SliderCaptchaVO>
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type);
+    ApiResponse<ImageCaptchaVO> generateCaptcha(String type);
 
     /**
      * 生成滑块验证码
@@ -41,7 +40,7 @@ public interface ImageCaptchaApplication {
      * @param captchaImageType 要生成webp还是jpg类型的图片
      * @return CaptchaResponse<SliderCaptchaVO>
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType);
+    ApiResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType);
 
     /**
      * 生成验证码
@@ -50,7 +49,7 @@ public interface ImageCaptchaApplication {
      * @param captchaImageType CaptchaImageType
      * @return CaptchaResponse<ImageCaptchaVO>
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType);
+    ApiResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType);
 
 
     /**
@@ -59,7 +58,7 @@ public interface ImageCaptchaApplication {
      * @param param param
      * @return CaptchaResponse<SliderCaptchaVO>
      */
-    CaptchaResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param);
+    ApiResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param);
 
     /**
      * 匹配

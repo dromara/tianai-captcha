@@ -2,7 +2,8 @@ package cloud.tianai.captcha.generator.common.model.dto;
 
 import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * @Author: 天爱有情

@@ -17,7 +17,7 @@ import java.util.List;
  * @Description BasicCaptchaTrackValidator
  */
 public class BasicTrackCaptchaInterceptor implements CaptchaInterceptor {
-    public static final CodeDefinition DEFINITION = new CodeDefinition(50001, "basic check fail");
+    public static final CodeDefinition DEFINITION = new CodeDefinition(50001, "basic track check fail");
 
     @Override
     public String getName() {

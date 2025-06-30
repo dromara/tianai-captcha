@@ -7,7 +7,7 @@ import java.io.Serializable;
 /**
  * @Author: 天爱有情
  * @date 2023/4/20 9:53
- * @Description 可能是最好用的API统一返回格式类
+ * @Description API统一返回格式类
  */
 @Data
 @SuppressWarnings({"unchecked", "rawtypes"})

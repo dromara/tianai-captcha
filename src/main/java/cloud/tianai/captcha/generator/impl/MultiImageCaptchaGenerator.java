@@ -28,6 +28,10 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
 
     protected Map<String, ImageCaptchaGenerator> imageCaptchaGeneratorMap = new ConcurrentHashMap<>(4);
     protected Map<String, ImageCaptchaGeneratorProvider> imageCaptchaGeneratorProviderMap = new HashMap<>(4);
+    // 点选类验证码字体
+//    @Setter
+//    @Getter
+//    protected List<FontWrapper> fontWrappers;
     @Setter
     @Getter
     private String defaultCaptcha = SLIDER;

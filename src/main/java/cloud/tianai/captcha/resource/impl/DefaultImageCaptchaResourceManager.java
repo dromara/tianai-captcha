@@ -1,12 +1,15 @@
 package cloud.tianai.captcha.resource.impl;
 
+import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.resource.*;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import lombok.Getter;
 
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @Author: 天爱有情
@@ -36,27 +39,42 @@ public class DefaultImageCaptchaResourceManager implements ImageCaptchaResourceM
             this.resourceStore = new LocalMemoryResourceStore();
         }
         // 在这里临时加上字体缓存器
-        resourceStore.addListener(FontCache.getInstance());
+        resourceStore = new FontCache(resourceStore);
         resourceStore.init(this);
     }
 
     @Override
     public ResourceMap randomGetTemplate(String type, String tag) {
-        ResourceMap resourceMap = resourceStore.randomGetTemplateByTypeAndTag(type, tag);
-        if (resourceMap == null) {
-            throw new IllegalStateException("随机获取模板错误，store中模板为空, type:" + type);
-        }
-        return resourceMap;
+        return randomGetTemplate(type, tag, 1).get(0);
     }
 
     @Override
     public Resource randomGetResource(String type, String tag) {
-        Resource resource = resourceStore.randomGetResourceByTypeAndTag(type, tag);
-        if (resource == null) {
-            throw new IllegalStateException("随机获取资源错误，store中资源为空, type:" + type);
-        }
-        return resource;
+        return randomGetResource(type, tag, 1).get(0);
     }
+
+    @Override
+    public List<ResourceMap> randomGetTemplate(String type, String tag, Integer quantity) {
+        List<ResourceMap> resourceMaps = resourceStore.randomGetTemplateByTypeAndTag(type, tag, quantity);
+        if (CollectionUtils.isEmpty(resourceMaps) || resourceMaps.size() != quantity) {
+            throw new IllegalStateException("随机获取**模板**错误，获取到的数量和指定数量不一致，" +
+                    " 指定获取数量[" + quantity + "],获取到的数据:[" + Optional.ofNullable(resourceMaps).orElse(Collections.emptyList()).size() + "], " +
+                    "[type:" + type + ",tag:" + tag + "]");
+        }
+        return resourceMaps;
+    }
+
+    @Override
+    public List<Resource> randomGetResource(String type, String tag, Integer quantity) {
+        List<Resource> resources = resourceStore.randomGetResourceByTypeAndTag(type, tag, quantity);
+        if (CollectionUtils.isEmpty(resources) || resources.size() != quantity) {
+            throw new IllegalStateException("随机获取**资源**错误，获取到的数量和指定数量不一致，" +
+                    " 指定获取数量[" + quantity + "],获取到的数据:[" + Optional.ofNullable(resources).orElse(Collections.emptyList()).size() + "], " +
+                    "[type:" + type + ",tag:" + tag + "]");
+        }
+        return resources;
+    }
+
 
     @Override
     public InputStream getResourceInputStream(Resource resource) {

@@ -1,6 +1,5 @@
 package cloud.tianai.captcha.application;
 
-import cloud.tianai.captcha.application.vo.CaptchaResponse;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.cache.CacheStore;
 import cloud.tianai.captcha.common.AnyMap;
@@ -78,21 +77,21 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha() {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha() {
         // 生成滑块验证码
         return generateCaptcha(CaptchaTypeConstant.SLIDER);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type) {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha(String type) {
         GenerateParam generateParam = new GenerateParam();
         generateParam.setType(type);
         return generateCaptcha(generateParam);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param) {
-        CaptchaResponse<ImageCaptchaVO> captchaResponse = beforeGenerateCaptcha(param);
+    public ApiResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param) {
+        ApiResponse<ImageCaptchaVO> captchaResponse = beforeGenerateCaptcha(param);
         if (captchaResponse != null) {
             return captchaResponse;
         }
@@ -103,12 +102,12 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType) {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType) {
         return generateCaptcha(CaptchaTypeConstant.SLIDER, captchaImageType);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType) {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType) {
         GenerateParam param = new GenerateParam();
         if (CaptchaImageType.WEBP.equals(captchaImageType)) {
             param.setBackgroundFormatName("webp");
@@ -122,14 +121,14 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
 
-    public CaptchaResponse<ImageCaptchaVO> convertToCaptchaResponse(ImageCaptchaInfo imageCaptchaInfo) {
+    public ApiResponse<ImageCaptchaVO> convertToCaptchaResponse(ImageCaptchaInfo imageCaptchaInfo) {
         if (imageCaptchaInfo == null) {
             // 要是生成失败
             throw new ImageCaptchaException("生成验证码失败，验证码生成为空");
         }
         // 生成ID
         String id = generatorId(imageCaptchaInfo);
-        CaptchaResponse<ImageCaptchaVO> response = beforeGenerateImageCaptchaValidData(imageCaptchaInfo);
+        ApiResponse<ImageCaptchaVO> response = beforeGenerateImageCaptchaValidData(imageCaptchaInfo);
         if (response != null) {
             return response;
         }
@@ -151,7 +150,8 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         verificationVO.setTemplateImageWidth(imageCaptchaInfo.getTemplateImageWidth());
         verificationVO.setTemplateImageHeight(imageCaptchaInfo.getTemplateImageHeight());
         verificationVO.setData(imageCaptchaInfo.getData() == null ? null : imageCaptchaInfo.getData().getViewData());
-        return CaptchaResponse.of(id, verificationVO);
+        verificationVO.setId(id);
+        return ApiResponse.ofSuccess(verificationVO);
     }
 
 
@@ -286,15 +286,15 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
 
     // ============== 一些模板方法 ================
 
-    private void afterGenerateCaptcha(ImageCaptchaInfo imageCaptchaInfo, CaptchaResponse<ImageCaptchaVO> captchaResponse) {
+    private void afterGenerateCaptcha(ImageCaptchaInfo imageCaptchaInfo, ApiResponse<ImageCaptchaVO> captchaResponse) {
         captchaInterceptor.afterGenerateCaptcha(captchaInterceptor.createContext(), imageCaptchaInfo.getType(), imageCaptchaInfo, captchaResponse);
     }
 
-    private CaptchaResponse<ImageCaptchaVO> beforeGenerateCaptcha(GenerateParam param) {
+    private ApiResponse<ImageCaptchaVO> beforeGenerateCaptcha(GenerateParam param) {
         return captchaInterceptor.beforeGenerateCaptcha(captchaInterceptor.createContext(), param.getType(), param);
     }
 
-    private CaptchaResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo) {
+    private ApiResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(ImageCaptchaInfo imageCaptchaInfo) {
         return captchaInterceptor.beforeGenerateImageCaptchaValidData(captchaInterceptor.createContext(), imageCaptchaInfo.getType(), imageCaptchaInfo);
     }
 

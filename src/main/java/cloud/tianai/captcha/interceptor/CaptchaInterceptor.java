@@ -1,6 +1,5 @@
 package cloud.tianai.captcha.interceptor;
 
-import cloud.tianai.captcha.application.vo.CaptchaResponse;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.response.ApiResponse;
@@ -41,18 +40,18 @@ public interface CaptchaInterceptor {
         return new Context(getName(), null, -1, 1, EmptyCaptchaInterceptor.INSTANCE);
     }
 
-    default CaptchaResponse<ImageCaptchaVO> beforeGenerateCaptcha(Context context, String type, GenerateParam param) {
+    default ApiResponse<ImageCaptchaVO> beforeGenerateCaptcha(Context context, String type, GenerateParam param) {
         return null;
     }
 
-    default CaptchaResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo) {
+    default ApiResponse<ImageCaptchaVO> beforeGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo) {
         return null;
     }
 
     default void afterGenerateImageCaptchaValidData(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, AnyMap validData) {
     }
 
-    default void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, CaptchaResponse<ImageCaptchaVO> captchaResponse) {
+    default void afterGenerateCaptcha(Context context, String type, ImageCaptchaInfo imageCaptchaInfo, ApiResponse<ImageCaptchaVO> captchaResponse) {
     }
 
     default ApiResponse<?> beforeValid(Context context, String type, MatchParam matchParam, AnyMap validData) {

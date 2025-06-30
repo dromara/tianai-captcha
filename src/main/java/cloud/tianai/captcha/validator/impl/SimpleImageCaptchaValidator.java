@@ -38,6 +38,8 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     public static final String TOLERANT_KEY = "tolerant";
     /** 类型 key， 标识是哪张类型的验证码. */
     public static final String TYPE_KEY = "type";
+    /** 点选类验证码验证时判断是否需要校验顺序. */
+    public static final String CLICK_IMAGE_CHECK_ORDER_KEY = "click_image_check_order";
     /** 计算当前验证码用户滑动的百分比率 - 生成时的百分比率, 多个的话取均值. */
     public static final String USER_CURRENT_PERCENTAGE_STD = "user_current_percentage_std";
     public static final String USER_CURRENT_PERCENTAGE = "user_current_percentage";
@@ -145,6 +147,12 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
                     map.put(TOLERANT_KEY, tolerant);
                 }
             }
+            // 新增是否判断顺序
+            if (imageCaptchaInfo.getData() != null && imageCaptchaInfo.getData().getData() != null) {
+                map.put(CLICK_IMAGE_CHECK_ORDER_KEY, imageCaptchaInfo.getData().getData().getOrDefault(CLICK_IMAGE_CHECK_ORDER_KEY, true));
+            } else {
+                map.put(CLICK_IMAGE_CHECK_ORDER_KEY, true);
+            }
             // 添加点选验证数据
             map.put(PERCENTAGE_KEY, sb.toString());
         } else if (CaptchaTypeClassifier.isJigsawCaptcha(type)) {
@@ -156,7 +164,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     @Override
     public ApiResponse<?> valid(ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData) {
         // 读容错值
-        Float tolerant = imageCaptchaValidData.getFloat(TOLERANT_KEY, defaultTolerant);
+        Float tolerant = recalculateTolerant(imageCaptchaValidData.getFloat(TOLERANT_KEY, defaultTolerant), imageCaptchaTrack, imageCaptchaValidData);
         // 读验证码类型
         String type = imageCaptchaValidData.getString(TYPE_KEY, CaptchaTypeConstant.SLIDER);
         // 验证前
@@ -176,15 +184,26 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
             return ApiResponse.ofCheckError("没有解析到滑动轨迹");
         }
         // 验证
-        ApiResponse<?> response;
         boolean valid = doValid(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
         return afterValid(valid, imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
     }
 
     /**
+     * 一个模板方法， 用于自定义处理容错值
+     *
+     * @param tolerant              容错值
+     * @param imageCaptchaTrack     imageCaptchaTrack
+     * @param imageCaptchaValidData captchaValidData
+     * @return
+     */
+    public Float recalculateTolerant(Float tolerant, ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData) {
+        return tolerant;
+    }
+
+    /**
      * 验证前
      *
-     * @param imageCaptchaTrack sliderCaptchaTrack
+     * @param imageCaptchaTrack imageCaptchaTrack
      * @param captchaValidData  captchaValidData
      * @param tolerant          tolerant
      * @param type              type
@@ -197,7 +216,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     /**
      * 验证后
      *
-     * @param imageCaptchaTrack sliderCaptchaTrack
+     * @param imageCaptchaTrack imageCaptchaTrack
      * @param captchaValidData  captchaValidData
      * @param tolerant          tolerant
      * @param type              type
@@ -241,7 +260,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     /**
      * 校验点选验证码
      *
-     * @param imageCaptchaTrack     sliderCaptchaTrack
+     * @param imageCaptchaTrack     imageCaptchaTrack
      * @param imageCaptchaValidData imageCaptchaValidData
      * @param tolerant              tolerant
      * @param type                  type
@@ -252,6 +271,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
                                        Float tolerant,
                                        String type) {
         String validStr = imageCaptchaValidData.getString(PERCENTAGE_KEY, null);
+        Object checkOrder = imageCaptchaValidData.getOrDefault(CLICK_IMAGE_CHECK_ORDER_KEY, true);
         if (ObjectUtils.isEmpty(validStr)) {
             return false;
         }
@@ -271,17 +291,38 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         StringBuilder sb = new StringBuilder();
         List<Double> percentages = new ArrayList<>();
         for (int i = 0; i < splitArr.length; i++) {
-            ImageCaptchaTrack.Track track = clickTrackList.get(i);
             String posStr = splitArr[i];
             String[] posArr = posStr.split(",");
             float xPercentage = Float.parseFloat(posArr[0]);
             float yPercentage = Float.parseFloat(posArr[1]);
-
-            float calcXPercentage = calcPercentage(track.getX(), imageCaptchaTrack.getBgImageWidth());
-            float calcYPercentage = calcPercentage(track.getY(), imageCaptchaTrack.getBgImageHeight());
-            if (!checkPercentage(calcXPercentage, xPercentage, tolerant)
-                    || !checkPercentage(calcYPercentage, yPercentage, tolerant)) {
-                return false;
+            float calcXPercentage = 0f;
+            float calcYPercentage = 0f;
+            if (Boolean.TRUE.equals(checkOrder)) {
+                ImageCaptchaTrack.Track track = clickTrackList.get(0);
+                calcXPercentage = calcPercentage(track.getX(), imageCaptchaTrack.getBgImageWidth());
+                calcYPercentage = calcPercentage(track.getY(), imageCaptchaTrack.getBgImageHeight());
+                if (!checkPercentage(calcXPercentage, xPercentage, tolerant)
+                        || !checkPercentage(calcYPercentage, yPercentage, tolerant)) {
+                    return false;
+                }
+                clickTrackList.remove(0);
+            } else {
+                boolean flag = false;
+                for (int a = 0; a < clickTrackList.size(); a++) {
+                    ImageCaptchaTrack.Track track = clickTrackList.get(a);
+                    calcXPercentage = calcPercentage(track.getX(), imageCaptchaTrack.getBgImageWidth());
+                    calcYPercentage = calcPercentage(track.getY(), imageCaptchaTrack.getBgImageHeight());
+                    if (checkPercentage(calcXPercentage, xPercentage, tolerant)
+                            && checkPercentage(calcYPercentage, yPercentage, tolerant)) {
+                        // 验证命中
+                        clickTrackList.remove(a);
+                        flag = true;
+                        break;
+                    }
+                }
+                if (!flag) {
+                    return false;
+                }
             }
             if (i > 0) {
                 sb.append("|");
@@ -296,7 +337,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     /**
      * 校验滑动验证码
      *
-     * @param imageCaptchaTrack     sliderCaptchaTrack
+     * @param imageCaptchaTrack     imageCaptchaTrack
      * @param imageCaptchaValidData imageCaptchaValidData
      * @param tolerant              tolerant
      * @param type                  type

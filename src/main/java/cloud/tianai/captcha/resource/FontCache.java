@@ -2,7 +2,7 @@ package cloud.tianai.captcha.resource;
 
 import cloud.tianai.captcha.generator.common.FontWrapper;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
-import lombok.Data;
+import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Description 一个用于统一缓存字体文件的对象
  */
 @Slf4j
-public class FontCache implements ResourceListener {
+public class FontCache implements ResourceStore {
 
 
     public static final String FONT_TYPE = "font";
@@ -31,18 +31,19 @@ public class FontCache implements ResourceListener {
     @Setter
     @Getter
     private int fontSize = 70;
-    public static FontCache getInstance() {
-        return INSTANCE.INSTANCE;
-    }
 
-    public FontCache() {
+
+
+    public FontCache(ResourceStore resourceStore) {
+        this.resourceStore = resourceStore;
     }
 
     @Override
-    public void onInit(ResourceStore resourceStore, ImageCaptchaResourceManager resourceManager) {
-        this.resourceStore = resourceStore;
+    public void init(ImageCaptchaResourceManager resourceManager) {
+        resourceStore.init(resourceManager);
         this.resourceManager = resourceManager;
     }
+
 
     public FontWrapper getFont(Resource resource) {
         try (InputStream stream = resourceManager.getResourceInputStream(resource)) {
@@ -53,43 +54,27 @@ public class FontCache implements ResourceListener {
         }
     }
 
+
+    private String calcId(Resource resource) {
+        // 缓存id， 避免重复加载。 多个验证码可能使用同一个字体， 这里不使用资源ID作为缓存ID， 而是使用type+data作为缓存ID。
+        return resource.getType() + "_" + resource.getData();
+    }
+
     @Override
-    public void onAddResource(String type, Resource resource) {
+    public List<Resource> randomGetResourceByTypeAndTag(String type, String tag, Integer quantity) {
+        List<Resource> resources = resourceStore.randomGetResourceByTypeAndTag(type, tag, quantity);
+        // 字体增强
         if (FONT_TYPE.equalsIgnoreCase(type)) {
-            fontMap.computeIfAbsent(resource.getId(), v -> getFont(resource));
+            for (Resource resource : resources) {
+                FontWrapper fontWrapper = fontMap.computeIfAbsent(calcId(resource), v -> getFont(resource));
+                resource.setExtra(fontWrapper);
+            }
         }
+        return resources;
     }
 
     @Override
-    public void onDeleteResource(String type, Resource resource) {
-        if (FONT_TYPE.equalsIgnoreCase(type)) {
-            fontMap.remove(resource.getId());
-        }
-    }
-
-    @Override
-    public void onClearAllResources() {
-        fontMap.clear();
-    }
-
-    @Override
-    public void onRandomGetResourceByTypeAndTag(String type, String tag, Resource resource) {
-        if (FONT_TYPE.equalsIgnoreCase(type)) {
-            FontWrapper fontWrapper = fontMap.computeIfAbsent(resource.getId(), v -> getFont(resource));
-
-            resource.setExtra(fontWrapper);
-        }
-    }
-
-    public void loadAllFonts() {
-        List<Resource> resources = resourceStore.listResourcesByTypeAndTag(FONT_TYPE, null);
-        for (Resource resource : resources) {
-            fontMap.computeIfAbsent(resource.getId(), v -> getFont(resource));
-        }
-    }
-
-
-    private static class INSTANCE {
-        private static final FontCache INSTANCE = new FontCache();
+    public List<ResourceMap> randomGetTemplateByTypeAndTag(String type, String tag, Integer quantity) {
+        return resourceStore.randomGetTemplateByTypeAndTag(type, tag, quantity);
     }
 }

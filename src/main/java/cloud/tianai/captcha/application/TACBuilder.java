@@ -7,10 +7,7 @@ import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.interceptor.EmptyCaptchaInterceptor;
-import cloud.tianai.captcha.resource.DefaultBuiltInResources;
-import cloud.tianai.captcha.resource.FontCache;
-import cloud.tianai.captcha.resource.ResourceProviders;
-import cloud.tianai.captcha.resource.ResourceStore;
+import cloud.tianai.captcha.resource.*;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
 import cloud.tianai.captcha.resource.common.model.dto.ResourceMap;
 import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
@@ -49,8 +46,8 @@ public class TACBuilder {
     }
 
     public TACBuilder addDefaultTemplate(String defaultPathPrefix) {
-        DefaultBuiltInResources defaultBuiltInResources = new DefaultBuiltInResources(defaultPathPrefix);
-        defaultBuiltInResources.addDefaultTemplate(resourceStore);
+//        DefaultBuiltInResources defaultBuiltInResources = new DefaultBuiltInResources(defaultPathPrefix);
+//        defaultBuiltInResources.addDefaultTemplate(resourceStore);
         return this;
     }
 
@@ -115,12 +112,16 @@ public class TACBuilder {
 
 
     public TACBuilder addResource(String captchaType, Resource imageResource) {
-        this.resourceStore.addResource(captchaType, imageResource);
+        if (resourceStore instanceof CrudResourceStore) {
+            ((CrudResourceStore) resourceStore).addResource(captchaType, imageResource);
+        }
         return this;
     }
 
     public TACBuilder addTemplate(String captchaType, ResourceMap resourceMap) {
-        this.resourceStore.addTemplate(captchaType, resourceMap);
+        if (resourceStore instanceof CrudResourceStore) {
+            ((CrudResourceStore) resourceStore).addTemplate(captchaType, resourceMap);
+        }
         return this;
     }
 

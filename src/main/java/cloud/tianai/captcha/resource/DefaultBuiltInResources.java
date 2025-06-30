@@ -23,7 +23,7 @@ public class DefaultBuiltInResources {
 
     public static final String PATH_PREFIX = "classpath:META-INF/cut-image/template";
 
-    private static Map<String, Consumer<ResourceStore>> defaultTemplateResource = new HashMap<>(8);
+    private static Map<String, Consumer<CrudResourceStore>> defaultTemplateResource = new HashMap<>(8);
 
 
     public DefaultBuiltInResources(String defaultPathPrefix) {
@@ -75,17 +75,21 @@ public class DefaultBuiltInResources {
 
 
     public void addDefaultTemplate(String type, ResourceStore resourceStore) {
-        Consumer<ResourceStore> resourceStoreConsumer = defaultTemplateResource.get(type);
-        if (resourceStoreConsumer == null) {
-            return;
+        if (resourceStore instanceof CrudResourceStore) {
+            Consumer<CrudResourceStore> resourceStoreConsumer = defaultTemplateResource.get(type);
+            if (resourceStoreConsumer == null) {
+                return;
+            }
+            resourceStoreConsumer.accept((CrudResourceStore) resourceStore);
         }
-        resourceStoreConsumer.accept(resourceStore);
     }
 
     public void addDefaultTemplate(ResourceStore resourceStore) {
-        defaultTemplateResource.forEach((type, consumer) -> {
-            consumer.accept(resourceStore);
-        });
+        if (resourceStore instanceof CrudResourceStore) {
+            defaultTemplateResource.forEach((type, consumer) -> {
+                consumer.accept((CrudResourceStore) resourceStore);
+            });
+        }
     }
 
 }

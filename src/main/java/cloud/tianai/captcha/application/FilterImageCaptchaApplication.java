@@ -1,6 +1,5 @@
 package cloud.tianai.captcha.application;
 
-import cloud.tianai.captcha.application.vo.CaptchaResponse;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.cache.CacheStore;
 import cloud.tianai.captcha.common.response.ApiResponse;
@@ -27,27 +26,27 @@ public class FilterImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha() {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha() {
         return target.generateCaptcha();
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type) {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha(String type) {
         return target.generateCaptcha(type);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType) {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha(CaptchaImageType captchaImageType) {
         return target.generateCaptcha(captchaImageType);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType) {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha(String type, CaptchaImageType captchaImageType) {
         return target.generateCaptcha(type, captchaImageType);
     }
 
     @Override
-    public CaptchaResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param) {
+    public ApiResponse<ImageCaptchaVO> generateCaptcha(GenerateParam param) {
         return target.generateCaptcha(param);
     }
 

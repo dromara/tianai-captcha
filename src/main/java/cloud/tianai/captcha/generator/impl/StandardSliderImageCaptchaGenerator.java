@@ -88,14 +88,11 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
         BufferedImage matrixTemplate = CaptchaImageUtils.createTransparentImage(activeTemplate.getWidth(), background.getHeight());
         CaptchaImageUtils.overlayImage(matrixTemplate, cutImage, 0, randomY);
 
-        XandY xandY = new XandY();
-        xandY.x = randomX;
-        xandY.y = randomY;
         captchaExchange.setBackgroundImage(background);
         captchaExchange.setTemplateImage(matrixTemplate);
         captchaExchange.setTemplateResource(templateResource);
         captchaExchange.setResourceImage(resourceImage);
-        captchaExchange.setTransferData(xandY);
+        captchaExchange.setTransferData(new Point(randomX,randomY));
         // 后处理
 //        applyPostProcessorBeforeWrapImageCaptchaInfo(captchaExchange, this);
 //        imageCaptchaInfo = wrapSliderCaptchaInfo(randomX, randomY, captchaExchange);
@@ -125,11 +122,6 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
     }
 
 
-    public static class XandY {
-        int x;
-        int y;
-    }
-
     @SneakyThrows
     @Override
     public SliderImageCaptchaInfo doWrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
@@ -139,7 +131,7 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
         Resource resourceImage = captchaExchange.getResourceImage();
         ResourceMap templateResource = captchaExchange.getTemplateResource();
         CustomData customData = captchaExchange.getCustomData();
-        XandY data = (XandY) captchaExchange.getTransferData();
+        Point data = (Point) captchaExchange.getTransferData();
         ImageTransformData transform = getImageTransform().transform(param, backgroundImage, sliderImage, resourceImage, templateResource, customData);
 
         SliderImageCaptchaInfo imageCaptchaInfo = SliderImageCaptchaInfo.of(data.x, data.y,

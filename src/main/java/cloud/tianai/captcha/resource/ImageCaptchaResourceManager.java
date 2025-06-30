@@ -31,6 +31,27 @@ public interface ImageCaptchaResourceManager {
      */
     Resource randomGetResource(String type, String tag);
 
+
+    /**
+     * 随机获取某个模板
+     *
+     * @param type 验证码类型
+     * @param tag  二级过滤，可以为空
+     * @param quantity  一次性获取的数量
+     * @return Map<String, Resource>
+     */
+    List<ResourceMap> randomGetTemplate(String type, String tag, Integer quantity);
+
+    /**
+     * 随机获取某个资源对象
+     *
+     * @param type 验证码类型
+     * @param tag  二级过滤，可以为空
+     * @param quantity  一次性获取的数量
+     * @return Resource
+     */
+    List<Resource> randomGetResource(String type, String tag, Integer quantity);
+
     /**
      * 获取真正的资源流通过资源对象
      *
