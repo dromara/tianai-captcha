@@ -1,6 +1,7 @@
 package example.readme;
 
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.resource.CrudResourceStore;
 import cloud.tianai.captcha.resource.ImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.ResourceStore;
 import cloud.tianai.captcha.resource.common.model.dto.Resource;
@@ -15,7 +16,7 @@ public class TestImageCaptcha {
     public static void main(String[] args) {
         ImageCaptchaResourceManager imageCaptchaResourceManager = new DefaultImageCaptchaResourceManager();
         // 通过资源管理器或者资源存储器
-        ResourceStore resourceStore = imageCaptchaResourceManager.getResourceStore();
+        CrudResourceStore resourceStore = (CrudResourceStore) imageCaptchaResourceManager.getResourceStore();
         // 添加classpath目录下的 aa.jpg 图片
         resourceStore.addResource(CaptchaTypeConstant.SLIDER, new Resource(ClassPathResourceProvider.NAME, "/aa.jpg"));
         // 添加远程url图片资源

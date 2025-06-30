@@ -7,6 +7,7 @@ import cloud.tianai.captcha.application.vo.CaptchaResponse;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.cache.impl.LocalCacheStore;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
+import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.generator.impl.StandardSliderImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
 import cloud.tianai.captcha.interceptor.EmptyCaptchaInterceptor;
@@ -54,7 +55,7 @@ public class TACBuilderTest {
 
         while (true){
             long start = System.currentTimeMillis();
-            CaptchaResponse<ImageCaptchaVO> response = application.generateCaptcha("SLIDER");
+            ApiResponse<ImageCaptchaVO> response = application.generateCaptcha("SLIDER");
             System.out.println("耗时:" + (System.currentTimeMillis() - start));
 //            System.out.println(response);
             Thread.sleep(1000);

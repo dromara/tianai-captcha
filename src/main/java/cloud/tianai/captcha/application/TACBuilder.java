@@ -46,8 +46,8 @@ public class TACBuilder {
     }
 
     public TACBuilder addDefaultTemplate(String defaultPathPrefix) {
-//        DefaultBuiltInResources defaultBuiltInResources = new DefaultBuiltInResources(defaultPathPrefix);
-//        defaultBuiltInResources.addDefaultTemplate(resourceStore);
+        DefaultBuiltInResources defaultBuiltInResources = new DefaultBuiltInResources(defaultPathPrefix);
+        defaultBuiltInResources.addDefaultTemplate(resourceStore);
         return this;
     }
 

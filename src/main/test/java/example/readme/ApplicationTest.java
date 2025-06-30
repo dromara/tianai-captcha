@@ -29,12 +29,12 @@ public class ApplicationTest {
     public static void main(String[] args) {
         ImageCaptchaApplication application = createImageCaptchaApplication();
         // 生成验证码数据， 可以将该数据直接返回给前端 ， 可配合 tianai-captcha-web-sdk 使用
-        CaptchaResponse<ImageCaptchaVO> res = application.generateCaptcha("SLIDER");
+        ApiResponse<ImageCaptchaVO> res = application.generateCaptcha("SLIDER");
         System.out.println(res);
 
         // 校验验证码， ImageCaptchaTrack 和 id 均为前端传开的参数， 可将 valid数据直接返回给 前端
         // 注意: 该项目只负责生成和校验验证码数据， 至于二次验证等需要自行扩展
-        String id =res.getId();
+        String id =res.getData().getId();
         ImageCaptchaTrack imageCaptchaTrack = null;
         ApiResponse<?> valid = application.matching(id, imageCaptchaTrack);
         System.out.println(valid.isSuccess());
