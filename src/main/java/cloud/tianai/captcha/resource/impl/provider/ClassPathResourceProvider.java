@@ -14,9 +14,14 @@ public class ClassPathResourceProvider extends AbstractResourceProvider {
 
     public static final String NAME = "classpath";
 
+    public static ClassLoader classLoader;
+
     @Override
     public InputStream doGetResourceInputStream(Resource data) {
-        return getClassLoader().getResourceAsStream(data.getData());
+        if (classLoader == null) {
+            return getClassLoader().getResourceAsStream(data.getData());
+        }
+        return classLoader.getResourceAsStream(data.getData());
     }
 
     @Override
@@ -38,5 +43,9 @@ public class ClassPathResourceProvider extends AbstractResourceProvider {
             classLoader = ClassLoader.getSystemClassLoader();
         }
         return classLoader;
+    }
+
+    public static void setClassLoader(ClassLoader classLoader) {
+        ClassPathResourceProvider.classLoader = classLoader;
     }
 }
