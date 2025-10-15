@@ -26,7 +26,7 @@ public class TACBuilderTest2 {
                 .addResource("WORD_IMAGE_CLICK", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource("ROTATE", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .build();
-        ApiResponse<ImageCaptchaVO> response = application.generateCaptcha("WORD_IMAGE_CLICK");
+        ApiResponse<ImageCaptchaVO> response = application.generateCaptcha("SLIDER");
         System.out.println(response);
 
     }

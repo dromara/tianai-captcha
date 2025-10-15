@@ -35,8 +35,8 @@ public class BasicTrackCaptchaInterceptor implements CaptchaInterceptor {
         }
         ImageCaptchaTrack imageCaptchaTrack = matchData.getTrack();
         // 进行行为轨迹检测
-        long startSlidingTime = imageCaptchaTrack.getStartTime().getTime();
-        long endSlidingTime = imageCaptchaTrack.getStopTime().getTime();
+        long startSlidingTime = imageCaptchaTrack.getStartTime();
+        long endSlidingTime = imageCaptchaTrack.getStopTime();
         Integer bgImageWidth = imageCaptchaTrack.getBgImageWidth();
         List<ImageCaptchaTrack.Track> trackList = imageCaptchaTrack.getTrackList();
         // 这里只进行基本检测, 用一些简单算法进行校验，如有需要可扩展

@@ -29,4 +29,8 @@ public interface ResourceStore {
      * @return Map<String, Resource>
      */
     List<ResourceMap> randomGetTemplateByTypeAndTag(String type, String tag,Integer quantity);
+
+    default ResourceStore getTarget() {
+        return this;
+    }
 }

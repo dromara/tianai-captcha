@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -25,9 +24,9 @@ public class ImageCaptchaTrack {
     /** 模板图片高度. */
     private Integer templateImageHeight;
     /** 滑动开始时间. */
-    private Date startTime;
+    private Long startTime;
     /** 滑动结束时间. */
-    private Date stopTime;
+    private Long stopTime;
     private Integer left;
     private Integer top;
     /** 滑动的轨迹. */

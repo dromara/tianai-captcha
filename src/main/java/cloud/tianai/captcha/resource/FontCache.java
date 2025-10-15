@@ -77,4 +77,9 @@ public class FontCache implements ResourceStore {
     public List<ResourceMap> randomGetTemplateByTypeAndTag(String type, String tag, Integer quantity) {
         return resourceStore.randomGetTemplateByTypeAndTag(type, tag, quantity);
     }
+
+    @Override
+    public ResourceStore getTarget() {
+        return resourceStore;
+    }
 }

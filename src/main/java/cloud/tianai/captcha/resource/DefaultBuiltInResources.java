@@ -69,7 +69,7 @@ public class DefaultBuiltInResources {
 
         // 字体包
         defaultTemplateResource.put(FontCache.FONT_TYPE, resourceStore -> {
-            resourceStore.addResource(FontCache.FONT_TYPE,new Resource(type,  finalPathPrefix.concat("/fontS/SIMSUN.TTC")));
+            resourceStore.addResource(FontCache.FONT_TYPE,new Resource(type,  finalPathPrefix.concat("/fonts/SIMSUN.TTC")));
         });
     }
 
