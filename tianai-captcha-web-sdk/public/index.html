@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #login-div {
+            width: 500px;
+            height: 500px;
+            border: 1px solid #ff5d39;
+            position: relative;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .input {
+            height: 50px;
+            width: 100%;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            margin: 20px auto;
+            color: #ccc;
+            line-height: 50px;
+            text-align: left;
+        }
+
+        .input-left {
+            border-right: 1px solid #ccc;
+            text-align: center;
+            width: 100px;
+            display: inline-block;
+        }
+
+        .login-btn {
+            /*margin: 0 auto;*/
+            display: inline-block;
+            width: 160px;
+            height: 50px;
+            background-color: #4BC065;
+            color: #fff;
+            line-height: 50px;
+            text-align: center;
+            border-radius: 6px;
+        }
+
+        #captcha-box {
+            position: absolute;
+            left: 78px;
+            top: 83px;
+        }
+    </style>
+</head>
+
+<body>
+<!-- 验证码存放的div块 -->
+<div id="login-div">
+    <!-- 装载验证码的DIV -->
+    <div id="captcha-box"></div>
+    <h1>用户登录</h1>
+    <div class="input">
+        <span class="input-left">用户名</span>
+        xxxxx
+    </div>
+    <div class="input">
+        <span class="input-left">密码</span>
+        xxxxx
+    </div>
+    <div class="login-btn" data-type="ROTATE">登录(旋转)</div>
+    <div class="login-btn" data-type="CONCAT">登录(拼接)</div>
+    <div class="login-btn" data-type="WORD_IMAGE_CLICK">登录(汉字点选)</div>
+    <div class="login-btn" data-type="SLIDER">登录(滑块拼图)</div>
+</div>
+
+<script>
+    document.querySelectorAll(".login-btn").forEach(el => {
+        el.addEventListener("click", e => {
+            // 样式配置
+            const config = {
+                requestCaptchaDataUrl: "http://localhost:8080/gen?type=" + el.dataset.type,
+                validCaptchaUrl: "http://localhost:8080/check",
+                bindEl: "#captcha-box"
+            }
+            // const style = {
+            //     logoUrl : null
+            //
+            // }
+
+            const captcha = new TAC(config, null);
+            captcha.init();
+        })
+    })
+
+
+</script>
+</body>
+
+</html>

@@ -1,0 +1,56 @@
+#tianai-captcha.tianai-captcha-disable{
+  z-index: 999;
+  position: absolute;
+  left: 0;
+  top: 0;
+  .content {
+      width: 100%;
+      height: 180px;
+      position: relative;
+      overflow: hidden;
+    .bg-img-div {
+      background-image: url("@/assets/images/dun.jpeg");
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      #content-span {
+        color: #fff;
+        overflow: hidden;
+        margin-top: 132px;
+        display: block;
+        text-align: center;
+      }
+    }
+  }
+}
+//#tianai-captcha.tianai-captcha-disable {
+//  z-index: 999;
+//  position: absolute;
+//  left: 0;
+//  top: 0;
+//
+//  .content {
+//    width: 100%;
+//    height: 180px;
+//    position: relative;
+//    overflow: hidden;
+//
+//    .bg-img-div {
+//      display: flex;
+//      justify-content: center;
+//      flex-direction: column;
+//      align-items: center;
+//      background-color: #0A3850;
+//      width: 100%;
+//      height: 100%;
+//      overflow: hidden;
+//
+//      #content-span {
+//        color: #fff;
+//        overflow: hidden;
+//        display: block;
+//        text-align: center;
+//      }
+//    }
+//  }
+//}

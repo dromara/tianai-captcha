@@ -1,0 +1,12 @@
+#tianai-captcha.tianai-captcha-rotate {
+  .rotate-img-div {
+    height: 100%;
+    /*position: absolute;*/
+    text-align: center;
+    img {
+      height: 100%;
+      transform: rotate(0deg);
+      display: inline-block;
+    }
+  }
+}

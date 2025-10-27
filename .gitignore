@@ -1,6 +1,6 @@
 target
 !.mvn/wrapper/maven-wrapper.jar
- 
+
 ### STS ###
 .apt_generated
 .classpath
@@ -9,7 +9,7 @@ target
 .settings
 .springBeans
 .sts4-cache
- 
+
 ### IntelliJ IDEA ###
 .idea
 *.iws
@@ -24,3 +24,5 @@ target
 /nbdist/
 /.nb-gradle/
 
+.flattened-pom.xml
+**/.flattened-pom.xml

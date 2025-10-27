@@ -3,14 +3,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>cloud.tianai.captcha</groupId>
-    <artifactId>tianai-captcha</artifactId>
-    <version>1.5.3</version>
-
-    <name>tianai-captcha</name>
+    <artifactId>tianai-captcha-parent</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>tianai-captcha-parent</name>
     <description>行为验证码</description>
     <url>https://gitee.com/tianai/tianai-captcha</url>
+    <modules>
+        <module>tianai-captcha</module>
+        <module>tianai-captcha-springboot-starter</module>
+        <module>tianai-captcha-solon-plugin</module>
+    </modules>
 
     <properties>
+        <revision>1.5.3</revision>
         <java.version>1.8</java.version>
         <!-- 打包跳过单元测试 -->
         <skipTests>true</skipTests>
@@ -18,9 +24,9 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
         <skip.nexus>false</skip.nexus>
-        <deplay.id>ossrh</deplay.id>
-        <deplay.repository>https://oss.sonatype.org/service/local/staging/deploy/maven2/</deplay.repository>
-        <deplay.snapshotRepository>https://oss.sonatype.org/content/repositories/snapshots/</deplay.snapshotRepository>
+        <serverId>ossrh</serverId>
+        <deplay.repository>https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/</deplay.repository>
+        <deplay.snapshotRepository>https://s01.oss.sonatype.org/content/repositories/snapshots</deplay.snapshotRepository>
 
         <!-- 私服 -->
         <!--        <skip.nexus>true</skip.nexus>-->
@@ -28,13 +34,17 @@
         <!--        <deplay.repository>http://192.168.3.10:6061/repository/smart_hosted/</deplay.repository>-->
         <!--        <deplay.snapshotRepository>http://192.168.3.10:6061/repository/smart_hosted/</deplay.snapshotRepository>-->
     </properties>
-
     <licenses>
         <license>
             <name>The MulanPSL2 License, Version 2.0</name>
             <url>http://license.coscl.org.cn/MulanPSL2</url>
         </license>
     </licenses>
+
+    <scm>
+        <url>https://gitee.com/tianai/tianai-captcha</url>
+    </scm>
+
 
     <developers>
         <developer>
@@ -44,12 +54,11 @@
             <organizationUrl>http://tianai.cloud</organizationUrl>
         </developer>
     </developers>
-    <scm>
-        <url>https://gitee.com/tianai/tianai-captcha</url>
-    </scm>
+
+
     <distributionManagement>
         <snapshotRepository>
-            <id>${deplay.id}</id>
+            <id>${serverId}</id>
             <url>${deplay.snapshotRepository}</url>
         </snapshotRepository>
         <repository>
@@ -58,42 +67,55 @@
         </repository>
     </distributionManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <version>1.18.12</version>
-            <optional>true</optional>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.30</version>
-        </dependency>
-    </dependencies>
-
     <build>
         <plugins>
+            <!-- 统一版本号管理 -->
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>flatten-maven-plugin</artifactId>
+                <version>1.2.7</version>
                 <configuration>
-                    <source>8</source>
-                    <target>8</target>
-                    <compilerArgument>-parameters</compilerArgument>
+                    <updatePomFile>true</updatePomFile>
+                    <flattenMode>resolveCiFriendliesOnly</flattenMode>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>flatten</id>
+                        <phase>process-resources</phase>
+                        <goals>
+                            <goal>flatten</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>flatten.clean</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>clean</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
-                <groupId>org.sonatype.plugins</groupId>
-                <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.7</version>
-                <extensions>true</extensions>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>2.9.1</version>
                 <configuration>
-                    <skipNexusStagingDeployMojo>${skip.nexus}</skipNexusStagingDeployMojo>
-                    <serverId>ossrh</serverId>
-                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                    <!-- 统一生成聚合文档，解决 mvn package 时控制台发出 javadoc 警告的问题 -->
+                    <aggregate>true</aggregate>
+                    <failOnError>false</failOnError>
+                    <detectLinks>false</detectLinks>
                 </configuration>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <additionalparam>-Xdoclint:none</additionalparam>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -108,22 +130,7 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-javadoc-plugin</artifactId>
-                <version>2.9.1</version>
-                <executions>
-                    <execution>
-                        <id>attach-javadocs</id>
-                        <goals>
-                            <goal>jar</goal>
-                        </goals>
-                        <configuration>
-                            <additionalparam>-Xdoclint:none</additionalparam>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
@@ -143,7 +150,24 @@
                 <artifactId>maven-resources-plugin</artifactId>
                 <version>2.6</version>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.central</groupId>
+                <artifactId>central-publishing-maven-plugin</artifactId>
+                <version>0.5.0</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <publishingServerId>ossrh</publishingServerId>
+<!--                    <tokenAuth>true</tokenAuth>-->
+                    <autoPublish>true</autoPublish>
+                </configuration>
+            </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+
+
+            </plugins>
+        </pluginManagement>
     </build>
 
 </project>

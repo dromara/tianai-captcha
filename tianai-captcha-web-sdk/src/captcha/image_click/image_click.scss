@@ -1,0 +1,64 @@
+#tianai-captcha.tianai-captcha-word-click {
+  //position: relative;
+  box-sizing: border-box;
+  //padding-top: 10px;
+  .click-tip {
+    position: relative;
+    height: 40px;
+    width: 100%;
+    .tip-img {
+      height: 35px;
+      position: absolute;
+      right: 15px;
+    }
+    #tianai-captcha-click-track-font {
+      font-size: 18px;
+      display: inline-block;
+      height: 40px;
+      line-height: 40px;
+      position: absolute;
+    }
+  }
+  .slider-bottom {
+    position: relative;
+    top: 6px;
+  }
+  .content {
+    #bg-img-click-mask {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      left: 0;
+      top: 0;
+      .click-span {
+        position: absolute;
+        left: 0;
+        top: 0;
+        border-radius: 50px;
+        background-color: #409eff;
+        width: 20px;
+        height: 20px;
+        text-align: center;
+        line-height: 20px;
+        color: #fff;
+        border: 2px solid #fff;
+        box-sizing: content-box;
+      }
+    }
+  }
+  .click-confirm-btn {
+    width: 100%;
+    height: 35px;
+    border-radius: 4px;
+    background-image: linear-gradient(173deg, hsl(38.09deg 91% 57.89%) 0%, hsl(38.09deg 89.38% 71.74%) 100%);
+    font-size: 15px;
+    text-align: center;
+    box-sizing: border-box;
+    line-height: 35px;
+    color: #fff;
+    margin-top: 3px;
+  }
+  .click-confirm-btn:hover{
+    cursor: pointer
+  }
+}
