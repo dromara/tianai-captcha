@@ -102,7 +102,7 @@
 
 ### 非spring项目
 
-### 1. 导入xml
+1. 导入xml
 
 ```xml
 <!-- maven 导入 -->
@@ -113,7 +113,7 @@
 </dependency>
 ```
 
-### 2. 构建 `ImageCaptchaApplication`负责生成和校验验证码
+2. 构建 `ImageCaptchaApplication`负责生成和校验验证码
 
 ```java
 import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
