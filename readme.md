@@ -32,7 +32,7 @@
    <dependency>
        <groupId>cloud.tianai.captcha</groupId>
        <artifactId>tianai-captcha-springboot-starter</artifactId>
-       <version>1.5.2</version>
+       <version>1.5.3</version>
    </dependency>
    ```
 
@@ -109,7 +109,7 @@
 <dependency>
     <groupId>cloud.tianai.captcha</groupId>
     <artifactId>tianai-captcha</artifactId>
-    <version>1.5.2</version>
+    <version>1.5.3</version>
 </dependency>
 ```
 
@@ -167,7 +167,7 @@ public class ApplicationTest {
 
 ### 安装
 
-1. 将打包好的`tac`目录放到自己项目中,如果是vue、react等框架，将tac目录放到public目录中、或者放到某个可以访问到地方，比如oss之类的可以被浏览器访问到的地方 （tac下载地址 [https://gitee.com/tianai/tianai-captcha-web-sdk/releases/tag/1.2](https://gitee.com/tianai/tianai-captcha-web-sdk/releases/tag/1.2)）
+1. 将打包好的`tac`目录放到自己项目中,如果是vue、react等框架，将tac目录放到public目录中、或者放到某个可以访问到地方，比如oss之类的可以被浏览器访问到的地方 （tac下载地址 [https://gitee.com/dromara/tianai-captcha/releases/tag/tianai-captcha-1.5.3](https://gitee.com/dromara/tianai-captcha/releases/tag/tianai-captcha-1.5.3)）
 
 2. 引入初始化函数 (load.js下载地址 [https://minio.tianai.cloud/public/static/captcha/js/load.min.js](https://minio.tianai.cloud/public/static/captcha/js/load.min.js)) 可自己将load.js下载到本地
 
