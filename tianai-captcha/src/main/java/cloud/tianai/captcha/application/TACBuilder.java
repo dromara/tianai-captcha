@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.application;
 
 import cloud.tianai.captcha.cache.CacheStore;
+import cloud.tianai.captcha.cache.StoreCacheKeyPrefix;
 import cloud.tianai.captcha.cache.impl.LocalCacheStore;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
@@ -29,6 +30,7 @@ public class TACBuilder {
     private ImageCaptchaProperties prop = new ImageCaptchaProperties();
     private ResourceStore resourceStore;
     private ImageTransform imageTransform;
+    private StoreCacheKeyPrefix cacheKeyPrefix;
 //    private List<FontWrapper> fontWrappers = new ArrayList<>();
 
     public static TACBuilder builder() {
@@ -75,6 +77,10 @@ public class TACBuilder {
         return this;
     }
 
+    public TACBuilder setCacheKeyPrefix(StoreCacheKeyPrefix cacheKeyPrefix) {
+        this.cacheKeyPrefix = cacheKeyPrefix;
+        return this;
+    }
     public TACBuilder addFont(Resource resource) {
         this.addResource(FontCache.FONT_TYPE, resource);
         return this;
@@ -148,7 +154,8 @@ public class TACBuilder {
         if (interceptor == null) {
             interceptor = EmptyCaptchaInterceptor.INSTANCE;
         }
-        DefaultImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, validator, cacheStore, prop, interceptor);
+        // 增加前缀处理接口
+        DefaultImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, validator, cacheStore, prop, interceptor, cacheKeyPrefix);
         return application;
     }
 }
