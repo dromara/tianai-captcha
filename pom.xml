@@ -13,6 +13,7 @@
         <module>tianai-captcha</module>
         <module>tianai-captcha-springboot-starter</module>
         <module>tianai-captcha-solon-plugin</module>
+        <module>tianai-captcha-springboot4-starter</module>
     </modules>
 
     <properties>
