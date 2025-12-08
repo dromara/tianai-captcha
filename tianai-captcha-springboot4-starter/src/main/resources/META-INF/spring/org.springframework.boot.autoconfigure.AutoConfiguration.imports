@@ -1,0 +1,2 @@
+cloud.tianai.captcha.spring4.autoconfiguration.CacheStoreAutoConfiguration
+cloud.tianai.captcha.spring4.autoconfiguration.ImageCaptchaAutoConfiguration
