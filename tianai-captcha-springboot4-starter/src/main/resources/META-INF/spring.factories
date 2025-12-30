@@ -1,3 +1,0 @@
-org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-  cloud.tianai.captcha.spring4.autoconfiguration.CacheStoreAutoConfiguration,\
-  cloud.tianai.captcha.spring4.autoconfiguration.ImageCaptchaAutoConfiguration

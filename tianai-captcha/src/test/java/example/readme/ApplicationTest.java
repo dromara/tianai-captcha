@@ -5,6 +5,7 @@ import cloud.tianai.captcha.application.ImageCaptchaApplication;
 import cloud.tianai.captcha.application.ImageCaptchaProperties;
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.cache.CacheStore;
+import cloud.tianai.captcha.cache.StoreCacheKeyPrefix;
 import cloud.tianai.captcha.cache.impl.LocalCacheStore;
 import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.response.ApiResponse;
@@ -65,7 +66,7 @@ public class ApplicationTest {
 
         ImageCaptchaProperties prop = new ImageCaptchaProperties();
         // application 验证码封装， prop为所需的一些扩展参数
-        ImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, imageCaptchaValidator, cacheStore, prop, group);
+        ImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, imageCaptchaValidator, cacheStore, prop, group, null);
         return application;
     }
 }
