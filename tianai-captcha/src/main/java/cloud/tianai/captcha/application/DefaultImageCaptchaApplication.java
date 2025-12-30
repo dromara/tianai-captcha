@@ -2,6 +2,7 @@ package cloud.tianai.captcha.application;
 
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.cache.CacheStore;
+import cloud.tianai.captcha.cache.StoreCacheKeyPrefix;
 import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.exception.ImageCaptchaException;
@@ -41,6 +42,8 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     private CacheStore cacheStore;
     /** 验证码配置属性. */
     private final ImageCaptchaProperties prop;
+    /** 缓存key 前缀处理器. */
+    private StoreCacheKeyPrefix storeCacheKeyPrefix;
     /** 默认的过期时间. */
     private long defaultExpire = 20000L;
 
@@ -50,9 +53,10 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
                                           ImageCaptchaValidator imageCaptchaValidator,
                                           CacheStore cacheStore,
                                           ImageCaptchaProperties prop,
-                                          CaptchaInterceptor captchaInterceptor) {
+                                          CaptchaInterceptor captchaInterceptor,
+                                          StoreCacheKeyPrefix storeCacheKeyPrefix) {
         this.prop = prop;
-
+        this.storeCacheKeyPrefix = null != storeCacheKeyPrefix? storeCacheKeyPrefix: StoreCacheKeyPrefix.prefixed(prop.getPrefix());
         setImageCaptchaValidator(imageCaptchaValidator);
         setCacheStore(cacheStore);
         // 默认过期时间
@@ -235,7 +239,8 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     protected String getKey(String id) {
-        return prop.getPrefix().concat(":").concat(id);
+        // 改为通过接口扩展
+        return storeCacheKeyPrefix.compute(id);
     }
 
     @Override
