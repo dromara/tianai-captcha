@@ -35,7 +35,8 @@ public class BasicCaptchaTrackValidator extends SimpleImageCaptchaValidator {
     @Override
     public ApiResponse<?> afterValid(Boolean basicValid, ImageCaptchaTrack imageCaptchaTrack, AnyMap captchaValidData, Float tolerant, String type) {
         if (!basicValid){
-            return ApiResponse.ofSuccess();
+            // bugfix gitee #IDGKCI 修复基本校验失败后，返回失败的问题
+            return super.afterValid(false, imageCaptchaTrack, captchaValidData, tolerant, type);
         }
         if (!CaptchaTypeClassifier.isSliderCaptcha(type)) {
             // 不是滑动验证码的话暂时跳过，点选验证码行为轨迹还没做
