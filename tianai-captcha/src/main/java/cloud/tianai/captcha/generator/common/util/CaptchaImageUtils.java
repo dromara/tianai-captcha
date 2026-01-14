@@ -408,7 +408,7 @@ public class CaptchaImageUtils {
             }
             return bufferedImage;
         } finally {
-            // fixme #IDIG16
+            // bugfix #IDIG16
             g.dispose();
         }
     }
