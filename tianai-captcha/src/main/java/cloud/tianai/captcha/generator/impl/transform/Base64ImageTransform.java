@@ -29,16 +29,24 @@ public class Base64ImageTransform implements ImageTransform {
             return result;
         }
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        if (CaptchaImageUtils.isPng(transformType) || CaptchaImageUtils.isJpeg(transformType)) {
-            // 如果是 jpg 或者 png图片的话 用hutool的生成
-            ImgWriter.write(bufferedImage, transformType, byteArrayOutputStream, -1);
-        } else {
-            ImageIO.write(bufferedImage, transformType, byteArrayOutputStream);
+        try {
+            if (CaptchaImageUtils.isPng(transformType) || CaptchaImageUtils.isJpeg(transformType)) {
+                // 如果是 jpg 或者 png图片的话 用hutool的生成
+                ImgWriter.write(bufferedImage, transformType, byteArrayOutputStream, -1);
+            } else {
+                ImageIO.write(bufferedImage, transformType, byteArrayOutputStream);
+            }
+            //转换成字节码
+            byte[] data = byteArrayOutputStream.toByteArray();
+            String base64 = Base64.getEncoder().encodeToString(data);
+            return "data:image/" + transformType + ";base64,".concat(base64);
+        } finally {
+            try {
+                byteArrayOutputStream.close();
+            } catch (IOException e) {
+                // 忽略关闭异常
+            }
         }
-        //转换成字节码
-        byte[] data = byteArrayOutputStream.toByteArray();
-        String base64 = Base64.getEncoder().encodeToString(data);
-        return "data:image/" + transformType + ";base64,".concat(base64);
     }
 
     public String beforeTransform(BufferedImage bufferedImage, String formatType) {

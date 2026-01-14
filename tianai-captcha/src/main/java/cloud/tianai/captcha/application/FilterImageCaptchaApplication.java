@@ -114,4 +114,9 @@ public class FilterImageCaptchaApplication implements ImageCaptchaApplication {
     public CacheStore getCacheStore() {
         return target.getCacheStore();
     }
+
+    @Override
+    public void close() throws Exception {
+        target.close();
+    }
 }

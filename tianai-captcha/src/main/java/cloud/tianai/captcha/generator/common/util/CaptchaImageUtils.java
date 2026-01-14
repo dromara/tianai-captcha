@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.CubicCurve2D;
 import java.awt.geom.QuadCurve2D;
@@ -387,24 +388,29 @@ public class CaptchaImageUtils {
                                                     int interferencePointNum) {
         BufferedImage bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = bufferedImage.createGraphics();
-        ThreadLocalRandom random = ThreadLocalRandom.current();
-        g.setFont(font);
-        char[] chars = data.toCharArray();
+        try {
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            g.setFont(font);
+            char[] chars = data.toCharArray();
 
-        for (int i = 0; i < chars.length; i++) {
-            g.setColor(Color.gray);
-            g.drawString(String.valueOf(chars[i]), startX + i * font.getSize(), startY);
+            for (int i = 0; i < chars.length; i++) {
+                g.setColor(Color.gray);
+                g.drawString(String.valueOf(chars[i]), startX + i * font.getSize(), startY);
+            }
+            // 干扰点
+            if (interferencePointNum > 0) {
+                drawOval(interferencePointNum, null, g, width, height, random);
+            }
+            if (interferencePointNum > 0) {
+                g.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
+                // 干扰线
+                drawBesselLine(interferenceLineNum, null, g, width, height, random);
+            }
+            return bufferedImage;
+        } finally {
+            // fixme #IDIG16
+            g.dispose();
         }
-        // 干扰点
-        if (interferencePointNum > 0) {
-            drawOval(interferencePointNum, null, g, width, height, random);
-        }
-        if (interferencePointNum > 0) {
-            g.setStroke(new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL));
-            // 干扰线
-            drawBesselLine(interferenceLineNum, null, g, width, height, random);
-        }
-        return bufferedImage;
     }
 
 
@@ -520,5 +526,81 @@ public class CaptchaImageUtils {
         return TYPE_PNG.equalsIgnoreCase(type);
     }
 
-}
+    /**
+     * 绘制水印
+     * @param bgImage   背景图片
+     * @param watermark 水印文字
+     * @param x         x坐标起始位置
+     * @param y         y坐标起始位置
+     * @param color     水印颜色
+     * @param font      水印字体
+     */
+    public static void drawWatermark(BufferedImage bgImage, String watermark, int x, int y, Color color, Font font) {
+        // 参数校验
+        if (bgImage == null || watermark == null || watermark.isEmpty() || font == null) {
+            return;
+        }
 
+        // 获取Graphics2D对象
+        Graphics2D g2d = bgImage.createGraphics();
+        try {
+            // 设置渲染质量
+            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+
+            g2d.setColor(color);
+
+            // 设置字体
+            g2d.setFont(font);
+
+            // 计算文字尺寸
+            FontMetrics fontMetrics = g2d.getFontMetrics();
+            int textWidth = fontMetrics.stringWidth(watermark);
+            int textHeight = fontMetrics.getHeight();
+
+            // 计算旋转角度（45度角倾斜）
+            double angle = Math.toRadians(45);
+
+            // 计算水印间距，确保铺满整个图片
+            int spacingX = textWidth + 50;
+            int spacingY = textHeight + 50;
+
+            // 获取图片尺寸
+            int imageWidth = bgImage.getWidth();
+            int imageHeight = bgImage.getHeight();
+
+            // 计算需要绘制的水印数量
+            int rows = (int) Math.ceil((double) imageHeight / spacingY) + 2;
+            int cols = (int) Math.ceil((double) imageWidth / spacingX) + 2;
+
+            // 绘制水印，铺满整个图片
+            for (int row = 0; row < rows; row++) {
+                for (int col = 0; col < cols; col++) {
+                    // 计算当前水印位置
+                    int currentX = col * spacingX + x;
+                    int currentY = row * spacingY + y;
+
+                    // 保存当前坐标系
+                    AffineTransform originalTransform = g2d.getTransform();
+
+                    try {
+                        // 平移到当前位置
+                        g2d.translate(currentX, currentY);
+
+                        // 旋转文字
+                        g2d.rotate(angle);
+
+                        // 绘制文字
+                        g2d.drawString(watermark, 0, fontMetrics.getAscent());
+                    } finally {
+                        // 恢复原始坐标系
+                        g2d.setTransform(originalTransform);
+                    }
+                }
+            }
+        } finally {
+            // 释放资源
+            g2d.dispose();
+        }
+    }
+}

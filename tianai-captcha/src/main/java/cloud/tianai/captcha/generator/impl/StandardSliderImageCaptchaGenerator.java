@@ -113,11 +113,15 @@ public class StandardSliderImageCaptchaGenerator extends AbstractImageCaptchaGen
         int type = fixedImage.getColorModel().getTransparency();
         BufferedImage image = new BufferedImage(width, height, type);
         Graphics2D graphics = image.createGraphics();
-        // 透明度
-        double alpha = ThreadLocalRandom.current().nextDouble(0.5, 0.8);
-        AlphaComposite alphaComposite = AlphaComposite.Src.derive((float) alpha);
-        graphics.setComposite(alphaComposite);
-        graphics.drawImage(fixedImage, 0, 0, width, height, null);
+        try {
+            // 透明度
+            double alpha = ThreadLocalRandom.current().nextDouble(0.5, 0.8);
+            AlphaComposite alphaComposite = AlphaComposite.Src.derive((float) alpha);
+            graphics.setComposite(alphaComposite);
+            graphics.drawImage(fixedImage, 0, 0, width, height, null);
+        } finally {
+            graphics.dispose();
+        }
         return image;
     }
 

@@ -2,16 +2,17 @@ package cloud.tianai.captcha.application;
 
 import cloud.tianai.captcha.application.vo.ImageCaptchaVO;
 import cloud.tianai.captcha.cache.CacheStore;
-import cloud.tianai.captcha.cache.StoreCacheKeyPrefix;
 import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import cloud.tianai.captcha.common.exception.ImageCaptchaException;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.common.response.ApiResponseStatusConstant;
 import cloud.tianai.captcha.common.util.CollectionUtils;
+import cloud.tianai.captcha.common.util.ObjectUtils;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.ParamKeyEnum;
 import cloud.tianai.captcha.generator.impl.CacheImageCaptchaGenerator;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
 import cloud.tianai.captcha.interceptor.EmptyCaptchaInterceptor;
@@ -42,8 +43,6 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     private CacheStore cacheStore;
     /** 验证码配置属性. */
     private final ImageCaptchaProperties prop;
-    /** 缓存key 前缀处理器. */
-    private StoreCacheKeyPrefix storeCacheKeyPrefix;
     /** 默认的过期时间. */
     private long defaultExpire = 20000L;
 
@@ -53,10 +52,9 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
                                           ImageCaptchaValidator imageCaptchaValidator,
                                           CacheStore cacheStore,
                                           ImageCaptchaProperties prop,
-                                          CaptchaInterceptor captchaInterceptor,
-                                          StoreCacheKeyPrefix storeCacheKeyPrefix) {
+                                          CaptchaInterceptor captchaInterceptor) {
         this.prop = prop;
-        this.storeCacheKeyPrefix = null != storeCacheKeyPrefix? storeCacheKeyPrefix: StoreCacheKeyPrefix.prefixed(prop.getPrefix());
+
         setImageCaptchaValidator(imageCaptchaValidator);
         setCacheStore(cacheStore);
         // 默认过期时间
@@ -99,9 +97,13 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         if (captchaResponse != null) {
             return captchaResponse;
         }
+        String id = generatorId(param);
+
         ImageCaptchaInfo imageCaptchaInfo = getImageCaptchaGenerator().generateCaptchaImage(param);
-        captchaResponse = convertToCaptchaResponse(imageCaptchaInfo);
+        captchaResponse = convertToCaptchaResponse(id, imageCaptchaInfo);
         afterGenerateCaptcha(imageCaptchaInfo, captchaResponse);
+
+        param.removeParam(ParamKeyEnum.ID);
         return captchaResponse;
     }
 
@@ -125,14 +127,14 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
 
-    public ApiResponse<ImageCaptchaVO> convertToCaptchaResponse(ImageCaptchaInfo imageCaptchaInfo) {
+    public ApiResponse<ImageCaptchaVO> convertToCaptchaResponse(String id, ImageCaptchaInfo imageCaptchaInfo) {
         if (imageCaptchaInfo == null) {
             // 要是生成失败
             throw new ImageCaptchaException("生成验证码失败，验证码生成为空");
         }
         // 生成ID
-        String id = generatorId(imageCaptchaInfo);
-        ApiResponse<ImageCaptchaVO> response = beforeGenerateImageCaptchaValidData(imageCaptchaInfo);
+
+        ApiResponse<ImageCaptchaVO> response = beforeGenerateImageCaptchaValidData( imageCaptchaInfo);
         if (response != null) {
             return response;
         }
@@ -209,8 +211,14 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         return null;
     }
 
-    protected String generatorId(ImageCaptchaInfo imageCaptchaInfo) {
-        return imageCaptchaInfo.getType() + ID_SPLIT + UUID.randomUUID().toString().replace("-", "");
+    protected String generatorId(GenerateParam param) {
+        String id = param.getParam(ParamKeyEnum.ID);
+        if (ObjectUtils.isEmpty(id)) {
+            id = param.getType() + ID_SPLIT + UUID.randomUUID().toString().replace("-", "");
+
+            param.addParam(ParamKeyEnum.ID, id);
+        }
+        return id;
     }
 
     /**
@@ -239,8 +247,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     }
 
     protected String getKey(String id) {
-        // 改为通过接口扩展
-        return storeCacheKeyPrefix.compute(id);
+        return prop.getPrefix().concat(":").concat(id);
     }
 
     @Override
@@ -292,6 +299,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     // ============== 一些模板方法 ================
 
     private void afterGenerateCaptcha(ImageCaptchaInfo imageCaptchaInfo, ApiResponse<ImageCaptchaVO> captchaResponse) {
+
         captchaInterceptor.afterGenerateCaptcha(captchaInterceptor.createContext(), imageCaptchaInfo.getType(), imageCaptchaInfo, captchaResponse);
     }
 
@@ -313,6 +321,26 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
 
     private ApiResponse<?> afterValid(String id, MatchParam matchParam, AnyMap validData, ApiResponse<?> basicValid) {
         return captchaInterceptor.afterValid(captchaInterceptor.createContext(), getCaptchaTypeById(id), matchParam, validData, basicValid);
+    }
+
+    /**
+     * 销毁应用程序，释放资源
+     * 建议在不再使用或应用关闭时调用
+     */
+    @Override
+    public void close() {
+        // 如果生成器是 CacheImageCaptchaGenerator，需要关闭其定时任务
+        if (captchaGenerator instanceof CacheImageCaptchaGenerator) {
+            ((CacheImageCaptchaGenerator) captchaGenerator).destroy();
+        }
+        // 如果缓存存储是 AutoCloseable，关闭它
+        if (cacheStore instanceof AutoCloseable) {
+            try {
+                ((AutoCloseable) cacheStore).close();
+            } catch (Exception e) {
+                log.warn("关闭 CacheStore 时出错", e);
+            }
+        }
     }
 
 }

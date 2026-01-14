@@ -17,7 +17,7 @@ import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
  * @Date 2020/5/29 8:33
  * @Description 滑块验证码应用程序
  */
-public interface ImageCaptchaApplication {
+public interface ImageCaptchaApplication extends AutoCloseable{
 
     /**
      * 生成滑块验证码

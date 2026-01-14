@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit;
  * @date 2022/3/2 14:35
  * @Description 提取出用于缓存的接口
  */
-public interface CacheStore {
+public interface CacheStore extends AutoCloseable {
 
     /**
      * 读取缓存数据通过key

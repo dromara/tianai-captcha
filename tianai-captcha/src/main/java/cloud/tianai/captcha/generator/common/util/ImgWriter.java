@@ -34,10 +34,22 @@ public class ImgWriter {
         if (ObjectUtils.isEmpty(imageType)) {
             imageType = CaptchaImageUtils.TYPE_JPG;
         }
-        ImageOutputStream imageOutputStream = transformImageOutputStream(destImageStream);
-        final BufferedImage bufferedImage = CaptchaImageUtils.toBufferedImage(image, imageType);
-        final ImageWriter writer = getWriter(bufferedImage, imageType);
-        return write(bufferedImage, writer, imageOutputStream, quality);
+        ImageOutputStream imageOutputStream = null;
+        try {
+            imageOutputStream = transformImageOutputStream(destImageStream);
+            final BufferedImage bufferedImage = CaptchaImageUtils.toBufferedImage(image, imageType);
+            final ImageWriter writer = getWriter(bufferedImage, imageType);
+            return write(bufferedImage, writer, imageOutputStream, quality);
+        } finally {
+            // 关闭 ImageOutputStream 防止资源泄露
+            if (imageOutputStream != null) {
+                try {
+                    imageOutputStream.close();
+                } catch (IOException e) {
+                    // 忽略关闭异常
+                }
+            }
+        }
     }
 
     /**

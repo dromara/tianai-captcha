@@ -66,7 +66,7 @@ public class ApplicationTest {
 
         ImageCaptchaProperties prop = new ImageCaptchaProperties();
         // application 验证码封装， prop为所需的一些扩展参数
-        ImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, imageCaptchaValidator, cacheStore, prop, group, null);
+        ImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, imageCaptchaValidator, cacheStore, prop, group);
         return application;
     }
 }

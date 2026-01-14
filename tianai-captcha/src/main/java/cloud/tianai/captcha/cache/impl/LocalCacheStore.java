@@ -63,4 +63,15 @@ public class LocalCacheStore implements CacheStore {
         }
         return null;
     }
+
+    /**
+     * 关闭缓存存储，释放资源
+     * 建议在不再使用时调用，或在 Spring Bean 销毁时自动调用
+     */
+    @Override
+    public void close() {
+        if (cache instanceof ConCurrentExpiringMap) {
+            ((ConCurrentExpiringMap<?, ?>) cache).destroy();
+        }
+    }
 }

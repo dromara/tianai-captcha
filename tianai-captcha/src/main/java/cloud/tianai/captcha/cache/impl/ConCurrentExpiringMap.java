@@ -12,7 +12,6 @@ import java.util.stream.Collectors;
 /**
  * @Author: 天爱有情
  * @date 2020/10/12 10:02
- * @Description 给予本人以前写的  expiring-map(redis淘汰策略的java实现) 项目进行改造
  */
 @Slf4j
 @Accessors(chain = true)
@@ -196,6 +195,28 @@ public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
     @Override
     public Set<Entry<K, V>> entrySet() {
         throw new IllegalArgumentException("timemap not impl entrySet.");
+    }
+
+    /**
+     * 销毁方法，关闭定时任务线程池
+     * 应该在不再使用此 Map 时调用，以防止线程泄露
+     *
+     * @since 0.0.3
+     */
+    public void destroy() {
+        try {
+            scheduledExecutor.shutdown();
+            if (!scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduledExecutor.shutdownNow();
+                if (!scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    log.warn("ConCurrentExpiringMap 定时任务线程池未能正常关闭");
+                }
+            }
+        } catch (InterruptedException e) {
+            scheduledExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+            log.warn("ConCurrentExpiringMap 定时任务线程池关闭时被中断", e);
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package cloud.tianai.captcha.application;
 import cloud.tianai.captcha.cache.CacheStore;
 import cloud.tianai.captcha.cache.StoreCacheKeyPrefix;
 import cloud.tianai.captcha.cache.impl.LocalCacheStore;
+import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
 import cloud.tianai.captcha.generator.impl.MultiImageCaptchaGenerator;
@@ -15,6 +16,9 @@ import cloud.tianai.captcha.resource.impl.DefaultImageCaptchaResourceManager;
 import cloud.tianai.captcha.resource.impl.LocalMemoryResourceStore;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.impl.SimpleImageCaptchaValidator;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @Author: 天爱有情
@@ -30,21 +34,22 @@ public class TACBuilder {
     private ImageCaptchaProperties prop = new ImageCaptchaProperties();
     private ResourceStore resourceStore;
     private ImageTransform imageTransform;
-    private StoreCacheKeyPrefix cacheKeyPrefix;
 //    private List<FontWrapper> fontWrappers = new ArrayList<>();
+    private Map<String, Resource> resourceCache;
+    private Map<String, ResourceMap> templateCache;
 
     public static TACBuilder builder() {
-        return TACBuilder.builder(new LocalMemoryResourceStore());
+        return TACBuilder.builder();
     }
 
-    public static TACBuilder builder(ResourceStore resourceStore) {
-        TACBuilder builder = new TACBuilder(resourceStore);
-        builder.prop = new ImageCaptchaProperties();
-        return builder;
-    }
+
 
     private TACBuilder(ResourceStore resourceStore) {
         this.resourceStore = resourceStore;
+    }
+    public TACBuilder setResourceStore(ResourceStore resourceStore) {
+        this.resourceStore = resourceStore;
+        return this;
     }
 
     public TACBuilder addDefaultTemplate(String defaultPathPrefix) {
@@ -77,10 +82,6 @@ public class TACBuilder {
         return this;
     }
 
-    public TACBuilder setCacheKeyPrefix(StoreCacheKeyPrefix cacheKeyPrefix) {
-        this.cacheKeyPrefix = cacheKeyPrefix;
-        return this;
-    }
     public TACBuilder addFont(Resource resource) {
         this.addResource(FontCache.FONT_TYPE, resource);
         return this;
@@ -118,16 +119,18 @@ public class TACBuilder {
 
 
     public TACBuilder addResource(String captchaType, Resource imageResource) {
-        if (resourceStore instanceof CrudResourceStore) {
-            ((CrudResourceStore) resourceStore).addResource(captchaType, imageResource);
-        }
+//        if (resourceStore instanceof CrudResourceStore) {
+//            ((CrudResourceStore) resourceStore).addResource(captchaType, imageResource);
+//        }
+        cacheResource(captchaType, imageResource);
         return this;
     }
 
     public TACBuilder addTemplate(String captchaType, ResourceMap resourceMap) {
-        if (resourceStore instanceof CrudResourceStore) {
-            ((CrudResourceStore) resourceStore).addTemplate(captchaType, resourceMap);
-        }
+//        if (resourceStore instanceof CrudResourceStore) {
+//            ((CrudResourceStore) resourceStore).addTemplate(captchaType, resourceMap);
+//        }
+        cacheTemplate(captchaType, resourceMap);
         return this;
     }
 
@@ -139,6 +142,20 @@ public class TACBuilder {
     public ImageCaptchaApplication build() {
         if (cacheStore == null) {
             cacheStore = new LocalCacheStore();
+        }
+        if (resourceStore == null) {
+            resourceStore = new LocalMemoryResourceStore();
+        }
+        if (resourceStore instanceof CrudResourceStore) {
+            CrudResourceStore crudResourceStore = (CrudResourceStore) resourceStore;
+            if (!CollectionUtils.isEmpty(resourceCache)) {
+                resourceCache.forEach(crudResourceStore::addResource);
+                resourceCache = null;
+            }
+            if (!CollectionUtils.isEmpty(templateCache)) {
+                templateCache.forEach(crudResourceStore::addTemplate);
+                templateCache = null;
+            }
         }
         if (generator == null) {
             ResourceProviders resourceProviders = new ResourceProviders();
@@ -155,7 +172,20 @@ public class TACBuilder {
             interceptor = EmptyCaptchaInterceptor.INSTANCE;
         }
         // 增加前缀处理接口
-        DefaultImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, validator, cacheStore, prop, interceptor, cacheKeyPrefix);
+        DefaultImageCaptchaApplication application = new DefaultImageCaptchaApplication(generator, validator, cacheStore, prop, interceptor);
         return application;
+    }
+
+    private void cacheResource(String captchaType, Resource imageResource) {
+        if (resourceCache == null) {
+            resourceCache = new LinkedHashMap<>(8);
+        }
+        resourceCache.put(captchaType, imageResource);
+    }
+    private void cacheTemplate(String captchaType, ResourceMap resourceMap) {
+        if (templateCache == null) {
+            templateCache = new LinkedHashMap<>(8);
+        }
+        templateCache.put(captchaType, resourceMap);
     }
 }

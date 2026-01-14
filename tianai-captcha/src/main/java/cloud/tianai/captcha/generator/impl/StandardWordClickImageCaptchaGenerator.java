@@ -35,11 +35,7 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
 //    @Getter
 //    @Setter
 //    protected List<FontWrapper> fonts = new ArrayList<>();
-    @Getter
-    @Setter
     protected Integer clickImgWidth = 100;
-    @Getter
-    @Setter
     protected Integer clickImgHeight = 100;
     @Getter
     @Setter
@@ -96,6 +92,33 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
     }
 
     @Override
+    public ClickImageCheckDefinition.ImgWrapper getClickImg(GenerateParam param, Resource tip, Color randomColor) {
+        if (randomColor == null) {
+            ThreadLocalRandom random = ThreadLocalRandom.current();
+            randomColor = CaptchaImageUtils.getRandomColor(random);
+        }
+        // 随机角度
+        int randomDeg = randomInt(0, 85);
+        // 缩放
+        double factor = 600d;
+
+        FontWrapper fontWrapper = randomFont(param);
+        Font font = fontWrapper.getFont((float) (FontWrapper.DEFAULT_FONT_SIZE * factor));
+        float currentFontTopCoef = fontWrapper.getFontTopCoef(font);
+        // 图片点击宽度
+        int clickImgWidth = (int) (font.getSize() * 1.428571428571429);
+
+        BufferedImage fontImage = CaptchaImageUtils.drawWordImg(randomColor,
+                tip.getData(),
+                font,
+                currentFontTopCoef,
+                clickImgWidth,
+                clickImgWidth,
+                randomDeg);
+        return new ClickImageCheckDefinition.ImgWrapper(fontImage, tip, randomColor);
+    }
+
+    @Override
     protected void doInit() {
 //        if (CollectionUtils.isEmpty(fonts)) {
 //            throw new ImageCaptchaException("初始化文字点选验证码失败，请设置字体包后再调用init()");
@@ -115,10 +138,12 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
         throw new ImageCaptchaException("随机获取字体失败， resource中没有读到字体包, resource=" + resource);
     }
 
+
+
     public ClickImageCheckDefinition.ImgWrapper genTipImage(List<ClickImageCheckDefinition> imageCheckDefinitions, GenerateParam param) {
         FontWrapper fontWrapper = randomFont(param);
         Font font = fontWrapper.getFont();
-        float currentFontTopCoef = fontWrapper.getCurrentFontTopCoef();
+        float currentFontTopCoef = fontWrapper.getFontTopCoef(font);
         String tips = imageCheckDefinitions.stream().map(c -> c.getTip().getData()).collect(Collectors.joining());
         // 生成随机颜色
         int fontWidth = tips.length() * font.getSize();
@@ -139,27 +164,6 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
 //        return getClickImg(tip, randomColor);
 //    }
 
-
-    @Override
-    public ClickImageCheckDefinition.ImgWrapper getClickImg(GenerateParam param, Resource tip, Color randomColor) {
-        if (randomColor == null) {
-            ThreadLocalRandom random = ThreadLocalRandom.current();
-            randomColor = CaptchaImageUtils.getRandomColor(random);
-        }
-        // 随机角度
-        int randomDeg = randomInt(0, 85);
-        FontWrapper fontWrapper = randomFont(param);
-        Font font = fontWrapper.getFont();
-        float currentFontTopCoef = fontWrapper.getCurrentFontTopCoef();
-        BufferedImage fontImage = CaptchaImageUtils.drawWordImg(randomColor,
-                tip.getData(),
-                font,
-                currentFontTopCoef,
-                clickImgWidth,
-                clickImgHeight,
-                randomDeg);
-        return new ClickImageCheckDefinition.ImgWrapper(fontImage, tip, randomColor);
-    }
 
     @Override
     protected List<ClickImageCheckDefinition> filterAndSortClickImageCheckDefinition(CaptchaExchange captchaExchange, List<ClickImageCheckDefinition> allCheckDefinitionList) {

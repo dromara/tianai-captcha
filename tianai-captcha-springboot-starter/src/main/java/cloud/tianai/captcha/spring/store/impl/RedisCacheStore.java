@@ -68,4 +68,9 @@ public class RedisCacheStore implements CacheStore {
         }
         return Long.valueOf(value);
     }
+
+    @Override
+    public void close() throws Exception {
+
+    }
 }

@@ -212,4 +212,28 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
         target.setInterceptor(interceptor);
     }
 
+    /**
+     * 销毁方法，关闭定时任务线程池并清理缓存
+     * 应该在不再使用此 Generator 时调用，以防止线程和内存泄露
+     */
+    public void destroy() {
+        try {
+            scheduledExecutor.shutdown();
+            if (!scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                scheduledExecutor.shutdownNow();
+                if (!scheduledExecutor.awaitTermination(5, TimeUnit.SECONDS)) {
+                    log.warn("CacheImageCaptchaGenerator 定时任务线程池未能正常关闭");
+                }
+            }
+        } catch (InterruptedException e) {
+            scheduledExecutor.shutdownNow();
+            Thread.currentThread().interrupt();
+            log.warn("CacheImageCaptchaGenerator 定时任务线程池关闭时被中断", e);
+        }
+        // 清理缓存
+        queueMap.clear();
+        posMap.clear();
+        lastUpdateMap.clear();
+    }
+
 }

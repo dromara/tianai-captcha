@@ -65,6 +65,9 @@ public class GenerateParam {
         }
         return param.remove(key);
     }
+    public  <T>  Object removeParam(ParamKey<T> paramKey) {
+        return removeParam(paramKey.getKey());
+    }
 
     public Object getOrDefault(String key, Object defaultValue) {
         if (param == null) {
