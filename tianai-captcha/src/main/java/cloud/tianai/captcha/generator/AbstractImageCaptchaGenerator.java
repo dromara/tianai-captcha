@@ -2,10 +2,7 @@ package cloud.tianai.captcha.generator;
 
 import cloud.tianai.captcha.common.exception.ImageCaptchaException;
 import cloud.tianai.captcha.common.util.CollectionUtils;
-import cloud.tianai.captcha.generator.common.model.dto.CaptchaExchange;
-import cloud.tianai.captcha.generator.common.model.dto.CustomData;
-import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
-import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.*;
 import cloud.tianai.captcha.generator.common.util.CaptchaImageUtils;
 import cloud.tianai.captcha.generator.impl.transform.Base64ImageTransform;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
@@ -136,6 +133,11 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
     public ImageCaptchaInfo wrapImageCaptchaInfo(CaptchaExchange captchaExchange) {
         ImageCaptchaInfo imageCaptchaInfo = doWrapImageCaptchaInfo(captchaExchange);
         imageCaptchaInfo.setData(captchaExchange.getCustomData());
+        // 设置自定义容错值
+        Number tolerant = captchaExchange.getParam().getParam(ParamKeyEnum.TOLERANT);
+        if (tolerant != null) {
+            imageCaptchaInfo.setTolerant(tolerant.floatValue());
+        }
         return imageCaptchaInfo;
     }
 

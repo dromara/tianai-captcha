@@ -13,7 +13,7 @@ import java.util.function.Function;
 @EqualsAndHashCode
 public class AnyMap implements Map<String, Object> {
 
-    private Map<String, Object> target;
+    private final Map<String, Object> target;
 
     public AnyMap() {
         target = new LinkedHashMap<>();
@@ -77,6 +77,39 @@ public class AnyMap implements Map<String, Object> {
         return new AnyMap(map);
     }
 
+
+    public void addParam(String key, Object value) {
+        put(key, value);
+    }
+
+    public Object getParam(String key) {
+        return get(key);
+    }
+
+    public Object removeParam(String key) {
+        return remove(key);
+    }
+
+    public <T> Object removeParam(ParamKey<T> paramKey) {
+        return removeParam(paramKey.getKey());
+    }
+
+    public <T> void addParam(ParamKey<T> paramKey, T value) {
+        addParam(paramKey.getKey(), value);
+    }
+
+    public <T> T getParam(ParamKey<T> paramKey) {
+        return getParam(paramKey, null);
+    }
+
+    public <T> T getParam(ParamKey<T> paramKey, T defaultValue) {
+        return (T) getParam(paramKey.getKey());
+
+    }
+
+    public <T> T getOrDefault(ParamKey<T> paramKey, T defaultValue) {
+        return (T) getOrDefault(paramKey.getKey(), defaultValue);
+    }
     // ==================  implement Map =======================
 
 

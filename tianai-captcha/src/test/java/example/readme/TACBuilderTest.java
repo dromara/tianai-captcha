@@ -26,7 +26,8 @@ public class TACBuilderTest {
 //        template1.put(StandardSliderImageCaptchaGenerator.TEMPLATE_ACTIVE_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/active.png"));
 //        template1.put(StandardSliderImageCaptchaGenerator.TEMPLATE_FIXED_IMAGE_NAME, new Resource(ClassPathResourceProvider.NAME, "/fixed.png"));
 
-        ImageCaptchaApplication application = TACBuilder.builder(new LocalMemoryResourceStore())
+        ImageCaptchaApplication application = TACBuilder.builder()
+                .setResourceStore(new LocalMemoryResourceStore())
                 // 加载系统自带的默认资源
                 .addDefaultTemplate()
                 // 设置验证码过期时间

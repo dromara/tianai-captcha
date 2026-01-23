@@ -1,6 +1,7 @@
 package cloud.tianai.captcha.generator.common.model.dto;
 
 import cloud.tianai.captcha.common.AnyMap;
+import cloud.tianai.captcha.common.ParamKey;
 import cloud.tianai.captcha.common.constant.CaptchaTypeConstant;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -11,88 +12,92 @@ import lombok.EqualsAndHashCode;
  * @Description 生成参数
  */
 @Data
-// param作为扩展字段暂时将param从equals和toString中移除掉 以适应 CacheImageCaptchaGenerator
-@EqualsAndHashCode(exclude = "param")
-public class GenerateParam {
+@EqualsAndHashCode(callSuper = true)
+public class GenerateParam extends AnyMap {
+
+    public GenerateParam() {
+        // 设置一些默认值
+        setBackgroundFormatName("jpeg");
+        setTemplateFormatName("png");
+        setObfuscate(false);
+        setType(CaptchaTypeConstant.SLIDER);
+    }
 
     /**
      * 背景格式化类型.
      */
-    private String backgroundFormatName = "jpeg";
+    private static final ParamKey<String> backgroundFormatName = () -> "backgroundFormatName";
     /**
      * 模板图片格式化类型.
      */
-    private String templateFormatName = "png";
+    private static final ParamKey<String> templateFormatName = () -> "templateFormatName";
     /**
      * 是否混淆.
      */
-    private Boolean obfuscate = false;
+    private static final ParamKey<Boolean> obfuscate = () -> "obfuscate";
     /**
      * 类型.
      */
-    private String type = CaptchaTypeConstant.SLIDER;
+    private static final ParamKey<String> type = () -> "type";
     /**
      * 背景图片标签, 用户二级过滤背景图片，或指定某背景图片.
      */
-    private String backgroundImageTag;
+    private static final ParamKey<String> backgroundImageTag = () -> "backgroundImageTag";
     /**
      * 滑动图片标签,用户二级过滤模板图片，或指定某模板图片..
      */
-    private String templateImageTag;
-    /**
-     * 扩展参数.
-     */
-    private AnyMap param = new AnyMap();
+    private static final ParamKey<String> templateImageTag = () -> "templateImageTag";
 
-    public void addParam(String key, Object value) {
-        doGetOrCreateParam().put(key, value);
+
+    // =============== getter and setter ====================
+    public void setBackgroundFormatName(String backgroundFormatName) {
+        addParam(GenerateParam.backgroundFormatName, backgroundFormatName);
     }
 
-    public Object getParam(String key) {
-        return param == null ? null : param.get(key);
+    public void setTemplateFormatName(String templateFormatName) {
+        addParam(GenerateParam.templateFormatName, templateFormatName);
     }
 
-    private AnyMap doGetOrCreateParam() {
-        if (param == null) {
-            param = new AnyMap();
-        }
-        return param;
+    public void setObfuscate(boolean obfuscate) {
+        addParam(GenerateParam.obfuscate, obfuscate);
     }
 
-    public Object removeParam(String key) {
-        if (param == null) {
-            return null;
-        }
-        return param.remove(key);
-    }
-    public  <T>  Object removeParam(ParamKey<T> paramKey) {
-        return removeParam(paramKey.getKey());
+    public void setType(String type) {
+        addParam(GenerateParam.type, type);
     }
 
-    public Object getOrDefault(String key, Object defaultValue) {
-        if (param == null) {
-            return defaultValue;
-        }
-        return param.getOrDefault(key, defaultValue);
+    public void setBackgroundImageTag(String backgroundImageTag) {
+        addParam(GenerateParam.backgroundImageTag, backgroundImageTag);
     }
 
-
-    public Object putIfAbsent(String key, Object value) {
-        return doGetOrCreateParam().putIfAbsent(key, value);
+    public void setTemplateImageTag(String templateImageTag) {
+        addParam(GenerateParam.templateImageTag, templateImageTag);
     }
 
-
-    public <T> void addParam(ParamKey<T> paramKey, T value) {
-        addParam(paramKey.getKey(), value);
+    public String getBackgroundFormatName() {
+        return getParam(GenerateParam.backgroundFormatName);
     }
 
-    public <T> T getParam(ParamKey<T> paramKey) {
-        return (T) getParam(paramKey.getKey());
+    public String getTemplateFormatName() {
+        return getParam(GenerateParam.templateFormatName);
     }
 
-    public <T> T getOrDefault(ParamKey<T> paramKey, T defaultValue) {
-        return (T) getOrDefault(paramKey.getKey(), defaultValue);
+    public boolean getObfuscate() {
+        return getParam(GenerateParam.obfuscate);
     }
+
+    public String getType() {
+        return getParam(GenerateParam.type);
+    }
+
+    public String getBackgroundImageTag() {
+        return getParam(GenerateParam.backgroundImageTag);
+    }
+
+    public String getTemplateImageTag() {
+        return getParam(GenerateParam.templateImageTag);
+    }
+
 
     public static Builder builder() {
         return new Builder();
@@ -105,7 +110,6 @@ public class GenerateParam {
         private String type = CaptchaTypeConstant.SLIDER;
         private String backgroundImageTag;
         private String templateImageTag;
-        private AnyMap param = new AnyMap();
 
         private Builder() {
         }
@@ -140,20 +144,15 @@ public class GenerateParam {
             return this;
         }
 
-        public Builder param(AnyMap param) {
-            this.param = param;
-            return this;
-        }
 
         public GenerateParam build() {
             GenerateParam generateParam = new GenerateParam();
-            generateParam.backgroundFormatName = backgroundFormatName;
-            generateParam.templateFormatName = templateFormatName;
-            generateParam.obfuscate = obfuscate;
-            generateParam.type = type;
-            generateParam.backgroundImageTag = backgroundImageTag;
-            generateParam.templateImageTag = templateImageTag;
-            generateParam.param = param;
+            generateParam.setBackgroundFormatName(backgroundFormatName);
+            generateParam.setTemplateFormatName(templateFormatName);
+            generateParam.setObfuscate(obfuscate);
+            generateParam.setType(type);
+            generateParam.setBackgroundImageTag(backgroundImageTag);
+            generateParam.setTemplateImageTag(templateImageTag);
             return generateParam;
         }
     }

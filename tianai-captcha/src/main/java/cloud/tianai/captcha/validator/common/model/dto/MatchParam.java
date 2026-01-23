@@ -1,5 +1,7 @@
 package cloud.tianai.captcha.validator.common.model.dto;
 
+import cloud.tianai.captcha.common.AnyMap;
+import cloud.tianai.captcha.common.ParamKey;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -10,22 +12,35 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-public class MatchParam {
-    /** 轨迹信息. */
-    private ImageCaptchaTrack track;
-    /** 检测到的设备信息. */
-    private Drives drives;
-    /** 留一个扩展属性. */
-    private Object extendData;
+public class MatchParam extends AnyMap {
+    private static final ParamKey<ImageCaptchaTrack> track = () -> "track";
 
+    private static final ParamKey<Drives> drives = () -> "drives";
+
+
+    public ImageCaptchaTrack getTrack() {
+        return getParam(MatchParam.track);
+    }
+
+    public Drives getDrives() {
+        return getParam(MatchParam.drives);
+    }
+
+    public void setTrack(ImageCaptchaTrack track) {
+        addParam(MatchParam.track, track);
+    }
+
+    public void setDrives(Drives drives) {
+        addParam(MatchParam.drives, drives);
+    }
 
     public MatchParam(ImageCaptchaTrack track) {
-        this.track = track;
+        this.setTrack(track);
     }
 
     public MatchParam(ImageCaptchaTrack track, Drives drives) {
-        this.track = track;
-        this.drives = drives;
+        this.setTrack(track);
+        this.setDrives(drives);
     }
 
 }
