@@ -92,7 +92,7 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
     }
 
     @Override
-    public ClickImageCheckDefinition.ImgWrapper getClickImg(GenerateParam param, Resource tip, Color randomColor) {
+    public ClickImageCheckDefinition.ImgWrapper getClickImg(GenerateParam param, Resource tip, Color randomColor, BufferedImage bgImage) {
         if (randomColor == null) {
             ThreadLocalRandom random = ThreadLocalRandom.current();
             randomColor = CaptchaImageUtils.getRandomColor(random);
@@ -100,7 +100,7 @@ public class StandardWordClickImageCaptchaGenerator extends AbstractClickImageCa
         // 随机角度
         int randomDeg = randomInt(0, 85);
         // 缩放
-        double factor = 600d;
+        double factor =  (double) bgImage.getWidth(null) / 600d;
 
         FontWrapper fontWrapper = randomFont(param);
         Font font = fontWrapper.getFont((float) (FontWrapper.DEFAULT_FONT_SIZE * factor));

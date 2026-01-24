@@ -65,7 +65,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
             }
 
             // 随机获取点击图片
-            ClickImageCheckDefinition.ImgWrapper imgWrapper = getClickImg(param, clickResource, null);
+            ClickImageCheckDefinition.ImgWrapper imgWrapper = getClickImg(param, clickResource, null, bgImage);
             BufferedImage image = imgWrapper.getImage();
             // 增加功能，是否需要扭曲图片
             image = obfuscateImage(image, param);
@@ -143,7 +143,7 @@ public abstract class AbstractClickImageCaptchaGenerator extends AbstractImageCa
      * @param tip 提示数据,根据改数据生成图片
      * @return ImgWrapper
      */
-    public abstract ClickImageCheckDefinition.ImgWrapper getClickImg(GenerateParam param, Resource tip, Color randomColor);
+    public abstract ClickImageCheckDefinition.ImgWrapper getClickImg(GenerateParam param, Resource tip, Color randomColor, BufferedImage bgImage);
 
 
     @Data
