@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author: 天爱有情
@@ -23,4 +24,5 @@ public class ImageCaptchaProperties {
     private int localCacheWaitTime = 1000;
     private int localCachePeriod = 5000;
     private Long localCacheExpireTime;
+    private Set<String> localCacheIgnoredCacheFields;
 }

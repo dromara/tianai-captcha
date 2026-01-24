@@ -3,6 +3,7 @@ package cloud.tianai.captcha.generator.impl;
 import cloud.tianai.captcha.common.util.NamedThreadFactory;
 import cloud.tianai.captcha.generator.ImageCaptchaGenerator;
 import cloud.tianai.captcha.generator.ImageTransform;
+import cloud.tianai.captcha.generator.common.model.dto.CacheKey;
 import cloud.tianai.captcha.generator.common.model.dto.GenerateParam;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
 import cloud.tianai.captcha.interceptor.CaptchaInterceptor;
@@ -12,7 +13,7 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -22,19 +23,31 @@ import java.util.concurrent.atomic.AtomicInteger;
  * @Description 滑块验证码缓冲器
  */
 @Slf4j
-public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
+public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator, AutoCloseable {
 
     protected final ScheduledExecutorService scheduledExecutor = new ScheduledThreadPoolExecutor(1, new NamedThreadFactory("slider-captcha-queue"));
-    protected Map<GenerateParam, ConcurrentLinkedQueue<ImageCaptchaInfo>> queueMap = new ConcurrentHashMap<>(8);
-    protected Map<GenerateParam, AtomicInteger> posMap = new ConcurrentHashMap<>(8);
-    protected Map<GenerateParam, Long> lastUpdateMap = new ConcurrentHashMap<>(8);
+    protected Map<CacheKey, ConcurrentLinkedQueue<ImageCaptchaInfo>> queueMap = new ConcurrentHashMap<>(8);
+    protected Map<CacheKey, AtomicInteger> posMap = new ConcurrentHashMap<>(8);
+    protected Map<CacheKey, Long> lastUpdateMap = new ConcurrentHashMap<>(8);
+    /**
+     * 忽略的字段集合（不参与缓存key计算），默认为空
+     */
+    @Getter
+    @Setter
+    protected Set<String> ignoredCacheFields = Collections.emptySet();
     protected ImageCaptchaGenerator target;
     protected int size;
-    /** 等待时间，一般报错或者拉取为空时会休眠一段时间再试. */
+    /**
+     * 等待时间，一般报错或者拉取为空时会休眠一段时间再试.
+     */
     protected int waitTime = 1000;
-    /** 调度器检查缓存的间隔时间. */
+    /**
+     * 调度器检查缓存的间隔时间.
+     */
     protected int period = 5000;
-    /** 10天内没有任何操作就删除已缓存的数据. */
+    /**
+     * 10天内没有任何操作就删除已缓存的数据.
+     */
     protected long expireTime = TimeUnit.DAYS.toMillis(10);
     @Getter
     @Setter
@@ -59,7 +72,7 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
         this.size = size;
         this.waitTime = waitTime;
         this.period = period;
-        if (expireTime != null){
+        if (expireTime != null) {
             this.expireTime = expireTime;
         }
     }
@@ -77,15 +90,18 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
         }
         this.size = z;
         // 初始化一个队列扫描
-        scheduledExecutor.scheduleAtFixedRate(() -> queueMap.forEach((k, queue) -> {
+        scheduledExecutor.scheduleAtFixedRate(() -> queueMap.forEach((cacheKey, queue) -> {
             try {
-                AtomicInteger pos = posMap.computeIfAbsent(k, k1 -> new AtomicInteger(0));
+                AtomicInteger pos = posMap.computeIfAbsent(cacheKey, k1 -> new AtomicInteger(0));
                 int addCount = 0;
                 while (pos.get() < this.size) {
                     if (pos.get() >= size) {
                         return;
                     }
-                    ImageCaptchaInfo slideImageInfo = target.generateCaptchaImage(k);
+                    GenerateParam generateParam = cacheKey.getGenerateParam();
+                    generateParam = beforeGenerateCaptchaImage(generateParam);
+                    // 使用原始GenerateParam生成验证码
+                    ImageCaptchaInfo slideImageInfo = target.generateCaptchaImage(generateParam);
                     if (slideImageInfo != null) {
                         boolean addStatus = queue.offer(slideImageInfo);
                         addCount++;
@@ -99,26 +115,27 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
                 }
                 if (addCount == 0) {
                     // 没有添加，检测最新更新时间 如果时间过长，直接清除数据
-                    Long lastUpdate = lastUpdateMap.get(k);
+                    Long lastUpdate = lastUpdateMap.get(cacheKey);
                     if (lastUpdate != null && System.currentTimeMillis() - lastUpdate > expireTime) {
-                        queueMap.remove(k);
-                        posMap.remove(k);
-                        lastUpdateMap.remove(k);
+                        queueMap.remove(cacheKey);
+                        posMap.remove(cacheKey);
+                        lastUpdateMap.remove(cacheKey);
                     }
                 }
             } catch (Exception e) {
                 // cache所有
                 log.error("缓存队列扫描时出错， ex", e);
                 // 删掉它
-                queueMap.remove(k);
-                posMap.remove(k);
-                lastUpdateMap.remove(k);
+                queueMap.remove(cacheKey);
+                posMap.remove(cacheKey);
+                lastUpdateMap.remove(cacheKey);
                 // 休眠
                 sleep();
             }
         }), 0, period, TimeUnit.MILLISECONDS);
         init = true;
     }
+
 
     private void sleep() {
         try {
@@ -131,7 +148,8 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
     public ImageCaptchaGenerator init() {
         ImageCaptchaGenerator captchaGenerator = target.init();
         // 初始化缓存
-        init(size);;
+        init(size);
+
         return captchaGenerator;
     }
 
@@ -145,21 +163,25 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
 
     @SneakyThrows
     public ImageCaptchaInfo generateCaptchaImage(GenerateParam generateParam, boolean requiredGetCaptcha) {
-        ConcurrentLinkedQueue<ImageCaptchaInfo> queue = queueMap.get(generateParam);
+        // 创建CacheKey
+        CacheKey cacheKey = new CacheKey(generateParam, ignoredCacheFields);
+
+        ConcurrentLinkedQueue<ImageCaptchaInfo> queue = queueMap.get(cacheKey);
         ImageCaptchaInfo captchaInfo = null;
         if (queue != null) {
             captchaInfo = queue.poll();
             if (captchaInfo == null) {
                 log.warn("滑块验证码缓存不足, genParam:{}", generateParam);
             } else {
-                AtomicInteger pos = posMap.get(generateParam);
+                AtomicInteger pos = posMap.get(cacheKey);
                 if (pos != null) {
                     pos.decrementAndGet();
                 }
             }
         } else {
-            queueMap.putIfAbsent(generateParam, new ConcurrentLinkedQueue<>());
-            posMap.putIfAbsent(generateParam, new AtomicInteger(0));
+            cacheKey = beforeAddQueue(cacheKey);
+            queueMap.putIfAbsent(cacheKey, new ConcurrentLinkedQueue<>());
+            posMap.putIfAbsent(cacheKey, new AtomicInteger(0));
         }
         if (captchaInfo == null && requiredGetCaptcha) {
             // 直接生成 不走缓存
@@ -167,10 +189,11 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
         }
         if (captchaInfo != null) {
             // 记录最新时间
-            lastUpdateMap.put(generateParam, System.currentTimeMillis());
+            lastUpdateMap.put(cacheKey, System.currentTimeMillis());
         }
         return captchaInfo;
     }
+
 
     @Override
     public ImageCaptchaInfo generateCaptchaImage(String type, String targetFormatName, String matrixFormatName) {
@@ -236,4 +259,37 @@ public class CacheImageCaptchaGenerator implements ImageCaptchaGenerator {
         lastUpdateMap.clear();
     }
 
+    /**
+     * 实现 AutoCloseable 接口，支持 try-with-resources 语法
+     * 调用 destroy() 方法释放资源
+     */
+    @Override
+    public void close() {
+        destroy();
+    }
+
+
+    //=============== 模板方法 =============
+
+
+    /**
+     * 添加到队列前扩展的函数
+     *
+     * @param cacheKey cacheKey
+     * @return CacheKey
+     */
+    public CacheKey beforeAddQueue(CacheKey cacheKey) {
+        return cacheKey;
+    }
+
+
+    /**
+     * 生成验证码前调用的函数， 方便子类扩展
+     *
+     * @param generateParam generateParam
+     * @return GenerateParam
+     */
+    public GenerateParam beforeGenerateCaptchaImage(GenerateParam generateParam) {
+        return generateParam;
+    }
 }

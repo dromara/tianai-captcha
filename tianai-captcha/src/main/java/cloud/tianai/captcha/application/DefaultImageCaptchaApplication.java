@@ -35,15 +35,25 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
     private CaptchaInterceptor captchaInterceptor;
-    /** 图片验证码生成器. */
+    /**
+     * 图片验证码生成器.
+     */
     private ImageCaptchaGenerator captchaGenerator;
-    /** 图片验证码校验器. */
+    /**
+     * 图片验证码校验器.
+     */
     private ImageCaptchaValidator imageCaptchaValidator;
-    /** 缓冲存储. */
+    /**
+     * 缓冲存储.
+     */
     private CacheStore cacheStore;
-    /** 验证码配置属性. */
+    /**
+     * 验证码配置属性.
+     */
     private final ImageCaptchaProperties prop;
-    /** 默认的过期时间. */
+    /**
+     * 默认的过期时间.
+     */
     private long defaultExpire = 20000L;
 
     public static final String ID_SPLIT = "_";
@@ -69,9 +79,11 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         }
         captchaGenerator.setInterceptor(this.captchaInterceptor);
         if (prop.isLocalCacheEnabled()) {
-            captchaGenerator = new CacheImageCaptchaGenerator(captchaGenerator,
+            CacheImageCaptchaGenerator cacheImageCaptchaGenerator = new CacheImageCaptchaGenerator(captchaGenerator,
                     prop.getLocalCacheSize(), prop.getLocalCacheWaitTime(),
                     prop.getLocalCachePeriod(), prop.getLocalCacheExpireTime());
+            cacheImageCaptchaGenerator.setIgnoredCacheFields(prop.getLocalCacheIgnoredCacheFields());
+            captchaGenerator = cacheImageCaptchaGenerator;
         }
         // 初始化生成器
         captchaGenerator.init();
@@ -134,7 +146,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         }
         // 生成ID
 
-        ApiResponse<ImageCaptchaVO> response = beforeGenerateImageCaptchaValidData( imageCaptchaInfo);
+        ApiResponse<ImageCaptchaVO> response = beforeGenerateImageCaptchaValidData(imageCaptchaInfo);
         if (response != null) {
             return response;
         }

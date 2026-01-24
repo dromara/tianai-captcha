@@ -19,6 +19,7 @@ import cloud.tianai.captcha.validator.impl.SimpleImageCaptchaValidator;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author: 天爱有情
@@ -34,19 +35,18 @@ public class TACBuilder {
     private ImageCaptchaProperties prop = new ImageCaptchaProperties();
     private ResourceStore resourceStore;
     private ImageTransform imageTransform;
-//    private List<FontWrapper> fontWrappers = new ArrayList<>();
+    //    private List<FontWrapper> fontWrappers = new ArrayList<>();
     private Map<String, Resource> resourceCache;
     private Map<String, ResourceMap> templateCache;
 
     public static TACBuilder builder() {
-        return TACBuilder.builder();
+        return new TACBuilder();
     }
 
 
-
-    private TACBuilder(ResourceStore resourceStore) {
-        this.resourceStore = resourceStore;
+    private TACBuilder() {
     }
+
     public TACBuilder setResourceStore(ResourceStore resourceStore) {
         this.resourceStore = resourceStore;
         return this;
@@ -89,11 +89,17 @@ public class TACBuilder {
 
 
     public TACBuilder cached(int size, int waitTime, int period, Long expireTime) {
+        cached(size, waitTime, period, expireTime, null);
+        return this;
+    }
+
+    public TACBuilder cached(int size, int waitTime, int period, Long expireTime, Set<String> ignoredCacheFields) {
         prop.setLocalCacheEnabled(true);
         prop.setLocalCacheSize(size);
         prop.setLocalCacheWaitTime(waitTime);
         prop.setLocalCachePeriod(period);
         prop.setLocalCacheExpireTime(expireTime);
+        prop.setLocalCacheIgnoredCacheFields(ignoredCacheFields);
         return this;
     }
 
@@ -182,6 +188,7 @@ public class TACBuilder {
         }
         resourceCache.put(captchaType, imageResource);
     }
+
     private void cacheTemplate(String captchaType, ResourceMap resourceMap) {
         if (templateCache == null) {
             templateCache = new LinkedHashMap<>(8);

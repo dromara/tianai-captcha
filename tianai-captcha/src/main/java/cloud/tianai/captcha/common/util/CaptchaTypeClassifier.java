@@ -1,5 +1,6 @@
 package cloud.tianai.captcha.common.util;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -10,15 +11,22 @@ import java.util.Set;
  */
 public class CaptchaTypeClassifier {
 
+    /**
+     * 每个类型集合的最大容量，防止内存泄漏
+     */
+    private static final int MAX_TYPE_SIZE = 100;
+
     private static final Set<String> SLIDER_CAPTCHA_TYPES = new HashSet<>();
     private static final Set<String> CLICK_CAPTCHA_TYPES = new HashSet<>();
     private static final Set<String> JIGSAW_CAPTCHA_TYPES = new HashSet<>();
 
     public static void addSliderCaptchaType(String type) {
+        checkCapacity(SLIDER_CAPTCHA_TYPES, "SLIDER_CAPTCHA_TYPES");
         SLIDER_CAPTCHA_TYPES.add(type.toUpperCase());
     }
 
     public static void addClickCaptchaType(String type) {
+        checkCapacity(CLICK_CAPTCHA_TYPES, "CLICK_CAPTCHA_TYPES");
         CLICK_CAPTCHA_TYPES.add(type.toUpperCase());
     }
 
@@ -31,11 +39,11 @@ public class CaptchaTypeClassifier {
     }
 
     public static Set<String> getSliderCaptchaTypes() {
-        return SLIDER_CAPTCHA_TYPES;
+        return Collections.unmodifiableSet(SLIDER_CAPTCHA_TYPES);
     }
 
     public static Set<String> getClickCaptchaTypes() {
-        return CLICK_CAPTCHA_TYPES;
+        return Collections.unmodifiableSet(CLICK_CAPTCHA_TYPES);
     }
 
     public static void removeSliderCaptchaType(String type) {
@@ -51,6 +59,7 @@ public class CaptchaTypeClassifier {
     }
 
     public static void addJigsawCaptchaType(String type) {
+        checkCapacity(JIGSAW_CAPTCHA_TYPES, "JIGSAW_CAPTCHA_TYPES");
         JIGSAW_CAPTCHA_TYPES.add(type.toUpperCase());
     }
 
@@ -59,6 +68,19 @@ public class CaptchaTypeClassifier {
     }
 
     public static Set<String> getJigsawCaptchaTypes() {
-        return JIGSAW_CAPTCHA_TYPES;
+        return Collections.unmodifiableSet(JIGSAW_CAPTCHA_TYPES);
+    }
+
+    /**
+     * 检查集合容量，防止内存泄漏
+     * @param set 要检查的集合
+     * @param name 集合名称，用于日志
+     */
+    private static void checkCapacity(Set<String> set, String name) {
+        if (set.size() >= MAX_TYPE_SIZE) {
+            throw new IllegalStateException(
+                String.format("验证码类型集合 %s 已达到最大容量 %d，无法继续添加", name, MAX_TYPE_SIZE)
+            );
+        }
     }
 }

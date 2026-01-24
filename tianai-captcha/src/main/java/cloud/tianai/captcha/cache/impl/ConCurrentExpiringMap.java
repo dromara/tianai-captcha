@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Accessors(chain = true)
-public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
+public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V>, AutoCloseable {
 
     private ConcurrentHashMap<K, TimeMapEntity<K, V>> storage;
     private SortedMap<Long, LinkedList<K>> sortedMap = new ConcurrentSkipListMap<>();
@@ -217,6 +217,15 @@ public class ConCurrentExpiringMap<K, V> implements ExpiringMap<K, V> {
             Thread.currentThread().interrupt();
             log.warn("ConCurrentExpiringMap 定时任务线程池关闭时被中断", e);
         }
+    }
+
+    /**
+     * 实现 AutoCloseable 接口，支持 try-with-resources 语法
+     * 调用 destroy() 方法释放资源
+     */
+    @Override
+    public void close() {
+        destroy();
     }
 
     /**

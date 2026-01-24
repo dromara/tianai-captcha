@@ -168,17 +168,21 @@ public abstract class AbstractImageCaptchaGenerator implements ImageCaptchaGener
 
     protected BufferedImage getTemplateImage(ResourceMap templateImages, String imageName) {
         InputStream stream = getTemplateFile(templateImages, imageName);
-        BufferedImage bufferedImage = CaptchaImageUtils.wrapFile2BufferedImage(stream);
-        closeStream(stream);
-        return bufferedImage;
+        try {
+            return CaptchaImageUtils.wrapFile2BufferedImage(stream);
+        } finally {
+            closeStream(stream);
+        }
     }
 
 
     protected BufferedImage getResourceImage(Resource resource) {
         InputStream stream = getResourceInputStream(resource, null);
-        BufferedImage bufferedImage = CaptchaImageUtils.wrapFile2BufferedImage(stream);
-        closeStream(stream);
-        return bufferedImage;
+        try {
+            return CaptchaImageUtils.wrapFile2BufferedImage(stream);
+        } finally {
+            closeStream(stream);
+        }
     }
 
     protected int randomInt(int origin, int bound) {
