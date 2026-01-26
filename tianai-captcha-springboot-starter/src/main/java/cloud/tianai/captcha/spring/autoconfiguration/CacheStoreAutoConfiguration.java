@@ -10,7 +10,6 @@ import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -21,6 +20,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  *
  * @author Hccake
  */
+@AutoConfigureAfter(name = {"org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration",
+        "org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration"})
 @Configuration(proxyBeanMethods = false)
 public class CacheStoreAutoConfiguration {
 
@@ -33,10 +34,9 @@ public class CacheStoreAutoConfiguration {
     @Order(1)
     @Configuration(proxyBeanMethods = false)
     @ConditionalOnClass(StringRedisTemplate.class)
-    @AutoConfigureAfter({RedisAutoConfiguration.class})
     public static class RedisCacheStoreConfiguration {
 
-        @Bean(destroyMethod = "")
+        @Bean(destroyMethod = "close")
         @ConditionalOnBean(StringRedisTemplate.class)
         @ConditionalOnMissingBean(CacheStore.class)
         public CacheStore redis(StringRedisTemplate redisTemplate) {
