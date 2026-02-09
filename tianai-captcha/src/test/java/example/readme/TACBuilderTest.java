@@ -58,7 +58,7 @@ public class TACBuilderTest {
 
         ImageCaptchaApplication application = TACBuilder.builder()
                 // 设置资源存储器，默认是 LocalMemoryResourceStore
-                .setResourceStore(new LocalMemoryResourceStore())
+//                .setResourceStore(new LocalMemoryResourceStore())
                 // 加载系统自带的默认资源(系统内置了几个滑块验证码缺口模板图，调用此函数加载)
                 .addDefaultTemplate()
                 // 设置验证码过期时间, 单位毫秒, default 是默认验证码过期时间，当前设置为10秒,
@@ -70,6 +70,7 @@ public class TACBuilderTest {
                 // 添加验证码背景图片
                 // arg1 验证码类型(SLIDER、WORD_IMAGE_CLICK、ROTATE、CONCAT),
                 // arg2 验证码背景图片资源
+                .addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource(CaptchaTypeConstant.SLIDER, new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK, new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
                 .addResource(CaptchaTypeConstant.ROTATE, new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
