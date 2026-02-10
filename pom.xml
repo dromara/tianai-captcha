@@ -12,11 +12,10 @@
     <modules>
         <module>tianai-captcha</module>
         <module>tianai-captcha-springboot-starter</module>
-        <module>tianai-captcha-solon-plugin</module>
     </modules>
 
     <properties>
-        <revision>1.5.4</revision>
+        <revision>1.5.5</revision>
         <java.version>1.8</java.version>
         <!-- 打包跳过单元测试 -->
         <skipTests>true</skipTests>
