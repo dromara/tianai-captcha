@@ -10,7 +10,7 @@ function getTemplate(styleConfig) {
     return `
     <div id="tianai-captcha" class="tianai-captcha-slider tianai-captcha-concat">
     <div class="slider-tip">
-        <span id="tianai-captcha-slider-move-track-font" >拖动滑块完成拼图</span>
+        <span id="tianai-captcha-slider-move-track-font" style="font-size: ${styleConfig.i18n.concat_title_size}">${styleConfig.i18n.concat_title}</span>
     </div>
     <div class="content">
         <div class="tianai-captcha-slider-concat-img-div" id="tianai-captcha-slider-concat-img-div">
