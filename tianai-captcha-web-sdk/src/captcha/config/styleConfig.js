@@ -9,15 +9,20 @@ export default {
     i18n: {
         tips_success: "验证成功,耗时%s秒",
         tips_error : "验证失败，请重新尝试!",
+        tips_4001: "验证码被黑洞吸走了！",
+        interface_error: "接口异常",
         slider_title:"拖动滑块完成拼图",
         concat_title: "拖动滑块完成拼图",
         image_click_title: "请依次点击:",
         rotate_title: "拖动滑块完成拼图",
+        disable_title: "验证码不可用",
+        click_confirm_btn: "确定",
         // TITLE 大小
         slider_title_size:"15px",
         concat_title_size: "15px",
         image_click_title_size: "20px",
         rotate_title_size: "15px",
+        disable_title_size: "15px",
     }
 
 }
