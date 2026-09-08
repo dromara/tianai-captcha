@@ -1,0 +1,58 @@
+#tianai-captcha.tianai-captcha-pow {
+  .content {
+    height: 100%;
+  }
+  /* 窗口容器：模拟 300x180 的窗口（已有窗口可省略） */
+  .verify-window {
+    width: 300px;
+    height: 180px;
+    border: 1px solid #eee; /* 仅可视化窗口边界，实际可删除 */
+    box-sizing: border-box;
+    position: relative;
+  }
+
+  /* 正在验证中 - 大号元素 + 主题色 #f7b645 核心样式 */
+  .verify-loading {
+    /* 填满整个 300x180 窗口 */
+    width: 100%;
+    height: 100%;
+
+    /* 大号字体：更醒目，适配小窗口且不拥挤 */
+    font-size: 16px; /* 从 14px 放大到 16px，视觉更突出 */
+    color: #f7b645; /* 替换为你的主题暖黄色 */
+    font-family: "Microsoft Yahei", sans-serif;
+    line-height: 1.6; /* 微调行高，搭配大号字体更协调 */
+
+    /* 水平+垂直居中（核心布局不变） */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    /* 轻微背景，突出暖黄色主题，不刺眼 */
+    background-color: #fefaf5;
+    box-sizing: border-box;
+  }
+
+  /* 大号加载小圆点：与字体匹配，主题色配套 */
+  .verify-loading::before {
+    content: "";
+    display: inline-block;
+    width: 16px; /* 从 12px 放大到 16px，与大号字体比例协调 */
+    height: 16px;
+    margin-right: 10px; /* 间距从 8px 放大到 10px，视觉更舒展 */
+    border: 2px solid #fee8c7; /* #f7b645 的浅色调，作为辅助色，旋转视觉更柔和 */
+    border-top-color: #f7b645; /* 主题色，形成旋转视觉差 */
+    border-radius: 50%;
+    animation: verify-spin 1s linear infinite;
+  }
+
+  /* 旋转动画定义（保持不变，流畅旋转） */
+  @keyframes verify-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+}

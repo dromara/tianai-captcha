@@ -19,7 +19,7 @@ public class CaptchaTypeClassifier {
     private static final Set<String> SLIDER_CAPTCHA_TYPES = new HashSet<>();
     private static final Set<String> CLICK_CAPTCHA_TYPES = new HashSet<>();
     private static final Set<String> JIGSAW_CAPTCHA_TYPES = new HashSet<>();
-
+    private static final Set<String> POW_CAPTCHA_TYPES = new HashSet<>();
     public static void addSliderCaptchaType(String type) {
         checkCapacity(SLIDER_CAPTCHA_TYPES, "SLIDER_CAPTCHA_TYPES");
         SLIDER_CAPTCHA_TYPES.add(type.toUpperCase());
@@ -30,12 +30,20 @@ public class CaptchaTypeClassifier {
         CLICK_CAPTCHA_TYPES.add(type.toUpperCase());
     }
 
+    public static void addPowCaptchaType(String type) {
+        checkCapacity(POW_CAPTCHA_TYPES, "POW_CAPTCHA_TYPES");
+        POW_CAPTCHA_TYPES.add(type.toUpperCase());
+    }
+
     public static boolean isSliderCaptcha(String type) {
         return SLIDER_CAPTCHA_TYPES.contains(type.toUpperCase());
     }
 
     public static boolean isClickCaptcha(String type) {
         return CLICK_CAPTCHA_TYPES.contains(type.toUpperCase());
+    }
+    public static boolean isPowCaptcha(String type) {
+        return POW_CAPTCHA_TYPES.contains(type.toUpperCase());
     }
 
     public static Set<String> getSliderCaptchaTypes() {

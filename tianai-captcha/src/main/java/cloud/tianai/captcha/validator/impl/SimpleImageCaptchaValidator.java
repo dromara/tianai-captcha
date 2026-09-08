@@ -9,10 +9,12 @@ import cloud.tianai.captcha.common.util.CollectionUtils;
 import cloud.tianai.captcha.common.util.ObjectUtils;
 import cloud.tianai.captcha.generator.common.model.dto.ClickImageCheckDefinition;
 import cloud.tianai.captcha.generator.common.model.dto.ImageCaptchaInfo;
+import cloud.tianai.captcha.generator.common.model.dto.ParamKeyEnum;
 import cloud.tianai.captcha.validator.ImageCaptchaValidator;
 import cloud.tianai.captcha.validator.SliderCaptchaPercentageValidator;
 import cloud.tianai.captcha.validator.common.constant.TrackTypeConstant;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.util.CapPowVerifier;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +45,8 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     /** 计算当前验证码用户滑动的百分比率 - 生成时的百分比率, 多个的话取均值. */
     public static final String USER_CURRENT_PERCENTAGE_STD = "user_current_percentage_std";
     public static final String USER_CURRENT_PERCENTAGE = "user_current_percentage";
+
+    public static final String POW_PARAM = "POW";
     /** 容错值. */
     @Getter
     @Setter
@@ -53,6 +57,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         CaptchaTypeClassifier.addSliderCaptchaType(CaptchaTypeConstant.ROTATE);
         CaptchaTypeClassifier.addSliderCaptchaType(CaptchaTypeConstant.SLIDER);
         CaptchaTypeClassifier.addClickCaptchaType(CaptchaTypeConstant.WORD_IMAGE_CLICK);
+        CaptchaTypeClassifier.addPowCaptchaType(CaptchaTypeConstant.POW);
     }
 
     public SimpleImageCaptchaValidator(float defaultTolerant) {
@@ -158,7 +163,39 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
         } else if (CaptchaTypeClassifier.isJigsawCaptcha(type)) {
             // 拼图验证码
             map.put(PERCENTAGE_KEY, expand);
+        }else if (CaptchaTypeClassifier.isPowCaptcha(type)) {
+            // 工作量证明
+            map.put(POW_PARAM, imageCaptchaInfo.getData().getData().get(POW_PARAM));
         }
+    }
+
+    private boolean doValidPowCaptcha(ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData, Float tolerant, String type) {
+        Object data = imageCaptchaTrack.getData();
+        if (!(data instanceof String)) {
+            throw new IllegalArgumentException("data is not List");
+        }
+        String noncesStr = data.toString();
+        // 兼容一下加密解密后字符串引号的问题
+        noncesStr = noncesStr.replaceAll("\"", "").replace("'", "");
+        String[] nonces = noncesStr.split("-");
+        // 请求参数
+        List<Number> param = (List<Number>) imageCaptchaValidData.getParam(POW_PARAM);
+
+        int difficulty = param.get(0).intValue();
+        int saltLen = param.get(1).intValue();
+        int num = param.get(2).intValue();
+
+        if (nonces.length != num) {
+            return false;
+        }
+        String id = imageCaptchaValidData.getParam(ParamKeyEnum.ID);
+
+        for (int i = 0; i < nonces.length; i++) {
+            if (!CapPowVerifier.verify(id, i, Long.parseLong(nonces[i]), saltLen, difficulty)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Override
@@ -233,7 +270,10 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
                            AnyMap imageCaptchaValidData,
                            Float tolerant,
                            String type) {
-        if (CaptchaTypeClassifier.isSliderCaptcha(type)) {
+        if (CaptchaTypeClassifier.isPowCaptcha(type)) {
+            // 工作量证明类型验证码
+            return doValidPowCaptcha(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
+        }else if (CaptchaTypeClassifier.isSliderCaptcha(type)) {
             // 滑动类型验证码
             return doValidSliderCaptcha(imageCaptchaTrack, imageCaptchaValidData, tolerant, type);
         } else if (CaptchaTypeClassifier.isClickCaptcha(type)) {

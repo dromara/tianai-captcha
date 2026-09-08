@@ -5,6 +5,8 @@ import cloud.tianai.captcha.common.ParamKey;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.List;
+
 @Getter
 @AllArgsConstructor
 public class ParamKeyEnum<T> implements ParamKey<T> {
@@ -16,6 +18,8 @@ public class ParamKeyEnum<T> implements ParamKey<T> {
     public static final ParamKey<Integer> CLICK_INTERFERENCE_COUNT = new ParamKeyEnum<>("interferenceCount");
     /** 读取字体时，可指定字体TAG，可用于给不同的验证码指定不同的字体包.*/
     public static final ParamKey<String> FONT_TAG = new ParamKeyEnum<>("fontTag");
+    /** 工作量计算验证码参数.*/
+    public static final ParamKey<List<Number>> POW_PARAM = new ParamKeyEnum<>("powParam");
     /** 容错值.*/
     public static final ParamKey<Number> TOLERANT = new ParamKeyEnum<>("tolerant");
     /** 验证码ID，内部使用.*/

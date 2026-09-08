@@ -6,6 +6,7 @@ import Disable from "./disable/disable";
 import WordImageClick from "./word_image_click/word_image_click";
 import {CaptchaConfig, wrapConfig, wrapStyle} from "./config/config";
 import {clearAllPreventDefault} from "./common/common";
+import Pow from "@/captcha/pow/pow";
 const template =
     `
     <div id="tianai-captcha-parent">
@@ -35,6 +36,8 @@ function createCaptchaByType(type, tac) {
             return new WordImageClick(box, styleConfig);
         case "DISABLED":
             return new Disable(box, styleConfig);
+        case "POW":
+            return new Pow(box, styleConfig);
         default:
             return null;
     }
@@ -145,6 +148,7 @@ class TianAiCaptcha {
                     startTime: currentCaptchaData.startTime.getTime(),
                     stopTime: currentCaptchaData.stopTime.getTime(),
                     trackList: currentCaptchaData.trackList,
+                    data:currentCaptchaData.customData
                 };
                 if (c.type === 'ROTATE_DEGREE' || c.type === 'ROTATE') {
                     data.bgImageWidth = c.currentCaptchaData.end;

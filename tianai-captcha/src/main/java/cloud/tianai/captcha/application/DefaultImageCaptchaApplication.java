@@ -179,6 +179,7 @@ public class DefaultImageCaptchaApplication implements ImageCaptchaApplication {
         if (validData == null) {
             return ApiResponse.ofMessage(ApiResponseStatusConstant.EXPIRED);
         }
+        validData.addParam(ParamKeyEnum.ID, id);
         ApiResponse<?> response = beforeValid(id, matchParam, validData);
         if (!response.isSuccess()) {
             return response;

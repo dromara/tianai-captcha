@@ -15,4 +15,6 @@ public interface CaptchaTypeConstant {
     String CONCAT = "CONCAT";
     /** 文字图片点选. */
     String WORD_IMAGE_CLICK = "WORD_IMAGE_CLICK";
+    /** 工作量证明.*/
+    String POW = "POW";
 }

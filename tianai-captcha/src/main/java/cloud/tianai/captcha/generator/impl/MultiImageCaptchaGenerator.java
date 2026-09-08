@@ -55,6 +55,8 @@ public class MultiImageCaptchaGenerator extends AbstractImageCaptchaGenerator {
         addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(CONCAT, StandardConcatImageCaptchaGenerator::new));
         // 点选文字验证码
         addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(WORD_IMAGE_CLICK, StandardWordClickImageCaptchaGenerator::new));
+        // 工作量证明
+        addImageCaptchaGeneratorProvider(new CommonImageCaptchaGeneratorProvider(POW, PowCaptchaGenerator::new));
     }
 
     public void addImageCaptchaGeneratorProvider(ImageCaptchaGeneratorProvider provider) {
