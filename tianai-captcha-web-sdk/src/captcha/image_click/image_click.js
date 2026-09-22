@@ -21,7 +21,7 @@ function getTemplate(styleConfig) {
         </div>
          <div class="tianai-captcha-tips" id="tianai-captcha-tips"></div>
     </div>
-    <div class="click-confirm-btn">确定</div>
+    <div class="click-confirm-btn">${styleConfig.i18n.click_confirm_btn}</div>
 </div>
 `;
 }

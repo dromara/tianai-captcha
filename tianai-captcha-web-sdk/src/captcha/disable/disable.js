@@ -51,7 +51,7 @@ class Disable {
         }
     }
     loadCaptchaForData (that, data) {
-        const msg = data.msg || data.message || "接口异常";
+        const msg = data.msg || data.message || that.styleConfig.i18n.interface_error;
         that.el.find("#content-span").text(msg);
     }
 }

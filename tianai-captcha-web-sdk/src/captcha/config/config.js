@@ -144,24 +144,25 @@ class CaptchaConfig {
         }).then(res => {
             if (res.code == 200) {
                 const useTimes = (data.stopTime - data.startTime) / 1000;
-                c.showTips(`验证成功,耗时${useTimes}秒`, 1, () => this.validSuccess(res, c, tac));
+                c.showTips(c.styleConfig.i18n.tips_success.replace("%s", useTimes), 1, () => this.validSuccess(res, c, tac));
             } else {
-                let tipMsg = "验证失败，请重新尝试!";
+                let tipMsg = c.styleConfig.i18n.tips_error;
                 if (res.code) {
                     if (res.code != 4001) {
-                        tipMsg = "验证码被黑洞吸走了！";
+                        tipMsg = c.styleConfig.i18n.tips_4001;
                     }
                 }
                 c.showTips(tipMsg, 0, () => this.validFail(res, c, tac));
             }
         }).catch(e => {
+            const errorResponse = e || {};
             let tipMsg = c.styleConfig.i18n.tips_error;
-            if (e.code && e.code != 200) {
-                if (res.code != 4001) {
+            if (errorResponse.code && errorResponse.code != 200) {
+                if (errorResponse.code != 4001) {
                     tipMsg = c.styleConfig.i18n.tips_4001;
                 }
-                c.showTips(tipMsg, 0, () => this.validFail(res, c, tac));
             }
+            c.showTips(tipMsg, 0, () => this.validFail(errorResponse, c, tac));
         })
 
     }
