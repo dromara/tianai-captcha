@@ -1,3 +1,5 @@
+> **中文** | [English](./README_EN.md)
+
 <div align="center">
 
 ![][image-logo]
@@ -16,15 +18,21 @@
 ## 简单介绍
 
 - tianai-captcha 目前支持的行为验证码类型
-    - 滑块验证码
-    - 旋转验证码
-    - 滑动还原验证码
-    - 文字点选验证码
+    - 滑块验证码（`SLIDER`）
+    - 旋转验证码（`ROTATE`）
+    - 滑动还原验证码（`CONCAT`）
+    - 文字点选验证码（`WORD_IMAGE_CLICK`）
+    - 工作量证明验证码（`POW`，v1.5.6 新增，无图片、前端自动求解）
     - 后面会陆续支持市面上更多好玩的验证码玩法... 敬请期待
+
+- 完整可运行示例：[tianai-captcha-demo](https://gitee.com/tianai/tianai-captcha-demo)
+- 更详细的配置说明请看 [在线文档][doc-link]
 
 ## 快速上手(后端)
 
-### springboot项目
+当前版本：**1.5.6**
+
+### SpringBoot 项目
 
 1. 导入依赖
 
@@ -32,239 +40,254 @@
    <dependency>
        <groupId>cloud.tianai.captcha</groupId>
        <artifactId>tianai-captcha-springboot-starter</artifactId>
-       <version>1.5.5</version>
+       <version>1.5.6</version>
    </dependency>
    ```
 
-2. 使用`ImageCaptchaApplication`生成和校验验证码
+2. 最小配置（`application.yaml`）
+
+   ```yaml
+   captcha:
+     # 加载系统自带滑块/旋转等模板
+     init-default-resource: true
+     expire:
+       default: 10000
+       WORD_IMAGE_CLICK: 60000
+       POW: 60000
+   ```
+
+3. 使用 `ImageCaptchaApplication` 生成和校验验证码
 
    ```java
-   public class Test2 {
+   @RestController
+   public class CaptchaController {
+
        @Autowired
        private ImageCaptchaApplication application;
-   
-       // 生成验证码 
-       public void gen() {
-           ApiResponse<ImageCaptchaVO> res1 = application.generateCaptcha(CaptchaTypeConstant.SLIDER);
-   
-           // 匹配验证码是否正确
-           // 该参数包含了滑动轨迹滑动时间等数据，用于校验滑块验证码。 由前端传入
-           ImageCaptchaTrack sliderCaptchaTrack = new ImageCaptchaTrack();
-           ApiResponse<?> match = application.matching(res1.getId(), sliderCaptchaTrack);
+
+       /** 生成验证码，type 可选：SLIDER / ROTATE / CONCAT / WORD_IMAGE_CLICK / POW */
+       @RequestMapping("/gen")
+       public ApiResponse<ImageCaptchaVO> gen(@RequestParam(value = "type", required = false) String type) {
+           if (type == null || type.isEmpty()) {
+               type = CaptchaTypeConstant.SLIDER;
+           }
+           return application.generateCaptcha(type);
        }
-       
-       // 校验验证码 
-       public boolean valid(@RequestBody ImageCaptchaTrack captchaTrack) {
-           ApiResponse<?> matching = captchaApplication.matching(data.getId(), sliderCaptchaTrack);
-           return matching.isSuccess();
+
+       /** 校验验证码，data 为前端回传的轨迹 / POW 结果 */
+       @PostMapping("/check")
+       public ApiResponse<?> check(@RequestBody CaptchaData data) {
+           ApiResponse<?> match = application.matching(data.getId(), data.getData());
+           if (match.isSuccess()) {
+               // 成功后把 id 回给前端，可用于二次验证 / 业务绑定
+               return ApiResponse.ofSuccess(Collections.singletonMap("id", data.getId()));
+           }
+           return match;
        }
-   
+
+       @lombok.Data
+       public static class CaptchaData {
+           private String id;
+           private ImageCaptchaTrack data;
+       }
    }
    ```
 
-3. springboot配置文件说明
+4. SpringBoot 配置文件说明（常用项）
 
    ```yaml
-   # 滑块验证码配置， 详细请看 cloud.tianai.captcha.autoconfiguration.ImageCaptchaProperties 类
+   # 详细请看 cloud.tianai.captcha.spring.autoconfiguration.SpringImageCaptchaProperties
    captcha:
-     # 如果项目中使用到了redis，滑块验证码会自动把验证码数据存到redis中， 这里配置redis的key的前缀,默认是captcha:slider
+     # Redis key 前缀，默认 captcha（引入 spring-boot-starter-data-redis 后会自动用 Redis 存校验数据）
      prefix: captcha
-     # 验证码过期时间，默认是2分钟,单位毫秒， 可以根据自身业务进行调整
+     # 过期时间，单位毫秒；未配 default 时内置默认约 20 秒
      expire:
-       # 默认缓存时间 2分钟
        default: 10000
-       # 针对 点选验证码 过期时间设置为 2分钟， 因为点选验证码验证比较慢，把过期时间调整大一些
-       WORD_IMAGE_CLICK: 20000
-     # 使用加载系统自带的资源， 默认是 false
-     init-default-resource: false
-     # 缓存控制， 默认为false不开启
+       WORD_IMAGE_CLICK: 60000
+       POW: 60000
+     # 是否加载系统自带模板，默认 false
+     init-default-resource: true
+     # 本地预生成缓存，默认 false
      local-cache-enabled: true
-     # 验证码会提前缓存一些生成好的验证数据， 默认是20
      local-cache-size: 20
-     # 缓存拉取失败后等待时间 默认是 5秒钟
-     local-cache-wait-time: 5000
-     # 缓存检查间隔 默认是2秒钟
-     local-cache-period: 2000
-     # 配置字体库，文字点选验证码的字体库，可以配置多个
+     local-cache-wait-time: 1000
+     local-cache-period: 5000
+     # 点选验证码字体，可配置多个，支持 ?tag=xxx
      font-path:
        - classpath:font/simhei.ttf
      secondary:
-       # 二次验证， 默认false 不开启
+       # 二次验证，默认 false
        enabled: false
-       # 二次验证过期时间， 默认 2分钟
        expire: 120000
-       # 二次验证缓存key前缀，默认是 captcha:secondary
        keyPrefix: "captcha:secondary"
    ```
 
-   
+5. 自定义背景图（推荐）
 
+   使用系统模板时，背景图尺寸建议 **600x360**。`POW` 不需要背景图。
 
-### 非spring项目
-
-1. 导入xml
-
-```xml
-<!-- maven 导入 -->
-<dependency>
-    <groupId>cloud.tianai.captcha</groupId>
-    <artifactId>tianai-captcha</artifactId>
-    <version>1.5.4</version>
-</dependency>
-```
-
-2. 构建 `ImageCaptchaApplication`负责生成和校验验证码
-
-```java
-import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
-
-public class ApplicationTest {
-
-    public static void main(String[] args) {
-        ImageCaptchaApplication application = TACBuilder.builder()
-                .addDefaultTemplate() // 添加默认模板
-                // 给滑块验证码 添加背景图片，宽高为600*360, Resource 参数1为 classpath/file/url , 参数2 为具体url 
-                .addResource("SLIDER", new Resource("classpath", "META-INF/cut-image/resource/1.jpg")) // 滑块验证的背景图
-                .addResource("WORD_IMAGE_CLICK", new Resource("classpath", "META-INF/cut-image/resource/1.jpg")) // 文字点选的背景图
-                .addResource("ROTATE", new Resource("classpath", "META-INF/cut-image/resource/1.jpg")) // 旋转验证的背景图
-                .build();
-        // 生成验证码数据， 可以将该数据直接返回给前端 ， 可配合 tianai-captcha-web-sdk 使用
-        // 支持生成 滑动验证码(SLIDER)、旋转验证码(ROTATE)、滑动还原验证码(CONCAT)、文字点选验证码(WORD_IMAGE_CLICK)
-        CaptchaResponse<ImageCaptchaVO> res = application.generateCaptcha("SLIDER");
-        System.out.println(res);
-
-        // 校验验证码， ImageCaptchaTrack 和 id 均为前端传开的参数， 可将 valid数据直接返回给 前端
-        // 注意: 该项目只负责生成和校验验证码数据， 至于二次验证等需要自行扩展
-        String id = res.getId();
-        ImageCaptchaTrack imageCaptchaTrack = null;
-        ApiResponse<?> valid = application.matching(id, new MatchParam(imageCaptchaTrack));
-        System.out.println(valid.isSuccess());
-
-
-        // 扩展: 一个简单的二次验证
-        CacheStore cacheStore = new LocalCacheStore();
-        if (valid.isSuccess()) {
-            // 如果验证成功，生成一个token并存储, 将该token返回给客户端，客户端下次请求数据时携带该token， 后台判断是否有效
-            String token = UUID.randomUUID().toString();
-            cacheStore.setCache(token, new AnyMap(), 5L, TimeUnit.MINUTES);
-        }
-
-    }
-}
-
-```
-
-
-## 快速上手(前端)
-
-
-| 条目     |                                                              |
-| -------- | ------------------------------------------------------------ |
-| 兼容性   | Chrome、Firefox、Safari、Opera、主流手机浏览器、iOS 及 Android上的内嵌Webview |
-| 框架支持 | H5、Angular、React、Vue2、Vue3                               |
-
-
-
-### 安装
-
-1. 将打包好的`tac`目录放到自己项目中,如果是vue、react等框架，将tac目录放到public目录中、或者放到某个可以访问到地方，比如oss之类的可以被浏览器访问到的地方 （tac下载地址 [https://gitee.com/dromara/tianai-captcha/releases/tag/tianai-captcha-1.5.4](https://gitee.com/dromara/tianai-captcha/releases/tag/tianai-captcha-1.5.4)）
-
-2. 引入初始化函数 (load.js下载地址 [https://minio.tianai.cloud/public/static/captcha/js/load.min.js](https://minio.tianai.cloud/public/static/captcha/js/load.min.js)) 可自己将load.js下载到本地
-
-   ```html
-   <script src="load.min.js"></script>
-   ```
-
-   **注:  如果是web框架，将该引入代码放到 `public/index.html`**
-
-### 使用方法
-
-2. 创建一个div块用于渲染验证码， 该div用于装载验证码
-
-   ```html
-    <div id="captcha-box"></div>
-   ```
-
-3. 在需要调用验证码的时候执行加载验证码方法
-
-   ```js
-   function login() {
-       // config 对象为TAC验证码的一些配置和验证的回调
-       const config = {
-           // 生成接口 (必选项,必须配置, 要符合tianai-captcha默认验证码生成接口规范)
-           requestCaptchaDataUrl: "/gen",
-           // 验证接口 (必选项,必须配置, 要符合tianai-captcha默认验证码校验接口规范)
-           validCaptchaUrl: "/check",
-           // 验证码绑定的div块 (必选项,必须配置)
-           bindEl: "#captcha-box",
-           // 验证成功回调函数(必选项,必须配置)
-           validSuccess: (res, c, tac) => {
-                // 销毁验证码服务
-               tac.destroyWindow();
-               console.log("验证成功，后端返回的数据为", res);
-   			// 调用具体的login方法
-               login(res.data.token)
-           },
-           // 验证失败的回调函数(可忽略，如果不自定义 validFail 方法时，会使用默认的)
-           validFail: (res, c, tac) => {
-               console.log("验证码验证失败回调...")
-               // 验证失败后重新拉取验证码
-               tac.reloadCaptcha();
-           },
-           // 刷新按钮回调事件
-           btnRefreshFun: (el, tac) => {
-               console.log("刷新按钮触发事件...")
-               tac.reloadCaptcha();
-           },
-           // 关闭按钮回调事件
-           btnCloseFun: (el, tac) => {
-               console.log("关闭按钮触发事件...")
-               tac.destroyWindow();
-           }
+   ```java
+   @Configuration
+   public class CaptchaResourceConfiguration {
+       @Bean
+       public ResourceStore resourceStore() {
+           LocalMemoryResourceStore store = new LocalMemoryResourceStore();
+           store.addResource(CaptchaTypeConstant.SLIDER,
+                   new Resource("classpath", "bgimages/a.jpg", "default"));
+           store.addResource(CaptchaTypeConstant.ROTATE,
+                   new Resource("classpath", "bgimages/48.jpg", "default"));
+           store.addResource(CaptchaTypeConstant.CONCAT,
+                   new Resource("classpath", "bgimages/48.jpg", "default"));
+           store.addResource(CaptchaTypeConstant.WORD_IMAGE_CLICK,
+                   new Resource("classpath", "bgimages/c.jpg", "default"));
+           return store;
        }
-       // 一些样式配置， 可不传
-       let style = {
-           logoUrl: null;// 去除logo    
-           // logoUrl: "/xx/xx/xxx.png" // 替换成自定义的logo   
-       }
-       // 参数1 为 tac文件是目录地址， 目录里包含 tac的js和css等文件
-       // 参数2 为 tac验证码相关配置
-       // 参数3 为 tac窗口一些样式配置
-       window.initTAC("./tac", config, style).then(tac => {
-           tac.init(); // 调用init则显示验证码
-       }).catch(e => {
-           console.log("初始化tac失败", e);
-       })
    }
    ```
 
-### 对滑块的按钮和背景设置为自定义的一些样式
+### 非 Spring 项目
 
-```js
-// 这里分享一些作者自己调的样式供参考
-const style =    {
-    	// 按钮样式
-        btnUrl: "https://minio.tianai.cloud/public/captcha-btn/btn3.png",
-    	// 背景样式
-        bgUrl: "https://minio.tianai.cloud/public/captcha-btn/btn3-bg.jpg",
-    	// logo地址
-        logoUrl: "https://minio.tianai.cloud/public/static/captcha/images/logo.png",
- 		// 滑动边框样式
-    	moveTrackMaskBgColor: "#f7b645",
-        moveTrackMaskBorderColor: "#ef9c0d"
-    }
- window.initTAC("./tac", config, style).then(tac => {
-     tac.init(); // 调用init则显示验证码
- }).catch(e => {
-     console.log("初始化tac失败", e);
- })
+1. 导入依赖
+
+```xml
+<dependency>
+    <groupId>cloud.tianai.captcha</groupId>
+    <artifactId>tianai-captcha</artifactId>
+    <version>1.5.6</version>
+</dependency>
 ```
 
+2. 构建 `ImageCaptchaApplication`
 
+```java
+ImageCaptchaApplication application = TACBuilder.builder()
+        .addDefaultTemplate()
+        // 背景图宽高建议 600x360；Resource 参数1为 classpath / file / URL
+        .addResource("SLIDER", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+        .addResource("WORD_IMAGE_CLICK", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+        .addResource("ROTATE", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+        .addResource("CONCAT", new Resource("classpath", "META-INF/cut-image/resource/1.jpg"))
+        .expire("default", 10000L)
+        .expire(CaptchaTypeConstant.WORD_IMAGE_CLICK, 60000L)
+        .build();
 
-## 详细文档请点击 [在线文档](http://doc.captcha.tianai.cloud)
+// 支持 SLIDER / ROTATE / CONCAT / WORD_IMAGE_CLICK / POW
+ApiResponse<ImageCaptchaVO> res = application.generateCaptcha(CaptchaTypeConstant.SLIDER);
 
-# qq群: 197340494
+// id 与 ImageCaptchaTrack 均由前端回传（此处 track 仅为占位）
+ImageCaptchaTrack track = null; // 实际项目中由前端 POST 传入
+ApiResponse<?> valid = application.matching(res.getData().getId(), new MatchParam(track));
+```
+
+## 快速上手(前端)
+
+| 条目     |                                                              |
+| -------- | ------------------------------------------------------------ |
+| 兼容性   | Chrome、Firefox、Safari、Opera、主流手机浏览器、iOS 及 Android 内嵌 WebView |
+| 框架支持 | H5、Angular、React、Vue2、Vue3                               |
+
+请保证 **前端 SDK 与后端版本一致（1.5.6）**。
+
+### 方式一：直接引入（更容易上手）
+
+1. 下载 tac 包：[tianai-captcha-1.5.6 / tac-web.zip](https://gitee.com/dromara/tianai-captcha/releases/download/tianai-captcha-1.5.6/tac-web.zip)  
+   放到可访问目录（如 SpringBoot `static/tac`，或 Vue/React 的 `public/tac`）
+
+2. 页面引入并初始化
+
+```html
+<link rel="stylesheet" href="/tac/css/tac.css">
+<script src="/tac/js/tac.min.js"></script>
+<div id="captcha-box"></div>
+<script>
+  new TAC({
+    requestCaptchaDataUrl: "/gen?type=SLIDER",
+    validCaptchaUrl: "/check",
+    bindEl: "#captcha-box",
+    validSuccess: (res, c, tac) => {
+      tac.destroyWindow();
+      // 与后端 /check 成功返回一致，业务侧拿 id
+      console.log("captcha id =", res.data.id);
+    },
+    validFail: (res, c, tac) => tac.reloadCaptcha()
+  }, {
+    // logoUrl: null  // 隐藏 logo
+  }).init();
+</script>
+```
+
+### 方式二：load.js 按需加载（上线推荐）
+
+首屏只引入很小的 `load.js`，用户点击登录时再拉取 `tac.min.js` / `tac.css`。
+
+1. 同样准备好 `tac` 目录  
+2. 下载 [load.js](https://minio.tianai.cloud/public/static/tac-opensoure/load.js)（或 [load.min.js](https://minio.tianai.cloud/public/static/captcha/js/load.min.js)）
+
+```html
+<script src="/js/load.js"></script>
+<button id="login-btn">登录</button>
+<div id="captcha-box"></div>
+<script>
+  document.getElementById("login-btn").onclick = function () {
+    const config = {
+      requestCaptchaDataUrl: "/gen?type=SLIDER",
+      validCaptchaUrl: "/check",
+      bindEl: "#captcha-box",
+      validSuccess: (res, c, tac) => {
+        tac.destroyWindow();
+        console.log("验证成功", res.data.id);
+      },
+      validFail: (res, c, tac) => tac.reloadCaptcha()
+    };
+    const style = {
+      logoUrl: null, // 隐藏 logo；也可写成 logoUrl: "/xx/logo.png"
+    };
+    // 参数1：tac 目录（需包含 js/tac.min.js、css/tac.css）
+    // window.initTAC 与 window.loadTAC 等价
+    window.loadTAC("./tac", config, style)
+      .then(tac => tac.init())
+      .catch(e => console.log("初始化失败", e));
+  };
+</script>
+```
+
+### 自定义样式参考
+
+```js
+const style = {
+  btnUrl: "https://minio.tianai.cloud/public/captcha-btn/btn3.png",
+  bgUrl: "https://minio.tianai.cloud/public/captcha-btn/btn3-bg.jpg",
+  logoUrl: "https://minio.tianai.cloud/public/static/captcha/images/logo.png",
+  moveTrackMaskBgColor: "#f7b645",
+  moveTrackMaskBorderColor: "#ef9c0d",
+  i18n: {
+    slider_title: "拖动滑块完成拼图",
+    pow_title: "正在验证中:",
+    pow_title_size: "15px"
+  }
+};
+```
+
+## 工作量证明（POW）简介
+
+```java
+// 默认难度参数 [4, 16, 4]
+application.generateCaptcha(CaptchaTypeConstant.POW);
+
+// 自定义：difficulty / saltLen / count
+GenerateParam param = new GenerateParam();
+param.setType(CaptchaTypeConstant.POW);
+param.addParam(ParamKeyEnum.POW_PARAM, Arrays.asList(4, 16, 4));
+application.generateCaptcha(param);
+```
+
+前端使用 1.5.6+ SDK，生成接口返回 `type: "POW"` 即可自动求解提交，无需拖动。
+
+---
+
+## 详细文档请点击 [在线文档][doc-link]
+
+# qq群: 993402836
 
 # 微信群:
 ![](https://minio.tianai.cloud/public/qun2.jpg)
