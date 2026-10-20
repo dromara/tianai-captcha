@@ -18,6 +18,8 @@ export default {
         concat_title_size: "15px",
         image_click_title_size: "20px",
         rotate_title_size: "15px",
+        pow_title: "正在验证中:",
+        pow_title_size: "15px",
     }
 
 }

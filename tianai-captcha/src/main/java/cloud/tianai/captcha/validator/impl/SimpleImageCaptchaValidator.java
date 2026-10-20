@@ -172,7 +172,7 @@ public class SimpleImageCaptchaValidator implements ImageCaptchaValidator, Slide
     private boolean doValidPowCaptcha(ImageCaptchaTrack imageCaptchaTrack, AnyMap imageCaptchaValidData, Float tolerant, String type) {
         Object data = imageCaptchaTrack.getData();
         if (!(data instanceof String)) {
-            throw new IllegalArgumentException("data is not List");
+            throw new IllegalArgumentException("data is not String");
         }
         String noncesStr = data.toString();
         // 兼容一下加密解密后字符串引号的问题

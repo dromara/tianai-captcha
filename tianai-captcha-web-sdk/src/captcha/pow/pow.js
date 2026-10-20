@@ -1,6 +1,6 @@
 import "@/captcha/slider/slider.scss"
 import "./pow.scss"
-import {CommonCaptcha,  initConfig,showTips} from "../common/common.js"
+import {CommonCaptcha,  initConfig,showTips,closeTips} from "../common/common.js"
 import {SolverManager} from "./pow-core"
 /**
  * 滑动验证码
@@ -49,7 +49,7 @@ class Pow extends CommonCaptcha{
 
     destroy () {
         if (this.pow) {
-            this.pow.cancel();
+            this.pow.destroy();
         }
         const existsCaptchaEl = this.boxEl.children("#tianai-captcha");
         if (existsCaptchaEl) {
