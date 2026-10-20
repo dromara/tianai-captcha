@@ -1,4 +1,5 @@
-> **中文** | [English](./README_EN.md)
+> **🌏 Looking for English?** Read the **[English README](./README_EN.md)** · Online docs: **[English Documentation](http://doc.captcha.tianai.cloud/en/)**  
+> **中文文档** · [在线文档](http://doc.captcha.tianai.cloud)
 
 <div align="center">
 
@@ -8,8 +9,11 @@
 
 ### tianaiCAPTCHA - 天爱验证码(TAC)
 #### 基于 JAVA实现的行为验证码
+
+**Language / 语言:** [中文](./readme.md) · [English](./README_EN.md)
+
 ### **[在线体验 🚀][online-demo-link]**
-### **[在线文档 🚀][doc-link]**
+### **[在线文档 🚀][doc-link]** · **[English Docs 🚀][doc-en-link]**
 </div>
 
 
@@ -307,4 +311,5 @@ application.generateCaptcha(param);
 [tianai-captcha-web-sdk-link]: https://github.com/tianaiyouqing/captcha-web-sdk
 [online-demo-link]: http://captcha.tianai.cloud
 [doc-link]: http://doc.captcha.tianai.cloud
+[doc-en-link]: http://doc.captcha.tianai.cloud/en/
 [qrcode-link]: https://minio.tianai.cloud/public/qun4.png

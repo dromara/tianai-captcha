@@ -1,4 +1,5 @@
-> [中文文档](./readme.md) | **English**
+> **Language:** [中文 README](./readme.md) · **English**  
+> Full docs: **[English Documentation](http://doc.captcha.tianai.cloud/en/)** · [中文在线文档](http://doc.captcha.tianai.cloud)
 
 <div align="center">
 
@@ -8,8 +9,11 @@
 
 ### tianaiCAPTCHA (TAC)
 #### Behavioral CAPTCHA for Java
+
+**Language / 语言:** [中文](./readme.md) · [English](./README_EN.md)
+
 ### **[Live Demo 🚀][online-demo-link]**
-### **[Documentation 🚀][doc-link]**
+### **[English Docs 🚀][doc-en-link]** · **[中文文档 🚀][doc-link]**
 </div>
 
 
@@ -307,4 +311,5 @@ With frontend SDK 1.5.6+, returning `type: "POW"` is enough — the SDK solves a
 [tianai-captcha-web-sdk-link]: https://github.com/tianaiyouqing/captcha-web-sdk
 [online-demo-link]: http://captcha.tianai.cloud
 [doc-link]: http://doc.captcha.tianai.cloud
+[doc-en-link]: http://doc.captcha.tianai.cloud/en/
 [qrcode-link]: https://minio.tianai.cloud/public/qun4.png
