@@ -6,6 +6,7 @@ import cloud.tianai.captcha.common.AnyMap;
 import cloud.tianai.captcha.common.response.ApiResponse;
 import cloud.tianai.captcha.spring.autoconfiguration.SecondaryVerificationProperties;
 import cloud.tianai.captcha.validator.common.model.dto.ImageCaptchaTrack;
+import cloud.tianai.captcha.validator.common.model.dto.MatchParam;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -21,6 +22,16 @@ public class SecondaryVerificationApplication extends FilterImageCaptchaApplicat
     public SecondaryVerificationApplication(ImageCaptchaApplication target, SecondaryVerificationProperties prop) {
         super(target);
         this.prop = prop;
+    }
+
+    @Override
+    public ApiResponse<?> matching(String id, MatchParam matchParam) {
+        ApiResponse<?>  match = super.matching(id, matchParam);
+        if (match.isSuccess()) {
+            // 如果匹配成功， 添加二次验证记录
+            addSecondaryVerification(id, matchParam.getTrack());
+        }
+        return match;
     }
 
     @Override
