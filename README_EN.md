@@ -17,7 +17,7 @@
 </div>
 
 
-![](https://minio.tianai.cloud/public/%E6%A0%87%E9%A2%98%E5%9B%BE%E7%89%87.jpg)
+![](images/标题图片.jpg)
 
 ## Introduction
 
